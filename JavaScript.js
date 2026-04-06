@@ -69,3 +69,8 @@ function toggleLanguage() {
 window.onload = () => {
     applyLanguage(currentLang);
 };
+
+
+
+
+
