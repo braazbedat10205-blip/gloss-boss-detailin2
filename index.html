@@ -1,0 +1,303 @@
+﻿<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="StyleSheet1.css">
+
+    <style>
+
+        .whatsapp-btn {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+            .whatsapp-btn:hover {
+                background-color: #1ebe57;
+            }
+
+        .whatsapp-float {
+            position: fixed;
+            width: 55px;
+            height: 55px;
+            bottom: 15px;
+            right: 15px;
+            background-color: #25D366;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 26px;
+            box-shadow: 2px 2px 5px #888;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+            .whatsapp-float:hover {
+                background-color: #1ebe57;
+            }
+
+        .service-box button {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+            .service-box button:hover {
+                background-color: #1ebe57;
+            }
+
+        header {
+            background-image: url('glos.jpeg');
+            background-size: cover;
+            background-position: center;
+            padding: 120px 20px;
+            text-align: center;
+            color: white;
+        }
+
+            header h1 {
+                font-size: 28px;
+            }
+
+            header p {
+                font-size: 16px;
+            }
+
+        section {
+            padding: 15px;
+        }
+
+        .services {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .service-box {
+            width: 280px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+
+            header {
+                padding: 80px 10px;
+            }
+
+            .service-box {
+                width: 90%;
+            }
+
+            header h1 {
+                font-size: 22px;
+            }
+
+            header p {
+                font-size: 14px;
+            }
+        }
+
+        /* زر اللغة */
+        .lang-btn {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 999;
+            padding: 8px 12px;
+            border: none;
+            background: #333;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        let isArabic = true;
+
+        function toggleLanguage() {
+            isArabic = !isArabic;
+
+            document.body.dir = "rtl";
+
+            if (isArabic) {
+                document.documentElement.lang = "ar";
+                location.reload();
+
+            } else {
+                document.documentElement.lang = "he";
+
+                document.querySelectorAll("*").forEach(el => {
+                    if (el.children.length === 0) {
+                        if (el.innerText) {
+                            el.innerText = translateToHebrew(el.innerText);
+                        }
+                    }
+                });
+            }
+        }
+
+        /* ترجمة النصوص */
+        function translateToHebrew(text) {
+
+            const map = [
+                ["Gloss Boss Detailing", "Gloss Boss Detailing"],
+                ["حماية • لمعان • فخامة", "הגנה • ברק • יוקרה"],
+
+                ["احجز الآن", "הזמן עכשיו"],
+                ["شوف أعمالنا", "צפה בעבודות"],
+                ["شراء وطلب منتجات", "מוצרים והזמנות"],
+
+                ["موقعنا", "המיקום שלנו"],
+                ["اضغط على الزر لفتح الموقع على Waze:", "לחץ על הכפתור לפתיחת Waze:"],
+                ["افتح Waze", "פתח Waze"],
+
+                ["خدماتنا", "השירותים שלנו"],
+
+                ["PPF", "PPF"],
+                ["بوليش نانو", "פוליש ננו"],
+                ["قزاز أسود", "חלונות כהים"],
+                ["أمور إضافية", "שירותים נוספים"],
+
+                ["من نحن", "אודותינו"],
+
+                ["حماية كاملة لطلاء السيارة ضد الخدوش والصدمات الخفيفة",
+                    "הגנה מלאה לצבע הרכב מפני שריטות ופגיעות קלות"],
+
+                ["إزالة الخدوش الخفيفة ولمعان نانو يدوم طويلاً",
+                    "הסרת שריטות קלות וברק ננו שמחזיק לאורך זמן"],
+
+                ["تظليل حراري عالي الجودة مع حماية من الأشعة",
+                    "הצללה תרמית איכותית עם הגנה מקרני השמש"],
+
+                ["سبويلر، شفه، خياطة ستيرنج، وغيرها",
+                    "ספוילר, שפה, תפירת הגה ועוד"],
+
+                ["Gloss Boss Detailing متخصصون في العناية الفاخرة بالسيارات، نقدم أعلى معايير الجودة باستخدام أفضل المنتجات والتقنيات الحديثة.",
+                    "Gloss Boss Detailing מתמחים בטיפוח רכבים יוקרתי, אנו מספקים סטנדרטים גבוהים תוך שימוש במוצרים ובטכנולוגיות המתקדמות ביותר."],
+                ["احجز خدمة PPF", "הזמינו שרות PPF"],
+                ["احجز خدمة פוליש ננו", "הזמינו שרות פוליש ננו"],
+                ["احجز خدمة إضافية", "הזמינו שירות נוסף"]
+            ];
+
+            let result = text;
+
+            map.forEach(item => {
+                result = result.replaceAll(item[0], item[1]);
+            });
+
+            return result;
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <!-- زر اللغة (تم نقله من head) -->
+    <button onclick="toggleLanguage()" class="lang-btn">🌐تغيير اللغه/שנה שפה</button>
+    <header>
+
+        <h1>Gloss Boss Detailing</h1>
+        <p id="subtitle">حماية • لمعان • فخامة</p>
+
+        <a href="https://wa.me/972533044605?text=مرحبا%20اريد%20الحجز"
+           target="_blank" class="whatsapp-btn">
+            احجز الآن
+        </a>
+
+        <br><br>
+
+        <a href="HtmlPage5.html">
+            <button style="padding:10px 16px;">شوف أعمالنا 🔥</button>
+        </a>
+
+        <a href="HtmlPage6.html">
+            <button style="padding:10px 16px;">شراء وطلب منتجات 🔥</button>
+        </a>
+
+    </header>
+
+    <section style="text-align:center;">
+        <h2>موقعنا</h2>
+        <p>اضغط على الزر لفتح الموقع على Waze:</p>
+
+        <a href="https://waze.com/ul/hsvc4gmwpk" target="_blank">
+            <button>افتح Waze</button>
+        </a>
+    </section>
+
+    <section>
+        <h2 style="text-align:center;">خدماتنا</h2>
+
+        <div class="services">
+
+            <div class="service-box">
+                <h3>PPF</h3>
+                <p>حماية كاملة لطلاء السيارة ضد الخدوش والصدمات الخفيفة</p>
+                <a href="https://wa.me/972533044605?text=PPF" target="_blank">
+                    <button>احجز خدمة PPF</button>
+                </a>
+            </div>
+
+            <div class="service-box">
+                <h3>بوليش نانو</h3>
+                <p>إزالة الخدوش الخفيفة ولمعان نانو يدوم طويلاً</p>
+                <a href="https://wa.me/972533044605?text=بوليش%20نانو" target="_blank">
+                    <button>احجز خدمة بوليش نانو</button>
+                </a>
+            </div>
+
+            <div class="service-box">
+                <h3>قزاز أسود</h3>
+                <p>تظليل حراري عالي الجودة مع حماية من الأشعة</p>
+                <a href="https://wa.me/972533044605?text=قزاز%20أسود" target="_blank">
+                    <button>احجز خدمة القزاز الأسود</button>
+                </a>
+            </div>
+
+            <div class="service-box">
+                <h3>أمور إضافية</h3>
+                <p>سبويلر، شفه، خياطة ستيرنج، وغيرها</p>
+                <a href="https://wa.me/972533044605?text=إضافات" target="_blank">
+                    <button>احجز خدمة إضافية</button>
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <section>
+        <h2>من نحن</h2>
+        <p>
+            Gloss Boss Detailing متخصصون في العناية الفاخرة بالسيارات،
+            نقدم أعلى معايير الجودة باستخدام أفضل المنتجات والتقنيات الحديثة.
+        </p>
+    </section>
+
+    <footer style="text-align:center; padding:10px;">
+        © 2025 Gloss Boss Detailing
+    </footer>
+
+    <!-- زر واتساب عائم -->
+    <a href="https://wa.me/972533044605?text=مرحبا%20اريد%20التواصل"
+       target="_blank"
+       class="whatsapp-float">
+        💬
+    </a>
+
+</body>
+</html>

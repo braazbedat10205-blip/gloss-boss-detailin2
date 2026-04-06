@@ -1,0 +1,252 @@
+﻿<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="StyleSheet1.css">
+
+    <title>المنتجات - Gloss Boss</title>
+
+    <style>
+
+        body {
+            background: #111;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            margin: 0;
+        }
+
+        h1 {
+            padding: 20px;
+        }
+
+        /* شبكة المنتجات */
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 10px;
+        }
+
+        /* كل منتج */
+        .product {
+            background: #1c1c1c;
+            width: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px #000;
+            transition: 0.3s;
+        }
+
+            .product:hover {
+                transform: scale(1.05);
+            }
+
+            .product img {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+            }
+
+            .product h3 {
+                margin: 10px 0;
+            }
+
+        .price {
+            color: #25D366;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+            button:hover {
+                background: #1ebe57;
+            }
+    </style>
+</head>
+<script>
+    let isArabic = true;
+
+    function toggleLanguage() {
+        isArabic = !isArabic;
+
+        if (isArabic) {
+            document.documentElement.lang = "ar";
+            document.body.dir = "rtl";
+            location.reload(); // يرجع عربي
+        } else {
+            document.documentElement.lang = "he";
+            document.body.dir = "rtl";
+            translatePage();
+        }
+    }
+
+    function translatePage() {
+
+        const map = [
+            ["المنتجات - Gloss Boss", "מוצרים - Gloss Boss"],
+            ["منتجاتنا", "המוצרים שלנו"],
+            ["العودة للصفحة الرئيسية", "חזרה לדף הבית"],
+            ["اطلب الآن", "הזמן עכשיו"]
+        ];
+
+        document.querySelectorAll("*").forEach(el => {
+
+            if (el.children.length === 0) {
+                let text = el.innerText;
+
+                if (text) {
+                    map.forEach(item => {
+                        text = text.replaceAll(item[0], item[1]);
+                    });
+                    el.innerText = text;
+                }
+            }
+
+        });
+    }
+</script>
+<body>
+    <button onclick="toggleLanguage()" class="lang-btn">🌐تغيير اللغه/שנה שפה</button>
+
+    <header style="
+    background-image: url('glos.jpeg');
+    background-size: cover;
+    background-position: center;
+    padding: 120px 20px;
+    text-align:center;
+    color:white;
+">
+        <h1>منتجاتنا</h1>
+        <a href="index.html" class="back-btn">العودة للصفحة الرئيسية</a>
+    </header>
+        <div class="products">
+
+            <!-- الصف 1 -->
+            <div class="product">
+                <img src="p1.jpg">
+                <h3>منتج 1</h3>
+                <p class="price">₪ 500</p>
+                <a href="https://wa.me/972533044605?text=اريد%20شراء%20منتج%201" target="_blank">
+                    <button>اطلب الآن</button>
+                </a>
+            </div>
+
+            <div class="product">
+                <img src="p2.jpg">
+                <h3>منتج 2</h3>
+                <p class="price">₪ 600</p>
+                <a href="https://wa.me/972533044605?text=اريد%20شراء%20منتج%202" target="_blank">
+                    <button>اطلب الآن</button>
+                </a>
+            </div>
+
+            <div class="product">
+                <img src="p3.jpg">
+                <h3>منتج 3</h3>
+                <p class="price">₪ 700</p>
+                <a href="https://wa.me/972533044605?text=اريد%20شراء%20منتج%203" target="_blank">
+                    <button>اطلب الآن</button>
+                </a>
+            </div>
+
+            <!-- الصف 2 -->
+            <div class="product">
+                <img src="p4.jpg">
+                <h3>منتج 4</h3>
+                <p class="price">₪ 400</p>
+                <a href="https://wa.me/972533044605?text=اريد%20شراء%20منتج%204" target="_blank">
+                    <button>اطلب الآن</button>
+                </a>
+            </div>
+
+            <div class="product">
+                <img src="p5.jpg">
+                <h3>منتج 5</h3>
+                <p class="price">₪ 800</p>
+                <a href="https://wa.me/972533044605?text=اريد%20شراء%20منتج%205" target="_blank">
+                    <button>اطلب الآن</button>
+                </a>
+            </div>
+
+            <div class="product">
+                <img src="p6.jpg">
+                <h3>منتج 6</h3>
+                <p class="price">₪ 900</p>
+                <a href="https://wa.me/972533044605?text=اريد%20شراء%20منتج%206" target="_blank">
+                    <button>اطلب الآن</button>
+                </a>
+            </div>
+
+            <!-- الصف 3 -->
+            <div class="product">
+                <img src="p7.jpg">
+                <h3>منتج 7</h3>
+                <p class="price">₪ 300</p>
+                <a href="https://wa.me/972533044605?text=اريد%20شراء%20منتج%207" target="_blank">
+                    <button>اطلب الآن</button>
+                </a>
+            </div>
+
+            <div class="product">
+                <img src="p8.jpg">
+                <h3>منتج 8</h3>
+                <p class="price">₪ 550</p>
+                <a href="https://wa.me/972533044605?text=اريد%20شراء%20منتج%208" target="_blank">
+                    <button>اطلب الآن</button>
+                </a>
+            </div>
+
+            <div class="product">
+                <img src="p9.jpg">
+                <h3>منتج 9</h3>
+                <p class="price">₪ 650</p>
+                <a href="https://wa.me/972533044605?text=اريد%20شراء%20منتج%209" target="_blank">
+                    <button>اطلب الآن</button>
+                </a>
+            </div>
+
+            <!-- الصف 4 -->
+            <div class="product">
+                <img src="p10.jpg">
+                <h3>منتج 10</h3>
+                <p class="price">₪ 750</p>
+                <a href="https://wa.me/972533044605?text=اريد%20شراء%20منتج%2010" target="_blank">
+                    <button>اطلب الآن</button>
+                </a>
+            </div>
+
+            <div class="product">
+                <img src="p11.jpg">
+                <h3>منتج 11</h3>
+                <p class="price">₪ 850</p>
+                <a href="https://wa.me/972533044605?text=اريد%20شراء%20منتج%2011" target="_blank">
+                    <button>اطلب الآن</button>
+                </a>
+            </div>
+
+            <div class="product">
+                <img src="p12.jpg">
+                <h3>منتج 12</h3>
+                <p class="price">₪ 950</p>
+                <a href="https://wa.me/972533044605?text=اريد%20شراء%20منتج%2012" target="_blank">
+                    <button>اطلب الآن</button>
+                </a>
+            </div>
+
+        </div>
+
+</body>
+</html>

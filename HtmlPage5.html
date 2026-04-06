@@ -1,0 +1,230 @@
+﻿<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="StyleSheet1.css">
+
+    <title>أعمالنا - Gloss Boss</title>
+
+    <style>
+        body {
+            background: #111;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            margin: 0;
+            direction: rtl;
+        }
+
+        h1 {
+            padding: 20px;
+        }
+
+        /* زر اللغة */
+        .lang-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background: #25D366;
+            color: white;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        /* قبل / بعد */
+        .compare {
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+            margin: 30px auto;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+            .compare img {
+                width: 100%;
+                display: block;
+            }
+
+        .after {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            overflow: hidden;
+            height: 100%;
+        }
+
+            .after img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 3px;
+            height: 100%;
+            background: #25D366;
+            cursor: ew-resize;
+            z-index: 5;
+        }
+
+            .slider::before {
+                content: "↔";
+                position: absolute;
+                top: 50%;
+                left: -15px;
+                background: #25D366;
+                color: white;
+                padding: 6px 9px;
+                border-radius: 50%;
+                transform: translateY(-50%);
+            }
+
+        /* فيديو */
+        .videos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+            .videos video {
+                width: 300px;
+                border-radius: 10px;
+            }
+
+        h2 {
+            margin-top: 50px;
+        }
+
+        /* موبايل */
+        @media (max-width: 768px) {
+            .videos video {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <button onclick="toggleLanguage()" class="lang-btn">🌐تغيير اللغه/שנה שפה</button>
+    <a href="index.html" class="back-btn">العودة للصفحة الرئيسية</a>
+
+    <br>
+    <br>
+    <br>
+    <h2>أعمالنا (قبل / بعد</h2>
+
+    <div class="compare">
+        <img src="before.jpeg">
+        <div class="after">
+            <img src="after.jpeg">
+        </div>
+        <div class="slider"></div>
+    </div>
+
+    <div class="compare">
+        <img src="before2.jpeg">
+        <div class="after">
+            <img src="after2.jpeg">
+        </div>
+        <div class="slider"></div>
+    </div>
+
+    <div class="compare">
+        <img src="mozdw.jpeg">
+    </div>
+
+    <h2>فيديوهات من شغلنا</h2>
+
+    <div class="videos">
+        <video controls>
+            <source src="video1.mp4" type="video/mp4">
+        </video>
+
+        <video controls>
+            <source src="video2.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <script>
+        /* ===== سلايدر (كمبيوتر + موبايل) ===== */
+        const sliders = document.querySelectorAll(".slider");
+
+        sliders.forEach(slider => {
+
+            let isDown = false;
+
+            function move(x, slider) {
+                let container = slider.parentElement;
+                let rect = container.getBoundingClientRect();
+                let pos = x - rect.left;
+
+                let percent = (pos / rect.width) * 100;
+                if (percent < 0) percent = 0;
+                if (percent > 100) percent = 100;
+
+                slider.style.left = percent + "%";
+                container.querySelector(".after").style.width = percent + "%";
+            }
+
+            // كمبيوتر
+            slider.addEventListener("mousedown", () => isDown = true);
+            window.addEventListener("mouseup", () => isDown = false);
+            window.addEventListener("mousemove", e => {
+                if (!isDown) return;
+                move(e.clientX, slider);
+            });
+
+            // موبايل
+            slider.addEventListener("touchstart", () => isDown = true);
+            window.addEventListener("touchend", () => isDown = false);
+            window.addEventListener("touchmove", e => {
+                if (!isDown) return;
+                move(e.touches[0].clientX, slider);
+            });
+
+        });
+
+        /* ===== ترجمة الصفحة ===== */
+        let isArabic = true;
+
+        function toggleLanguage() {
+            isArabic = !isArabic;
+
+            if (isArabic) {
+                location.reload();
+            } else {
+                document.body.dir = "rtl";
+
+                const map = [
+                    ["أعمالنا (قبل / بعد)", "העבודות שלנו (לפני / אחרי)"],
+                    ["فيديوهات من شغلنا", "סרטונים מהעבודות שלנו"]
+                ];
+
+                document.querySelectorAll("*").forEach(el => {
+                    if (el.children.length === 0) {
+                        let text = el.innerText;
+                        if (text) {
+                            map.forEach(item => {
+                                text = text.replaceAll(item[0], item[1]);
+                            });
+                            el.innerText = text;
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+
+</body>
+</html>
