@@ -1,5 +1,5 @@
 ﻿body {
-        font-size: 17px;
+    font-size: 17px;
     margin: 0;
     font-family: Arial, sans-serif;
     direction: rtl;
@@ -9,9 +9,9 @@
 
 /* ====== الهيدر ====== */
 header {
-    background-size: auto;
+    background-size: cover;
     background-position: center;
-    height: 105vh;
+    height: 90vh; /* بدل 105vh */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -20,28 +20,28 @@ header {
     position: relative;
 }
 
-    header::before {
-        content: "";
-        position: absolute;
-        inset: 0;
- background: rgba(0,0,0,0.25); 
-   }
+header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+}
 
-    header * {
-        position: relative;
-        z-index: 1;
-    }
+header * {
+    position: relative;
+    z-index: 1;
+}
 
-    header h1 {
-        font-size: 52px;
-        color: #facc15;
-        margin-bottom: 10px;
-    }
+header h1 {
+    font-size: 42px;
+    color: #facc15;
+    margin-bottom: 10px;
+}
 
-    header p {
-        font-size: 22px;
-        color: yellow;
-    }
+header p {
+    font-size: 20px;
+    color: yellow;
+}
 
 /* ====== الأزرار ====== */
 button,
@@ -60,11 +60,11 @@ button,
     transition: 0.3s;
 }
 
-    button:hover,
-    .service-btn:hover,
-    .back-btn:hover {
-        background-color: #eab308;
-    }
+button:hover,
+.service-btn:hover,
+.back-btn:hover {
+    background-color: #eab308;
+}
 
 /* ====== الأقسام ====== */
 section {
@@ -73,11 +73,11 @@ section {
     background-color: #020617;
 }
 
-    section h2 {
-        font-size: 36px;
-        margin-bottom: 40px;
-        color: #facc15;
-    }
+section h2 {
+    font-size: 32px;
+    margin-bottom: 40px;
+    color: #facc15;
+}
 
 /* ====== الخدمات ====== */
 .services {
@@ -96,15 +96,15 @@ section {
     transition: transform 0.3s;
 }
 
-    .service-box:hover {
-        transform: translateY(-10px);
-    }
+.service-box:hover {
+    transform: translateY(-10px);
+}
 
-    .service-box h3 {
-        color: #38bdf8;
-        font-size: 22px;
-        margin-bottom: 10px;
-    }
+.service-box h3 {
+    color: #38bdf8;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
 
 /* ====== ميزات الخدمات ====== */
 .features {
@@ -129,7 +129,8 @@ footer {
     font-size: 14px;
     color: #9ca3af;
 }
-/*..................*/
+
+/* ====== معرض الصور ====== */
 .gallery {
     display: flex;
     flex-wrap: wrap;
@@ -138,18 +139,19 @@ footer {
     margin-top: 20px;
 }
 
-    .gallery img {
-        width: 250px; /* حجم الصورة */
-        border-radius: 10px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.6);
-        transition: transform 0.3s;
-        cursor: pointer;
-    }
+.gallery img {
+    width: 250px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.6);
+    transition: transform 0.3s;
+    cursor: pointer;
+}
 
-        .gallery img:hover {
-            transform: scale(1.05); /* تكبير الصورة عند المرور عليها */
-        }
-        /*...................*/
+.gallery img:hover {
+    transform: scale(1.05);
+}
+
+/* ====== أزرار الأقسام ====== */
 section button {
     padding: 12px 25px;
     font-size: 16px;
@@ -161,36 +163,10 @@ section button {
     margin-top: 10px;
 }
 
-    section button:hover {
-        background-color: #eab308;
-    }
-    /*......................*/
-/* تصميم متجاوب للشاشات الصغيرة */
-@media screen and (max-width: 768px) {
-    .features {
-        flex-direction: column; /* المميزات تحت بعض */
-        align-items: center;
-    }
-
-    .feature-box {
-        width: 90%; /* عرض كامل تقريباً */
-        margin-bottom: 15px;
-    }
-
-    .gallery img {
-        width: 90%; /* صور أكبر للهواتف */
-    }
-
-    video {
-        width: 90%; /* الفيديو يغطي الشاشة تقريباً */
-    }
-
-    .map-container iframe {
-        width: 90%;
-        height: 300px; /* تصغير الخريطة للهاتف */
-    }
+section button:hover {
+    background-color: #eab308;
 }
-/*......................................*/
+
 /* ====== كتالوج التعديلات ====== */
 .catalog {
     display: grid;
@@ -207,21 +183,21 @@ section button {
     text-align: center;
 }
 
-    .catalog-item img {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-    }
+.catalog-item img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
 
-    .catalog-item h4 {
-        margin: 15px 0 5px;
-        color: #facc15;
-    }
+.catalog-item h4 {
+    margin: 15px 0 5px;
+    color: #facc15;
+}
 
-    .catalog-item p {
-        font-size: 14px;
-        padding: 0 10px;
-    }
+.catalog-item p {
+    font-size: 14px;
+    padding: 0 10px;
+}
 
 .order-btn {
     display: inline-block;
@@ -234,9 +210,10 @@ section button {
     font-weight: bold;
 }
 
-    .order-btn:hover {
-        background-color: #0ea5e9;
-    }
+.order-btn:hover {
+    background-color: #0ea5e9;
+}
+
 .lang-btn {
     position: fixed;
     top: 10px;
@@ -256,4 +233,52 @@ section button {
     border-radius: 6px;
 }
 
+/* ====== موبايل ====== */
+@media screen and (max-width: 768px) {
 
+    header h1 {
+        font-size: 32px;
+    }
+
+    header p {
+        font-size: 18px;
+    }
+
+    .services {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .service-box {
+        width: 90%;
+    }
+
+    .features {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-box {
+        width: 100%;
+    }
+
+    .gallery img {
+        width: 90%;
+    }
+
+    video {
+        width: 100%;
+    }
+
+    .map-container iframe {
+        width: 100%;
+        height: 260px;
+    }
+
+    .catalog {
+        grid-template-columns: 1fr;
+    }
+
+    .catalog-item img {
+        height: 200px;
+    }
+}
