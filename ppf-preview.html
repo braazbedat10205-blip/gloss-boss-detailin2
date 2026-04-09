@@ -176,49 +176,46 @@ document.getElementById("carModel").addEventListener("change", function () {
     function (gltf) {
 
         car = gltf.scene;
-        car.scale.set(1.3, 1.3, 1.3);
+        car.scale.set(1.25, 1.25, 1.25); // ↓ تصغير بسيط يمنع المطاولة
 
         // 1) حساب حجم السيارة
         const box = new THREE.Box3().setFromObject(car);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        // 2) توسيط السيارة على مركز الأرضية
+        // 2) توسيط السيارة + إنزالها لتحت قرب الدائرة
         car.position.set(
             -center.x,
-            -center.y + size.y * 0.5, // نخليها فوق الأرضية
-            -center.z 
+            -center.y + size.y * 0.15,   // ↓ نزلنا السيارة شوي
+            -center.z
         );
 
-        // 3) إرجاع السيارة لورا حسب حجمها (قيمة مثالية)
+        // 3) تقريب السيارة لقدّام (مهم للتلفون)
         const maxDim = Math.max(size.x, size.y, size.z);
-        const distance = maxDim * 0.85; // قريب وواضح
+        const distance = maxDim * 0.75;   // ↓ أقرب بكثير من قبل
 
         car.position.z -= distance;
 
-        // 4) ضبط الكاميرا بحيث تكون السيارة بالنص
+        // 4) ضبط الكاميرا للتلفون (أقرب + زاوية أقل)
         camera.position.set(
-            distance * 0.10,  // يمين شوي
-            distance * 0.30,  // ارتفاع
-            distance * 0.80   // قرب الكاميرا
+            distance * 0.45,   // يمين شوي
+            distance * 0.22,   // ↓ نزلنا الكاميرا
+            distance * 0.80    // ↓ قربنا الكاميرا
         );
         camera.lookAt(0, 0, 0);
 
         // 5) تفعيل الظلال والانعكاس
         car.traverse(obj => {
-            if (obj.isMesh) {
-                obj.castShadow = true;
-                obj.receiveShadow = true;
-                if (obj.material) {
-                    obj.material.envMap = env;
-                    obj.material.envMapIntensity = 0.9;
-                }
+            if (obj.isMesh && obj.material) {
+                obj.material.envMap = env;
+                obj.material.envMapIntensity = 0.9;
             }
         });
 
         scene.add(car);
     }
 );
+
 
 });
 
