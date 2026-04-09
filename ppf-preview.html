@@ -281,7 +281,7 @@ loader.load(
         const maxDim = Math.max(size.x, size.y, size.z);
         const distance = maxDim * 1.0;
 
-        car.position.z -= distance;
+        car.position.z -= distance * 0.1;
 
         camera.position.set(0, distance * 0.25, distance * 1.1);
         camera.lookAt(0, 0, 0);
