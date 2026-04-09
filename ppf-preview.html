@@ -153,6 +153,17 @@ let camera = new THREE.PerspectiveCamera(
 );
 
 let renderer = new THREE.WebGLRenderer({ antialias: true });
+// رفع جودة العرض على الموبايل
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+// تحسين الألوان والحدة
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+// تحسين عرض الكانفاس
+renderer.domElement.style.imageRendering = "auto";
+
 resizeRenderer();
 document.getElementById("viewer").appendChild(renderer.domElement);
 
@@ -301,6 +312,10 @@ function resizeRenderer() {
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
 }
+
+
+
+
 </script>
 
 </body>
