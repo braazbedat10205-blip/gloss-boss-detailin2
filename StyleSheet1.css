@@ -233,8 +233,38 @@ section button:hover {
     border-radius: 6px;
 }
 
+
 /* ====== موبايل ====== */
 @media screen and (max-width: 768px) {
+
+    body {
+        display: block !important;
+        overflow-y: auto;
+    }
+
+    #controls, 
+    #rightPanel {
+        width: 100%;
+        border: none;
+        padding: 15px;
+        background: #111119;
+    }
+
+    #controls {
+        margin-bottom: 10px;
+    }
+
+    #rightPanel {
+        display: block !important;
+        width: 100% !important;
+        margin-top: 15px;
+        padding: 15px;
+    }
+
+    #viewer {
+        width: 100%;
+    height: 45vh !important;        margin: 10px 0;
+    }
 
     header h1 {
         font-size: 32px;
@@ -257,10 +287,6 @@ section button:hover {
         grid-template-columns: 1fr;
     }
 
-    .feature-box {
-        width: 100%;
-    }
-
     .gallery img {
         width: 90%;
     }
@@ -277,8 +303,5 @@ section button:hover {
     .catalog {
         grid-template-columns: 1fr;
     }
-
-    .catalog-item img {
-        height: 200px;
-    }
 }
+
