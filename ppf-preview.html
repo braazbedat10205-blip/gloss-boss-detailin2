@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PPF Car Visualizer</title>
+        <link rel="stylesheet" href="StyleSheet1.css">
+
+
+    <style>
+        body {
+            margin: 0;
+            background: #050509;
+            font-family: Arial, sans-serif;
+            color: white;
+            overflow: hidden;
+            display: flex;
+        }
+
+        #controls {
+            width: 260px;
+            background: #111119;
+            padding: 20px;
+            border-right: 2px solid #1f1f2a;
+            box-sizing: border-box;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #181824;
+            border: 1px solid #33334a;
+            color: white;
+            border-radius: 6px;
+        }
+
+        #viewer {
+            flex: 1;
+            position: relative;
+        }
+
+        #rightPanel {
+            width: 220px;
+            background: #111119;
+            padding: 20px;
+            border-left: 2px solid #1f1f2a;
+        }
+
+        .colorBtn {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 6px;
+            transition: 0.15s;
+            color: white;
+        }
+
+        .matte { background: #555; }
+        .satin { background: #888; }
+        .chrome { background: linear-gradient(45deg, #eee, #aaa, #fff); color: black; }
+    </style>
+</head>
+
+<body>
+
+
+<div id="controls">
+<br>
+<br>
+
+    <h2>Car Selector</h2>
+
+    <select id="carBrand">
+        <option value="">Select Brand</option>
+        <option value="skoda">Skoda</option>
+    </select>
+
+    <select id="carModel">
+        <option value="">Select Model</option>
+    </select>
+</div>
+        <a href="index.html" class="back-btn">العودة للصفحة الرئيسية</a>
+
+<div id="viewer"></div>
+
+<div id="rightPanel">
+    <h3>PPF Types</h3>
+    <button class="colorBtn matte" data-color="matte">Matte</button>
+    <button class="colorBtn satin" data-color="satin">Satin</button>
+    <button class="colorBtn chrome" data-color="chrome">Chrome</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
+
+<script>
+const carModels = {
+    skoda: {
+        "Superb 2016": "skoda/models/scene.gltf"
+    }
+};
+
+document.getElementById("carBrand").addEventListener("change", function () {
+    const brand = this.value;
+    const modelSelect = document.getElementById("carModel");
+
+    modelSelect.innerHTML = "<option value=''>Select Model</option>";
+
+    if (carModels[brand]) {
+        Object.keys(carModels[brand]).forEach(model => {
+            modelSelect.innerHTML += `<option value="${model}">${model}</option>`;
+        });
+    }
+});
+
+let scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050509);
+
+let camera = new THREE.PerspectiveCamera(
+    50,
+    (window.innerWidth - 480) / window.innerHeight,
+    0.1,
+    1000
+);
+
+let renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth - 480, window.innerHeight);
+document.getElementById("viewer").appendChild(renderer.domElement);
+
+const hemi = new THREE.HemisphereLight(0xffffff, 0x222233, 1.4);
+scene.add(hemi);
+
+const dir = new THREE.DirectionalLight(0xffffff, 1.3);
+dir.position.set(5, 10, 7);
+scene.add(dir);
+
+const floorGeo = new THREE.CircleGeometry(6, 64);
+const floorMat = new THREE.MeshStandardMaterial({
+    color: 0x111118,
+    roughness: 0.9,
+    metalness: 0.1
+});
+const floor = new THREE.Mesh(floorGeo, floorMat);
+floor.rotation.x = -Math.PI / 2;
+scene.add(floor);
+
+const env = new THREE.CubeTextureLoader().load([
+    "https://threejs.org/examples/textures/cube/Bridge2/posx.jpg",
+    "https://threejs.org/examples/textures/cube/Bridge2/negx.jpg",
+    "https://threejs.org/examples/textures/cube/Bridge2/posy.jpg",
+    "https://threejs.org/examples/textures/cube/Bridge2/negy.jpg",
+    "https://threejs.org/examples/textures/cube/Bridge2/posz.jpg",
+    "https://threejs.org/examples/textures/cube/Bridge2/negz.jpg"
+]);
+scene.environment = env;
+
+let car;
+const loader = new THREE.GLTFLoader();
+
+document.getElementById("carModel").addEventListener("change", function () {
+    const brand = document.getElementById("carBrand").value;
+    const model = this.value;
+
+    if (!brand || !model) return;
+
+    if (car) {
+        scene.remove(car);
+        car = null;
+    }
+
+    loader.load(
+    carModels[brand][model],
+    function (gltf) {
+
+        car = gltf.scene;
+        car.scale.set(1.3, 1.3, 1.3);
+
+        // 1) حساب حجم السيارة
+        const box = new THREE.Box3().setFromObject(car);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+
+        // 2) توسيط السيارة على مركز الأرضية
+        car.position.set(
+            -center.x,
+            -center.y + size.y * 0.5, // نخليها فوق الأرضية
+            -center.z 
+        );
+
+        // 3) إرجاع السيارة لورا حسب حجمها (قيمة مثالية)
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const distance = maxDim * 0.85; // قريب وواضح
+
+        car.position.z -= distance;
+
+        // 4) ضبط الكاميرا بحيث تكون السيارة بالنص
+        camera.position.set(
+            distance * 0.10,  // يمين شوي
+            distance * 0.30,  // ارتفاع
+            distance * 0.80   // قرب الكاميرا
+        );
+        camera.lookAt(0, 0, 0);
+
+        // 5) تفعيل الظلال والانعكاس
+        car.traverse(obj => {
+            if (obj.isMesh) {
+                obj.castShadow = true;
+                obj.receiveShadow = true;
+                if (obj.material) {
+                    obj.material.envMap = env;
+                    obj.material.envMapIntensity = 0.9;
+                }
+            }
+        });
+
+        scene.add(car);
+    }
+);
+
+});
+
+document.querySelectorAll(".colorBtn").forEach(btn => {
+    btn.addEventListener("click", function () {
+        if (!car) return;
+
+        const type = this.dataset.color;
+
+        car.traverse(child => {
+            if (child.isMesh && child.material) {
+                if (type === "matte") {
+                    child.material.metalness = 0.1;
+                    child.material.roughness = 0.9;
+                }
+                if (type === "satin") {
+                    child.material.metalness = 0.4;
+                    child.material.roughness = 0.5;
+                }
+                if (type === "chrome") {
+                    child.material.metalness = 1.0;
+                    child.material.roughness = 0.08;
+                }
+                child.material.needsUpdate = true;
+            }
+        });
+    });
+});
+
+function animate() {
+    requestAnimationFrame(animate);
+    if (car) car.rotation.y += 0.002;
+    renderer.render(scene, camera);
+}
+animate();
+</script>
+
+</body>
+</html>
