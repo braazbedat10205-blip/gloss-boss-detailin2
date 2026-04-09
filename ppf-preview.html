@@ -1,146 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=375, user-scalable=no">
-    <link rel="stylesheet" href="StyleSheet1.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, user-scalable=no">
+<title>PPF Car Visualizer</title>
 
-    <title>PPF Car Visualizer</title>
+<style>
+    body {
+    margin: 0;
+    background: #050509;
+    font-family: Arial, sans-serif;
+    color: white;
+    overflow: hidden;
+    display: flex;
+    height: 100vh;
+}
 
-    <style>
-        body {
-            margin: 0;
-            background: #050509;
-            font-family: Arial, sans-serif;
-            color: white;
-            overflow: hidden;
-            display: flex;
-        }
+/* LEFT + RIGHT PANELS */
+#controls, #rightPanel {
+    background: #111119;
+    padding: 16px;
+    box-sizing: border-box;
+}
 
-        #controls, #rightPanel {
-            background: #111119;
-            padding: 16px;
-            box-sizing: border-box;
-        }
+/* DESKTOP */
+#controls {
+    width: 260px;
+    border-right: 2px solid #1f1f2a;
+}
 
-        #controls {
-            width: 260px;
-            border-right: 2px solid #1f1f2a;
-        }
+#rightPanel {
+    width: 260px;
+    border-left: 2px solid #1f1f2a;
+    overflow-y: auto;
+    max-height: 100vh;
+}
 
-        #rightPanel {
-            width: 220px;
-            border-left: 2px solid #1f1f2a;
-        }
+/* VIEWER */
+#viewer {
+    flex: 1;
+    position: relative;
+    height: 100vh;
+}
 
-        #viewer {
-            flex: 1;
-            position: relative;
-        }
+/* BUTTONS */
+.colorBtn {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: 0.15s;
+    color: white;
+}
 
-        select {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            background: #181824;
-            border: 1px solid #33334a;
-            color: white;
-            border-radius: 6px;
-            font-size: 15px;
-        }
+.colorBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 10px rgba(255,255,255,0.2);
+}
 
-        .colorBtn {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            border-radius: 6px;
-            transition: 0.15s;
-            color: white;
-        }
+.chrome {
+    background: linear-gradient(45deg,#eee,#aaa,#fff);
+    color: black;
+}
 
-        .colorBtn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 10px rgba(255,255,255,0.2);
-        }
+/* ===================== MOBILE FIX ===================== */
+@media (max-width: 768px) {
 
-        .matte { background: #555; }
-        .satin { background: #888; }
-        .chrome { background: linear-gradient(45deg, #eee, #aaa, #fff); color: black; }
+    body {
+        display: block;
+        overflow-y: auto;
+        height: auto;
+    }
 
-        /* موبايل: نخلي كلشي فوق بعض */
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-            #controls, #rightPanel {
-                width: 100%;
-                border: none;
-                border-bottom: 1px solid #1f1f2a;
-            }
-            #viewer {
-                width: 100%;
-                height: calc(100vh - 260px);
-            }
-        }
+    #controls {
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid #1f1f2a;
+    }
 
-        @media (min-width: 769px) {
-            #viewer {
-                height: 100vh;
-            }
-        }
-    </style>
+    #rightPanel {
+        width: 100%;
+        border-left: none;
+        border-top: 2px solid #1f1f2a;
+        max-height: none;
+    }
+
+    #viewer {
+        width: 100%;
+        height: 45vh !important;   /* مهم جداً */
+        margin-bottom: 10px;
+    }
+
+    .colorBtn {
+        font-size: 15px;
+        padding: 12px;
+    }
+}
+
+
+    .chrome {
+        background: linear-gradient(45deg,#eee,#aaa,#fff);
+        color: black;
+    }
+
+    h3 {
+        margin-top: 20px;
+        border-bottom: 1px solid #333;
+        padding-bottom: 5px;
+    }
+</style>
 </head>
 
 <body>
 
+<!-- ================== LEFT PANEL ================== -->
 <div id="controls">
     <h2>Car Selector</h2>
 
     <select id="carBrand">
-        <option value="">Select Brand</option>
         <option value="skoda">Skoda</option>
     </select>
 
     <select id="carModel">
-        <option value="">Select Model</option>
+        <option value="Superb 2016">Superb 2016</option>
     </select>
 </div>
 
+<!-- ================== VIEWER ================== -->
 <div id="viewer"></div>
 
+<!-- ================== RIGHT PANEL ================== -->
 <div id="rightPanel">
+
     <h3>PPF Types</h3>
-    <button class="colorBtn matte" data-color="matte">Matte</button>
-    <button class="colorBtn satin" data-color="satin">Satin</button>
+    <button class="colorBtn" data-color="matte">Matte</button>
+    <button class="colorBtn" data-color="satin">Satin</button>
     <button class="colorBtn chrome" data-color="chrome">Chrome</button>
+    <button class="colorBtn" data-color="gloss" style="background:#fff; color:#000">Gloss</button>
+    <button class="colorBtn" data-color="stealth" style="background:#222">Stealth</button>
+    <button class="colorBtn" data-color="clear" style="background:#00c3ff; color:#000">Clear</button>
+
+    <!-- ================== GREY GROUP ================== -->
+    <h3>Grey Colors</h3>
+    <button class="colorBtn" style="background:#6e6e6e" data-color="grey">Grey</button>
+    <button class="colorBtn" style="background:#3a3a3a" data-color="dark-grey">Dark Grey</button>
+    <button class="colorBtn" style="background:#b8b8b8; color:#000" data-color="cement">Cement</button>
+    <button class="colorBtn" style="background:#a6a6a6; color:#000" data-color="nardo">Nardo Grey</button>
+
+    <!-- ================== RED GROUP ================== -->
+    <h3>Red Colors</h3>
+    <button class="colorBtn" style="background:#c40000" data-color="red">Red</button>
+    <button class="colorBtn" style="background:#7a0000" data-color="dark-red">Dark Red</button>
+    <button class="colorBtn" style="background:#8b1a1a" data-color="red-matte">Red Matte</button>
+    <button class="colorBtn" style="background:#e60019" data-color="candy-red">Candy Red</button>
+    <button class="colorBtn" style="background:#4b0015" data-color="burgundy">Burgundy</button>
+
+    <!-- ================== BLUE GROUP ================== -->
+    <h3>Blue Colors</h3>
+    <button class="colorBtn" style="background:#0055ff" data-color="blue">Blue</button>
+    <button class="colorBtn" style="background:#001f4d" data-color="navy">Navy Blue</button>
+    <button class="colorBtn" style="background:#1f3b73" data-color="blue-matte">Blue Matte</button>
+    <button class="colorBtn" style="background:#4fa3ff; color:#000" data-color="light-blue">Light Blue</button>
+    <button class="colorBtn" style="background:#008c99" data-color="teal">Teal</button>
+
+    <!-- ================== GREEN GROUP ================== -->
+    <h3>Green Colors</h3>
+    <button class="colorBtn" style="background:#0f8a0f" data-color="green">Green</button>
+    <button class="colorBtn" style="background:#064d06" data-color="dark-green">Dark Green</button>
+    <button class="colorBtn" style="background:#1f4d2f" data-color="green-matte">Green Matte</button>
+    <button class="colorBtn" style="background:#003b24" data-color="racing-green">Racing Green</button>
+    <button class="colorBtn" style="background:#8ee000; color:#000" data-color="lime">Lime</button>
+
+    <!-- ================== YELLOW / ORANGE GROUP ================== -->
+    <h3>Yellow & Orange</h3>
+    <button class="colorBtn" style="background:#ffcc00; color:#000" data-color="yellow">Yellow</button>
+    <button class="colorBtn" style="background:#d4a800; color:#000" data-color="yellow-matte">Yellow Matte</button>
+    <button class="colorBtn" style="background:#ff7a00; color:#000" data-color="orange">Orange</button>
+    <button class="colorBtn" style="background:#cc5f00" data-color="orange-matte">Orange Matte</button>
+
+    <!-- ================== PURPLE / PINK GROUP ================== -->
+    <h3>Purple & Pink</h3>
+    <button class="colorBtn" style="background:#6a0dad" data-color="purple">Purple</button>
+    <button class="colorBtn" style="background:#4b0a7a" data-color="purple-matte">Purple Matte</button>
+    <button class="colorBtn" style="background:#ff00aa" data-color="magenta">Magenta</button>
+    <button class="colorBtn" style="background:#ff7abf; color:#000" data-color="pink">Pink</button>
+    <button class="colorBtn" style="background:#b76e79" data-color="rose-gold">Rose Gold</button>
+
+    <!-- ================== METALS GROUP ================== -->
+    <h3>Metallic</h3>
+    <button class="colorBtn" style="background:#c0c0c0; color:#000" data-color="silver">Silver</button>
+    <button class="colorBtn" style="background:#43464b" data-color="gunmetal">Gunmetal</button>
+    <button class="colorBtn" style="background:#d4af37; color:#000" data-color="gold">Gold</button>
+    <button class="colorBtn" style="background:#8c5a2b" data-color="bronze">Bronze</button>
+
+    <!-- ================== SPECIAL GROUP ================== -->
+    <h3>Special Colors</h3>
+    <button class="colorBtn" style="background:#00c4ff; color:#000" data-color="miami">Miami Blue</button>
+    <button class="colorBtn" style="background:#a8dfff; color:#000" data-color="baby-blue">Baby Blue</button>
+    <button class="colorBtn" style="background:#556b2f" data-color="olive">Olive</button>
+    <button class="colorBtn" style="background:#d2b48c; color:#000" data-color="sand">Sand</button>
+    <button class="colorBtn" style="background:#00b8a9" data-color="turquoise">Turquoise</button>
+
 </div>
 
+<!-- ================== SCRIPTS ================== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
+// ================== CAR MODEL ==================
 const carModels = {
     skoda: {
-        "Superb 2016": "skoda/models/scene.gltf" // عدّل المسار حسب ملفاتك
+        "Superb 2016": "skoda/models/scene.gltf"
     }
 };
-
-const brandSelect = document.getElementById("carBrand");
-const modelSelect = document.getElementById("carModel");
-
-brandSelect.addEventListener("change", function () {
-    const brand = this.value;
-    modelSelect.innerHTML = "<option value=''>Select Model</option>";
-
-    if (carModels[brand]) {
-        Object.keys(carModels[brand]).forEach(model => {
-            modelSelect.innerHTML += `<option value="${model}">${model}</option>`;
-        });
-    }
-});
 
 let scene = new THREE.Scene();
 scene.background = new THREE.Color(0x050509);
@@ -153,42 +229,29 @@ let camera = new THREE.PerspectiveCamera(
 );
 
 let renderer = new THREE.WebGLRenderer({ antialias: true });
-// رفع جودة العرض على الموبايل
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-// تحسين الألوان والحدة
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.1;
 
-// تحسين عرض الكانفاس
-renderer.domElement.style.imageRendering = "auto";
-
 resizeRenderer();
 document.getElementById("viewer").appendChild(renderer.domElement);
 
-/* إضاءة */
-const hemi = new THREE.HemisphereLight(0xffffff, 0x222233, 1.4);
-scene.add(hemi);
-
+// Lights
+scene.add(new THREE.HemisphereLight(0xffffff, 0x222233, 1.4));
 const dir = new THREE.DirectionalLight(0xffffff, 1.3);
 dir.position.set(5, 10, 7);
-dir.castShadow = true;
 scene.add(dir);
 
-/* أرضية */
-const floorGeo = new THREE.CircleGeometry(6, 64);
-const floorMat = new THREE.MeshStandardMaterial({
-    color: 0x111118,
-    roughness: 0.9,
-    metalness: 0.1
-});
-const floor = new THREE.Mesh(floorGeo, floorMat);
+// Floor
+const floor = new THREE.Mesh(
+    new THREE.CircleGeometry(6, 64),
+    new THREE.MeshStandardMaterial({ color: 0x111118, roughness: 0.9, metalness: 0.1 })
+);
 floor.rotation.x = -Math.PI / 2;
-floor.receiveShadow = true;
 scene.add(floor);
 
-/* Environment */
+// Environment
 const env = new THREE.CubeTextureLoader().load([
     "https://threejs.org/examples/textures/cube/Bridge2/posx.jpg",
     "https://threejs.org/examples/textures/cube/Bridge2/negx.jpg",
@@ -202,95 +265,98 @@ scene.environment = env;
 let car;
 const loader = new THREE.GLTFLoader();
 
-/* تحميل السيارة */
-modelSelect.addEventListener("change", function () {
-    const brand = brandSelect.value;
-    const model = this.value;
-    if (!brand || !model) return;
+// Load car
+loader.load(
+    "skoda/models/scene.gltf",
+    function (gltf) {
+        car = gltf.scene;
+        car.scale.set(1.15, 1.15, 1.15);
 
-    if (car) {
-        scene.remove(car);
-        car = null;
+        const box = new THREE.Box3().setFromObject(car);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+
+        car.position.set(-center.x, -center.y + size.y * 0.35, -center.z);
+
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const distance = maxDim * 1.0;
+
+        car.position.z -= distance;
+
+        camera.position.set(0, distance * 0.25, distance * 1.1);
+        camera.lookAt(0, 0, 0);
+
+        car.traverse(obj => {
+            if (obj.isMesh && obj.material) {
+                obj.material.envMap = env;
+                obj.material.envMapIntensity = 0.9;
+            }
+        });
+
+        scene.add(car);
     }
+);
 
-    loader.load(
-        carModels[brand][model],
-        function (gltf) {
-            car = gltf.scene;
-            car.scale.set(1.15, 1.15, 1.15);
-
-            const box = new THREE.Box3().setFromObject(car);
-            const center = box.getCenter(new THREE.Vector3());
-            const size = box.getSize(new THREE.Vector3());
-
-            // توسيط السيارة فوق الأرضية
-            car.position.set(
-                -center.x,
-                -center.y + size.y * 0.42,
-                -center.z
-            );
-
-            const maxDim = Math.max(size.x, size.y, size.z);
-
-            // مسافة ديناميكية حسب حجم الشاشة
-            const isMobile = window.innerWidth <= 768;
-            const distance = maxDim * (isMobile ? 0.8 : 1.0);
-
-            car.position.z -= distance;
-
-            camera.position.set(
-                distance * 0.11,
-                distance * 0.30,
-                distance * 0.95
-            );
-            camera.lookAt(0, 0, 0);
-
-            car.traverse(obj => {
-                if (obj.isMesh && obj.material) {
-                    obj.castShadow = true;
-                    obj.receiveShadow = true;
-                    obj.material.envMap = env;
-                    obj.material.envMapIntensity = 0.9;
-                }
-            });
-
-            scene.add(car);
-        },
-        undefined,
-        err => console.error("Error loading model:", err)
-    );
-});
-
-/* PPF */
+// ================== APPLY COLORS (FIXED VERSION) ==================
 document.querySelectorAll(".colorBtn").forEach(btn => {
     btn.addEventListener("click", function () {
         if (!car) return;
+
         const type = this.dataset.color;
 
         car.traverse(child => {
-            if (child.isMesh && child.material) {
-                if (type === "matte") {
-                    child.material.metalness = 0.1;
-                    child.material.roughness = 0.9;
-                    child.material.envMapIntensity = 0.5;
-                }
-                if (type === "satin") {
-                    child.material.metalness = 0.4;
-                    child.material.roughness = 0.5;
-                    child.material.envMapIntensity = 0.8;
-                }
-                if (type === "chrome") {
-                    child.material.metalness = 1.0;
-                    child.material.roughness = 0.08;
-                    child.material.envMapIntensity = 1.2;
-                }
-                child.material.needsUpdate = true;
-            }
+            if (!child.isMesh || !child.material) return;
+
+            const name = child.name.toLowerCase();
+
+            // نحدد فقط أجزاء البودي
+            const isBody =
+                name.includes("body") ||
+                name.includes("paint") ||
+                name.includes("carpaint") ||
+                name.includes("door") ||
+                name.includes("hood") ||
+                name.includes("fender") ||
+                name.includes("bumper");
+
+            if (!isBody) return; // باقي الأجزاء ما تتلوّن
+
+            const mat = child.material;
+
+            // RESET
+            mat.metalness = 0.5;
+            mat.roughness = 0.4;
+            mat.envMapIntensity = 1.0;
+
+            // FINISHES
+            if (type === "matte") { mat.metalness = 0.1; mat.roughness = 0.9; }
+            if (type === "satin") { mat.metalness = 0.4; mat.roughness = 0.5; }
+            if (type === "chrome") { mat.metalness = 1.0; mat.roughness = 0.08; }
+            if (type === "gloss") { mat.metalness = 0.6; mat.roughness = 0.2; }
+            if (type === "stealth") { mat.metalness = 0.2; mat.roughness = 0.8; }
+            if (type === "clear") { mat.metalness = 0.5; mat.roughness = 0.3; }
+
+            // COLORS
+            const colors = {
+                "grey":"#6e6e6e","dark-grey":"#3a3a3a","cement":"#b8b8b8","nardo":"#a6a6a6",
+                "red":"#c40000","dark-red":"#7a0000","red-matte":"#8b1a1a","candy-red":"#e60019","burgundy":"#4b0015",
+                "blue":"#0055ff","navy":"#001f4d","blue-matte":"#1f3b73","light-blue":"#4fa3ff","teal":"#008c99",
+                "green":"#0f8a0f","dark-green":"#064d06","green-matte":"#1f4d2f","racing-green":"#003b24","lime":"#8ee000",
+                "yellow":"#ffcc00","yellow-matte":"#d4a800","orange":"#ff7a00","orange-matte":"#cc5f00",
+                "purple":"#6a0dad","purple-matte":"#4b0a7a","magenta":"#ff00aa","pink":"#ff7abf","rose-gold":"#b76e79",
+                "silver":"#c0c0c0","gunmetal":"#43464b","gold":"#d4af37","bronze":"#8c5a2b",
+                "miami":"#00c4ff","baby-blue":"#a8dfff","olive":"#556b2f","sand":"#d2b48c","turquoise":"#00b8a9"
+            };
+
+            if (colors[type]) mat.color.set(colors[type]);
+
+            mat.needsUpdate = true;
         });
     });
 });
 
-/* أنيميشن */
+
+// ================== ANIMATE ==================
 function animate() {
     requestAnimationFrame(animate);
     if (car) car.rotation.y += 0.002;
@@ -298,10 +364,8 @@ function animate() {
 }
 animate();
 
-/* ريسايز */
-window.addEventListener("resize", () => {
-    resizeRenderer();
-});
+// ================== RESIZE ==================
+window.addEventListener("resize", resizeRenderer);
 
 function resizeRenderer() {
     const viewer = document.getElementById("viewer");
@@ -312,10 +376,6 @@ function resizeRenderer() {
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
 }
-
-
-
-
 </script>
 
 </body>
