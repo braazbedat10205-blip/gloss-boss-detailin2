@@ -1,257 +1,828 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=375, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PPF Car Visualizer</title>
 
 <style>
-    body {
-    margin: 0;
-    background: #050509;
-    font-family: Arial, sans-serif;
-    color: white;
-    overflow: hidden;
-    display: flex;
-    height: 100vh;
-}
+    :root {
+        --bg: #05070d;
+        --bg-soft: #0d1220;
+        --panel: rgba(15, 20, 34, 0.9);
+        --panel-border: rgba(255, 255, 255, 0.08);
+        --text: #f5f7fb;
+        --muted: #9da8c3;
+        --accent: #66c8ff;
+        --shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
+    }
 
-/* LEFT + RIGHT PANELS */
-#controls, #rightPanel {
-    background: #111119;
-    padding: 16px;
-    box-sizing: border-box;
-}
+    * {
+        box-sizing: border-box;
+    }
 
-/* DESKTOP */
-#controls {
-    width: 260px;
-    border-right: 2px solid #1f1f2a;
-}
-
-#rightPanel {
-    width: 260px;
-    border-left: 2px solid #1f1f2a;
-    overflow-y: auto;
-    max-height: 100vh;
-}
-
-/* VIEWER */
-#viewer {
-    flex: 1;
-    position: relative;
-    height: 100vh;
-}
-
-/* BUTTONS */
-.colorBtn {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    border-radius: 6px;
-    transition: 0.15s;
-    color: white;
-}
-
-.colorBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 10px rgba(255,255,255,0.2);
-}
-
-.chrome {
-    background: linear-gradient(45deg,#eee,#aaa,#fff);
-    color: black;
-}
-
-/* ===================== MOBILE FIX ===================== */
-@media (max-width: 768px) {
+    html, body {
+        margin: 0;
+        min-height: 100%;
+        background:
+            radial-gradient(circle at top left, rgba(40, 92, 255, 0.18), transparent 28%),
+            radial-gradient(circle at top right, rgba(0, 200, 255, 0.12), transparent 24%),
+            linear-gradient(180deg, #060811 0%, #05070d 100%);
+        color: var(--text);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
 
     body {
-        display: block;
+        overflow: hidden;
+    }
+
+    .appShell {
+        display: grid;
+        grid-template-columns: minmax(300px, 370px) 1fr;
+        height: 100vh;
+    }
+
+    .sidePanel {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding: 18px;
+        background: linear-gradient(180deg, rgba(14, 19, 34, 0.96), rgba(10, 14, 24, 0.92));
+        border-right: 1px solid var(--panel-border);
+        backdrop-filter: blur(16px);
+        box-shadow: var(--shadow);
         overflow-y: auto;
-        height: auto;
     }
 
-    #controls {
-        width: 100%;
-        border-right: none;
-        border-bottom: 2px solid #1f1f2a;
+    .heroCard,
+    .pickerCard,
+    .colorsCard,
+    .tipsCard {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 22px;
+        padding: 16px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
 
-    #rightPanel {
+    .topLinks {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .homeBtn,
+    .ghostBtn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 700;
+        transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .homeBtn:hover,
+    .ghostBtn:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .brandBadge {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba(102, 200, 255, 0.2), rgba(255, 255, 255, 0.05));
+        border: 1px solid rgba(102, 200, 255, 0.22);
+        color: #d9f4ff;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    h1, h2, h3, p {
+        margin: 0;
+    }
+
+    .heroCard h1 {
+        font-size: 28px;
+        line-height: 1.1;
+        margin-top: 12px;
+    }
+
+    .heroCard p {
+        margin-top: 10px;
+        color: var(--muted);
+        line-height: 1.6;
+        font-size: 14px;
+    }
+
+    .cardTitle {
+        font-size: 17px;
+        margin-bottom: 6px;
+    }
+
+    .cardHint {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 14px;
+        line-height: 1.5;
+    }
+
+    .selectGrid {
+        display: grid;
+        gap: 10px;
+    }
+
+    .fieldLabel {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    select {
         width: 100%;
-        border-left: none;
-        border-top: 2px solid #1f1f2a;
-        max-height: none;
+        padding: 13px 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        outline: none;
+        font-size: 14px;
+    }
+
+    option {
+        color: #111;
+    }
+
+    .viewerWrap {
+        position: relative;
+        min-width: 0;
+        overflow: hidden;
     }
 
     #viewer {
+        height: 100vh;
         width: 100%;
-        height: 45vh !important;   /* مهم جداً */
-        margin-bottom: 10px;
+        position: relative;
+    }
+
+    .viewerOverlay {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        z-index: 1;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        pointer-events: none;
+    }
+
+    .viewerChip {
+        pointer-events: auto;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(10, 12, 20, 0.55);
+        color: #eef5ff;
+        backdrop-filter: blur(12px);
+        font-size: 13px;
+    }
+
+    .statusText {
+        margin-top: 12px;
+        color: #d9f4ff;
+        font-size: 13px;
+    }
+
+    .colorGrid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
     }
 
     .colorBtn {
-        font-size: 15px;
-        padding: 12px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        min-height: 54px;
+        padding: 10px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        cursor: pointer;
+        color: white;
+        background: rgba(255, 255, 255, 0.04);
+        transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+        text-align: right;
     }
-}
 
-
-    .chrome {
-        background: linear-gradient(45deg,#eee,#aaa,#fff);
-        color: black;
+    .colorBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24);
+        border-color: rgba(255, 255, 255, 0.18);
     }
 
-    h3 {
-        margin-top: 20px;
-        border-bottom: 1px solid #333;
-        padding-bottom: 5px;
+    .colorBtn.active {
+        outline: 2px solid rgba(102, 200, 255, 0.7);
+        border-color: rgba(102, 200, 255, 0.7);
+        box-shadow: 0 0 0 4px rgba(102, 200, 255, 0.14);
+    }
+
+    .swatch {
+        flex: 0 0 24px;
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.45);
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+    }
+
+    .btnText {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    .btnTitle {
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .btnFinish {
+        font-size: 11px;
+        opacity: 0.85;
+    }
+
+    .tipsCard ul {
+        margin: 0;
+        padding-inline-start: 18px;
+        color: var(--muted);
+        line-height: 1.7;
+        font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+        .appShell {
+            grid-template-columns: 1fr;
+            grid-template-rows: minmax(46svh, 54svh) minmax(46svh, auto);
+            height: auto;
+            min-height: 100svh;
+        }
+
+        .sidePanel {
+            order: 2;
+            gap: 12px;
+            padding: 12px;
+            border-right: none;
+            border-top: 1px solid var(--panel-border);
+            max-height: 50svh;
+        }
+
+        .viewerWrap {
+            order: 1;
+            position: relative;
+        }
+
+        #viewer {
+            height: 54svh;
+            min-height: 46svh;
+        }
+
+        .viewerOverlay {
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            justify-content: flex-end;
+        }
+
+        .heroCard,
+        .pickerCard,
+        .colorsCard,
+        .tipsCard {
+            border-radius: 18px;
+            padding: 12px;
+        }
+
+        .heroCard h1 {
+            font-size: 21px;
+        }
+
+        .heroCard p,
+        .tipsCard {
+            display: none;
+        }
+
+        .topLinks {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .homeBtn,
+        .ghostBtn {
+            min-height: 38px;
+            font-size: 13px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .colorGrid {
+            grid-template-columns: 1fr;
+        }
+
+        .appShell {
+            grid-template-rows: minmax(42svh, 48svh) minmax(52svh, auto);
+        }
+
+        .cardHint,
+        .fieldLabel,
+        .statusText,
+        .viewerChip {
+            font-size: 12px;
+        }
+
+        .colorBtn {
+            min-height: 48px;
+            padding: 8px 10px;
+        }
+
+        .btnTitle {
+            font-size: 12px;
+        }
+
+        .sidePanel {
+            max-height: 56svh;
+        }
     }
 </style>
 </head>
 
 <body>
+<div class="appShell">
+    <aside class="sidePanel">
+        <div class="heroCard">
+            <div class="topLinks">
+                <a class="homeBtn" href="index.html">الرجوع للرئيسية</a>
+                <span class="brandBadge">Gloss Boss PPF</span>
+            </div>
+            <h1>معاينة ألوان PPF على السيارات</h1>
+            <p>اختر السيارة ثم جرّب خامات وألوان PPF المشهورة. التلوين الآن صار يعتمد على اسم القطعة والخامة معًا حتى يركّز على البودي ويتجنب الضو والداخلية والجنطات.</p>
+            <div id="statusText" class="statusText">اختر الماركة والموديل للبدء.</div>
+        </div>
 
-<!-- ================== LEFT PANEL ================== -->
-<div id="controls">
-    <h2>Car Selector</h2>
+        <div class="pickerCard">
+            <h3 class="cardTitle">اختيار السيارة</h3>
+            <p class="cardHint">اختر الماركة ثم الموديل. سيتم حفظ آخر لون اخترته وتطبيقه على السيارة الجديدة تلقائيًا.</p>
+            <div class="selectGrid">
+                <div>
+                    <label class="fieldLabel" for="brandSelect">الماركة</label>
+                    <select id="brandSelect">
+                        <option value="">اختر الشركة</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="fieldLabel" for="modelSelect">الموديل</label>
+                    <select id="modelSelect">
+                        <option value="">اختر الموديل</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
-    <select id="carBrand">
-        <option value="skoda">Skoda</option>
-    </select>
+        <div class="colorsCard">
+            <h3 class="cardTitle">ألوان وخامات PPF</h3>
+            <p class="cardHint">ألوان أساسية، باتوني، ودرجات PPF واقعية كثيرة مثل Nardo Grey وBrooklyn Grey وMiami Blue وBritish Racing Green وBatuni Grey.</p>
+            <div id="colorGrid" class="colorGrid"></div>
+        </div>
 
-    <select id="carModel">
-        <option value="Superb 2016">Superb 2016</option>
-    </select>
+        <div class="tipsCard">
+            <h3 class="cardTitle">ملاحظات سريعة</h3>
+            <ul>
+                <li>الكود صار يقرأ أسماء أجزاء السيارة نفسها مثل body وdoor وhood وbumper وfender وليس أسماء خامات محدودة فقط.</li>
+                <li>أي خامة Body عليها texture لونية يتم فصلها وقت التلوين حتى لا يتحول الرمادي والساتن إلى أبيض.</li>
+                <li>إضافة سيارة جديدة صارت أسهل لأن القواعد العامة أوسع، وتحتاج override فقط إذا كان الموديل اسمه غير واضح جدًا.</li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="viewerWrap">
+        <div class="viewerOverlay">
+            <div class="viewerChip">اختر سيارة ولون من اللوحة الجانبية</div>
+            <a class="ghostBtn" href="index.html">Home</a>
+        </div>
+        <div id="viewer"></div>
+    </main>
 </div>
 
-<!-- ================== VIEWER ================== -->
-<div id="viewer"></div>
-
-<!-- ================== RIGHT PANEL ================== -->
-<div id="rightPanel">
-
-    <h3>PPF Types</h3>
-    <button class="colorBtn" data-color="matte">Matte</button>
-    <button class="colorBtn" data-color="satin">Satin</button>
-    <button class="colorBtn chrome" data-color="chrome">Chrome</button>
-    <button class="colorBtn" data-color="gloss" style="background:#fff; color:#000">Gloss</button>
-    <button class="colorBtn" data-color="stealth" style="background:#222">Stealth</button>
-    <button class="colorBtn" data-color="clear" style="background:#00c3ff; color:#000">Clear</button>
-
-    <!-- ================== GREY GROUP ================== -->
-    <h3>Grey Colors</h3>
-    <button class="colorBtn" style="background:#6e6e6e" data-color="grey">Grey</button>
-    <button class="colorBtn" style="background:#3a3a3a" data-color="dark-grey">Dark Grey</button>
-    <button class="colorBtn" style="background:#b8b8b8; color:#000" data-color="cement">Cement</button>
-    <button class="colorBtn" style="background:#a6a6a6; color:#000" data-color="nardo">Nardo Grey</button>
-
-    <!-- ================== RED GROUP ================== -->
-    <h3>Red Colors</h3>
-    <button class="colorBtn" style="background:#c40000" data-color="red">Red</button>
-    <button class="colorBtn" style="background:#7a0000" data-color="dark-red">Dark Red</button>
-    <button class="colorBtn" style="background:#8b1a1a" data-color="red-matte">Red Matte</button>
-    <button class="colorBtn" style="background:#e60019" data-color="candy-red">Candy Red</button>
-    <button class="colorBtn" style="background:#4b0015" data-color="burgundy">Burgundy</button>
-
-    <!-- ================== BLUE GROUP ================== -->
-    <h3>Blue Colors</h3>
-    <button class="colorBtn" style="background:#0055ff" data-color="blue">Blue</button>
-    <button class="colorBtn" style="background:#001f4d" data-color="navy">Navy Blue</button>
-    <button class="colorBtn" style="background:#1f3b73" data-color="blue-matte">Blue Matte</button>
-    <button class="colorBtn" style="background:#4fa3ff; color:#000" data-color="light-blue">Light Blue</button>
-    <button class="colorBtn" style="background:#008c99" data-color="teal">Teal</button>
-
-    <!-- ================== GREEN GROUP ================== -->
-    <h3>Green Colors</h3>
-    <button class="colorBtn" style="background:#0f8a0f" data-color="green">Green</button>
-    <button class="colorBtn" style="background:#064d06" data-color="dark-green">Dark Green</button>
-    <button class="colorBtn" style="background:#1f4d2f" data-color="green-matte">Green Matte</button>
-    <button class="colorBtn" style="background:#003b24" data-color="racing-green">Racing Green</button>
-    <button class="colorBtn" style="background:#8ee000; color:#000" data-color="lime">Lime</button>
-
-    <!-- ================== YELLOW / ORANGE GROUP ================== -->
-    <h3>Yellow & Orange</h3>
-    <button class="colorBtn" style="background:#ffcc00; color:#000" data-color="yellow">Yellow</button>
-    <button class="colorBtn" style="background:#d4a800; color:#000" data-color="yellow-matte">Yellow Matte</button>
-    <button class="colorBtn" style="background:#ff7a00; color:#000" data-color="orange">Orange</button>
-    <button class="colorBtn" style="background:#cc5f00" data-color="orange-matte">Orange Matte</button>
-
-    <!-- ================== PURPLE / PINK GROUP ================== -->
-    <h3>Purple & Pink</h3>
-    <button class="colorBtn" style="background:#6a0dad" data-color="purple">Purple</button>
-    <button class="colorBtn" style="background:#4b0a7a" data-color="purple-matte">Purple Matte</button>
-    <button class="colorBtn" style="background:#ff00aa" data-color="magenta">Magenta</button>
-    <button class="colorBtn" style="background:#ff7abf; color:#000" data-color="pink">Pink</button>
-    <button class="colorBtn" style="background:#b76e79" data-color="rose-gold">Rose Gold</button>
-
-    <!-- ================== METALS GROUP ================== -->
-    <h3>Metallic</h3>
-    <button class="colorBtn" style="background:#c0c0c0; color:#000" data-color="silver">Silver</button>
-    <button class="colorBtn" style="background:#43464b" data-color="gunmetal">Gunmetal</button>
-    <button class="colorBtn" style="background:#d4af37; color:#000" data-color="gold">Gold</button>
-    <button class="colorBtn" style="background:#8c5a2b" data-color="bronze">Bronze</button>
-
-    <!-- ================== SPECIAL GROUP ================== -->
-    <h3>Special Colors</h3>
-    <button class="colorBtn" style="background:#00c4ff; color:#000" data-color="miami">Miami Blue</button>
-    <button class="colorBtn" style="background:#a8dfff; color:#000" data-color="baby-blue">Baby Blue</button>
-    <button class="colorBtn" style="background:#556b2f" data-color="olive">Olive</button>
-    <button class="colorBtn" style="background:#d2b48c; color:#000" data-color="sand">Sand</button>
-    <button class="colorBtn" style="background:#00b8a9" data-color="turquoise">Turquoise</button>
-
-</div>
-
-<!-- ================== SCRIPTS ================== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
-// ================== CAR MODEL ==================
+    
 const carModels = {
     skoda: {
-        "Superb 2016": "skoda/models/scene.gltf"
+        "2020 Skoda Octavia RS": "skoda/mods/scene.gltf"
+    },
+    cupra: {
+        "2022-2024 Cupra Formentor": "cupra/modcopra/scene.gltf",
+        "2025 Cupra Leon": "cupra/copraleon/scene.gltf"
+    },
+    bmw: {
+        "BMW M4 Coupe": "BMW/models/scene.gltf",
+        "BMW 5 Series E34": "BMW/modelbm2/scene.gltf",
+        "BMW M5 F90 2017": "BMW/modm3/scene.gltf",
+        "2019 BMW M2 Competition": "BMW/modm4/scene.gltf"
+    },
+    audi: {
+        "2018 Audi RS 3 Sportback": "audi/mod4/scene.gltf",
+        "2019 Audi S5 Sportback": "audi/mod5/scene.gltf"
+    },
+    mercedes: {
+        "Mercedes-Benz GLC63 S AMG E Performance 2023": "audi/mod2/scene.gltf",
+        "Mercedes-Benz GLC": "audi/mod2/scene.gltf",
+        "Mercedes-Benz A45 AMG 2018": "audi/mod3/scene.gltf",
+        "2016 Mercedes-AMG GT S 130th Anniversary Edition": "audi/mod6/scene.gltf"
+    },
+    nissan: {
+        "2023 Nissan GT-R R35 Nismo": "seat/smodel/scene.gltf"
+    },
+    ford: {
+        "2015 Ford Mustang GT": "seat/ford1/scene.gltf"
+    },
+    corvette: {
+        "Chevrolet Corvette C7": "cupra/modell/scene.gltf"
+    },
+    alfa: {
+        "2017 Alfa Romeo Giulia Quadrifoglio": "cupra/modc7/scene.gltf"
+    },
+    toyota: {
+        "Toyota Prado 2025": "skoda/models/scene.gltf"
+    },
+    landrover: {
+        "2016 Range Rover Sport": "skoda/modrang/scene.gltf"
+    },
+    ram: {
+        "Dodge Challenger SRT Hellcat Redeye": "Ram/modram/scene.gltf",
+        "Dodge Charger SRT 2018": "Ram/moddg/scene.gltf"
     }
 };
 
-let scene = new THREE.Scene();
-scene.background = new THREE.Color(0x050509);
+const COLOR_PRESETS = [
+    { key: "gloss", label: "Gloss White", finish: "Gloss", hex: "#ffffff", textColor: "#111", roughness: 0.08, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.2, emissiveIntensity: 0.06 },
+    { key: "matte", label: "Matte Black", finish: "Matte", hex: "#000000", roughness: 1.0, metalness: 0.08, clearcoat: 0.0, envMapIntensity: 0.15, emissiveIntensity: 0.0 },
+    { key: "satin", label: "Satin Silver", finish: "Satin", hex: "#8c939b", textColor: "#111", roughness: 0.62, metalness: 0.2, clearcoat: 0.3, clearcoatRoughness: 0.46, envMapIntensity: 0.4, emissiveIntensity: 0.02 },
+    { key: "chrome", label: "Chrome", finish: "Chrome", gradient: "linear-gradient(135deg, #f8f8f8 0%, #bbbbbb 45%, #ffffff 100%)", textColor: "#111", roughness: 0.03, metalness: 1.0, clearcoat: 1.0, clearcoatRoughness: 0.02, envMapIntensity: 2.0, emissiveIntensity: 0.02, hex: "#ffffff" },
+    { key: "clear", label: "Clear Blue", finish: "Clear", hex: "#00c3ff", textColor: "#111", roughness: 0.04, metalness: 0.0, clearcoat: 1.0, clearcoatRoughness: 0.02, transmission: 0.08, transparent: true, opacity: 0.82, envMapIntensity: 1.0, emissiveIntensity: 0.08 },
+    { key: "stealth", label: "Stealth", finish: "Stealth", hex: "#222222", roughness: 0.82, metalness: 0.1, clearcoat: 0.12, clearcoatRoughness: 0.6, envMapIntensity: 0.22, emissiveIntensity: 0.01 },
+    { key: "blackmatte", label: "Black Matte", finish: "Matte", hex: "#333333", roughness: 0.98, metalness: 0.08, clearcoat: 0.0, envMapIntensity: 0.18, emissiveIntensity: 0.0 },
+    { key: "bluegloss", label: "Blue Gloss", finish: "Gloss", hex: "#0055ff", roughness: 0.08, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.25, emissiveIntensity: 0.1 },
+    { key: "bluematte", label: "Blue Matte", finish: "Matte", hex: "#0033aa", roughness: 0.95, metalness: 0.08, clearcoat: 0.04, envMapIntensity: 0.25, emissiveIntensity: 0.02 },
+    { key: "redgloss", label: "Red Gloss", finish: "Gloss", hex: "#ff0000", roughness: 0.08, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.25, emissiveIntensity: 0.08 },
+    { key: "miamiblue", label: "Miami Blue", finish: "Gloss", hex: "#00c8ff", textColor: "#111", roughness: 0.08, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.2, emissiveIntensity: 0.08 },
+    { key: "nardogrey", label: "Nardo Grey", finish: "OEM Style", hex: "#a9a9a9", textColor: "#111", roughness: 0.28, metalness: 0.16, clearcoat: 0.75, clearcoatRoughness: 0.12, envMapIntensity: 0.8, emissiveIntensity: 0.03 },
+    { key: "britishgreen", label: "British Racing Green", finish: "Gloss", hex: "#0b3d2e", roughness: 0.12, metalness: 0.14, clearcoat: 1.0, clearcoatRoughness: 0.05, envMapIntensity: 1.15, emissiveIntensity: 0.05 },
+    { key: "green", label: "Racing Green", finish: "Gloss", hex: "#013220", roughness: 0.12, metalness: 0.14, clearcoat: 1.0, clearcoatRoughness: 0.05, envMapIntensity: 1.15, emissiveIntensity: 0.05 },
+    { key: "batuni", label: "Batuni Sand", finish: "Satin", hex: "#c9b38f", textColor: "#111", roughness: 0.46, metalness: 0.1, clearcoat: 0.28, clearcoatRoughness: 0.34, envMapIntensity: 0.58, emissiveIntensity: 0.02 },
+    { key: "desertsand", label: "Desert Sand", finish: "Satin", hex: "#b8a27a", textColor: "#111", roughness: 0.46, metalness: 0.1, clearcoat: 0.28, clearcoatRoughness: 0.34, envMapIntensity: 0.58, emissiveIntensity: 0.02 },
+    { key: "sandstorm", label: "Sandstorm Beige", finish: "Matte", hex: "#a8906b", textColor: "#111", roughness: 0.62, metalness: 0.08, clearcoat: 0.12, clearcoatRoughness: 0.45, envMapIntensity: 0.35, emissiveIntensity: 0.02 },
+    { key: "gunmetal", label: "Gunmetal Grey", finish: "Metallic", hex: "#2a3439", roughness: 0.22, metalness: 0.75, clearcoat: 0.7, clearcoatRoughness: 0.12, envMapIntensity: 1.15, emissiveIntensity: 0.02 },
+    { key: "bronze", label: "Bronze Metallic", finish: "Metallic", hex: "#cd7f32", roughness: 0.12, metalness: 0.82, clearcoat: 0.95, clearcoatRoughness: 0.04, envMapIntensity: 1.4, emissiveIntensity: 0.04 },
+    { key: "goldchrome", label: "Gold Chrome", finish: "Chrome", gradient: "linear-gradient(135deg, #f7d774 0%, #c9a000 100%)", textColor: "#111", roughness: 0.04, metalness: 1.0, clearcoat: 1.0, clearcoatRoughness: 0.02, envMapIntensity: 2.0, emissiveIntensity: 0.04, hex: "#f7d774" },
+    { key: "purple", label: "Purple Candy", finish: "Candy", hex: "#6a0dad", roughness: 0.1, metalness: 0.14, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.2, emissiveIntensity: 0.08 },
+    { key: "midnight", label: "Midnight Blue", finish: "Gloss", hex: "#000b33", roughness: 0.12, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.04, envMapIntensity: 1.0, emissiveIntensity: 0.04 },
+    { key: "lime", label: "Lime Green", finish: "Gloss", hex: "#32cd32", textColor: "#111", roughness: 0.08, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.1, emissiveIntensity: 0.06 },
+    { key: "yellow", label: "Yellow Gloss", finish: "Gloss", hex: "#ffeb00", textColor: "#111", roughness: 0.08, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.15, emissiveIntensity: 0.08 },
+    { key: "orange", label: "Orange Gloss", finish: "Gloss", hex: "#ff6600", roughness: 0.08, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.15, emissiveIntensity: 0.08 },
+    { key: "satinwhite", label: "Satin White", finish: "Satin", hex: "#f2f2f2", textColor: "#111", roughness: 0.55, metalness: 0.12, clearcoat: 0.32, clearcoatRoughness: 0.38, envMapIntensity: 0.55, emissiveIntensity: 0.03 },
+    { key: "satinblack", label: "Satin Black", finish: "Satin", hex: "#111111", roughness: 0.7, metalness: 0.12, clearcoat: 0.25, clearcoatRoughness: 0.42, envMapIntensity: 0.32, emissiveIntensity: 0.01 },
+    { key: "pearlwhite", label: "Pearl White", finish: "Pearl", hex: "#ffffff", textColor: "#111", roughness: 0.05, metalness: 0.1, clearcoat: 1.0, clearcoatRoughness: 0.02, envMapIntensity: 1.25, emissiveIntensity: 0.06 },
+    { key: "pearlred", label: "Pearl Red", finish: "Pearl", hex: "#b30000", roughness: 0.07, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.2, emissiveIntensity: 0.08 },
+    { key: "rosegold", label: "Rose Gold", finish: "Metallic", hex: "#b76e79", roughness: 0.08, metalness: 0.82, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.65, emissiveIntensity: 0.04 },
+    { key: "tiffany", label: "Tiffany Blue", finish: "Gloss", hex: "#81d8d0", textColor: "#111", roughness: 0.08, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.15, emissiveIntensity: 0.06 },
+    { key: "brooklyngrey", label: "Brooklyn Grey", finish: "OEM Style", hex: "#7c8083", textColor: "#111", roughness: 0.32, metalness: 0.16, clearcoat: 0.7, clearcoatRoughness: 0.18, envMapIntensity: 0.72, emissiveIntensity: 0.02 },
+    { key: "daytonagrey", label: "Daytona Grey", finish: "Metallic", hex: "#54585d", roughness: 0.24, metalness: 0.5, clearcoat: 0.84, clearcoatRoughness: 0.14, envMapIntensity: 0.92, emissiveIntensity: 0.02 },
+    { key: "chalkgrey", label: "Chalk Grey", finish: "Satin", hex: "#bbb6ae", textColor: "#111", roughness: 0.56, metalness: 0.14, clearcoat: 0.24, clearcoatRoughness: 0.4, envMapIntensity: 0.46, emissiveIntensity: 0.02 },
+    { key: "cementgrey", label: "Cement Grey", finish: "Matte", hex: "#9ca0a1", textColor: "#111", roughness: 0.7, metalness: 0.1, clearcoat: 0.08, clearcoatRoughness: 0.52, envMapIntensity: 0.32, emissiveIntensity: 0.01 },
+    { key: "battleshipgrey", label: "Battleship Grey", finish: "Satin", hex: "#62686e", roughness: 0.6, metalness: 0.16, clearcoat: 0.26, clearcoatRoughness: 0.4, envMapIntensity: 0.44, emissiveIntensity: 0.01 },
+    { key: "satinnardo", label: "Satin Nardo", finish: "Satin", hex: "#8b8f91", textColor: "#111", roughness: 0.62, metalness: 0.15, clearcoat: 0.22, clearcoatRoughness: 0.44, envMapIntensity: 0.42, emissiveIntensity: 0.01 },
+    { key: "satingraphite", label: "Satin Graphite", finish: "Satin", hex: "#4c5258", roughness: 0.64, metalness: 0.22, clearcoat: 0.24, clearcoatRoughness: 0.44, envMapIntensity: 0.42, emissiveIntensity: 0.01 },
+    { key: "satincharcoal", label: "Satin Charcoal", finish: "Satin", hex: "#383d42", roughness: 0.68, metalness: 0.16, clearcoat: 0.2, clearcoatRoughness: 0.46, envMapIntensity: 0.34, emissiveIntensity: 0.0 },
+    { key: "satingunmetal", label: "Satin Gunmetal", finish: "Satin", hex: "#5d646b", roughness: 0.58, metalness: 0.24, clearcoat: 0.3, clearcoatRoughness: 0.4, envMapIntensity: 0.48, emissiveIntensity: 0.01 },
+    { key: "stormgrey", label: "Storm Grey", finish: "Gloss", hex: "#70777e", roughness: 0.18, metalness: 0.24, clearcoat: 0.95, clearcoatRoughness: 0.08, envMapIntensity: 1.0, emissiveIntensity: 0.02 },
+    { key: "avalongrey", label: "Avalon Grey", finish: "Metallic", hex: "#676d73", roughness: 0.24, metalness: 0.42, clearcoat: 0.82, clearcoatRoughness: 0.16, envMapIntensity: 0.88, emissiveIntensity: 0.02 },
+    { key: "satinstormgrey", label: "Satin Storm Grey", finish: "Satin", hex: "#767c81", roughness: 0.61, metalness: 0.16, clearcoat: 0.2, clearcoatRoughness: 0.46, envMapIntensity: 0.4, emissiveIntensity: 0.01 },
+    { key: "batunigrey", label: "Batuni Grey", finish: "Satin", hex: "#8d877b", textColor: "#111", roughness: 0.58, metalness: 0.12, clearcoat: 0.22, clearcoatRoughness: 0.42, envMapIntensity: 0.45, emissiveIntensity: 0.01 },
+    { key: "batunicement", label: "Batuni Cement", finish: "Satin", hex: "#a0988b", textColor: "#111", roughness: 0.56, metalness: 0.12, clearcoat: 0.24, clearcoatRoughness: 0.42, envMapIntensity: 0.45, emissiveIntensity: 0.01 },
+    { key: "batunistone", label: "Batuni Stone", finish: "Matte", hex: "#8a8378", roughness: 0.72, metalness: 0.08, clearcoat: 0.08, clearcoatRoughness: 0.54, envMapIntensity: 0.28, emissiveIntensity: 0.0 },
+    { key: "urbanconcrete", label: "Urban Concrete", finish: "Matte", hex: "#96918a", textColor: "#111", roughness: 0.74, metalness: 0.08, clearcoat: 0.06, clearcoatRoughness: 0.56, envMapIntensity: 0.28, emissiveIntensity: 0.0 },
+    { key: "lunarrock", label: "Lunar Rock", finish: "Satin", hex: "#8f9487", textColor: "#111", roughness: 0.54, metalness: 0.12, clearcoat: 0.26, clearcoatRoughness: 0.38, envMapIntensity: 0.48, emissiveIntensity: 0.01 },
+    { key: "mojavesand", label: "Mojave Sand", finish: "Satin", hex: "#a9977e", textColor: "#111", roughness: 0.52, metalness: 0.1, clearcoat: 0.24, clearcoatRoughness: 0.36, envMapIntensity: 0.5, emissiveIntensity: 0.01 },
+    { key: "dunesand", label: "Dune Sand", finish: "Satin", hex: "#b2a084", textColor: "#111", roughness: 0.5, metalness: 0.1, clearcoat: 0.26, clearcoatRoughness: 0.36, envMapIntensity: 0.5, emissiveIntensity: 0.01 },
+    { key: "warmtaupe", label: "Warm Taupe", finish: "Matte", hex: "#8c7465", roughness: 0.7, metalness: 0.08, clearcoat: 0.08, clearcoatRoughness: 0.5, envMapIntensity: 0.26, emissiveIntensity: 0.0 },
+    { key: "militarybeige", label: "Military Beige", finish: "Matte", hex: "#8f836c", roughness: 0.72, metalness: 0.08, clearcoat: 0.08, clearcoatRoughness: 0.54, envMapIntensity: 0.24, emissiveIntensity: 0.0 },
+    { key: "olivekhaki", label: "Olive Khaki", finish: "Satin", hex: "#6f7257", roughness: 0.58, metalness: 0.12, clearcoat: 0.2, clearcoatRoughness: 0.42, envMapIntensity: 0.4, emissiveIntensity: 0.01 },
+    { key: "satinolive", label: "Satin Olive", finish: "Satin", hex: "#556048", roughness: 0.62, metalness: 0.1, clearcoat: 0.18, clearcoatRoughness: 0.46, envMapIntensity: 0.34, emissiveIntensity: 0.0 },
+    { key: "mossgreen", label: "Moss Green", finish: "Matte", hex: "#4d5b46", roughness: 0.74, metalness: 0.08, clearcoat: 0.06, clearcoatRoughness: 0.56, envMapIntensity: 0.24, emissiveIntensity: 0.0 },
+    { key: "jadegreen", label: "Jade Green", finish: "Gloss", hex: "#1b7b63", roughness: 0.1, metalness: 0.16, clearcoat: 1.0, clearcoatRoughness: 0.04, envMapIntensity: 1.08, emissiveIntensity: 0.04 },
+    { key: "smokedemerald", label: "Smoked Emerald", finish: "Gloss", hex: "#0d4c3d", roughness: 0.14, metalness: 0.16, clearcoat: 0.98, clearcoatRoughness: 0.05, envMapIntensity: 1.02, emissiveIntensity: 0.03 },
+    { key: "forestolive", label: "Forest Olive", finish: "Gloss", hex: "#445137", roughness: 0.14, metalness: 0.14, clearcoat: 0.92, clearcoatRoughness: 0.06, envMapIntensity: 0.94, emissiveIntensity: 0.02 },
+    { key: "lagunablue", label: "Laguna Blue", finish: "Gloss", hex: "#0d8fe5", roughness: 0.08, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.16, emissiveIntensity: 0.06 },
+    { key: "rivierablue", label: "Riviera Blue", finish: "Gloss", hex: "#0086ff", roughness: 0.08, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.2, emissiveIntensity: 0.06 },
+    { key: "powderblue", label: "Powder Blue", finish: "Satin", hex: "#8eb5c7", textColor: "#111", roughness: 0.52, metalness: 0.12, clearcoat: 0.24, clearcoatRoughness: 0.36, envMapIntensity: 0.5, emissiveIntensity: 0.02 },
+    { key: "tealsatin", label: "Teal Satin", finish: "Satin", hex: "#2f7e80", roughness: 0.56, metalness: 0.12, clearcoat: 0.22, clearcoatRoughness: 0.38, envMapIntensity: 0.48, emissiveIntensity: 0.02 },
+    { key: "satinnavy", label: "Satin Navy", finish: "Satin", hex: "#1f3555", roughness: 0.62, metalness: 0.14, clearcoat: 0.22, clearcoatRoughness: 0.42, envMapIntensity: 0.4, emissiveIntensity: 0.01 },
+    { key: "frozenberry", label: "Frozen Berry", finish: "Satin", hex: "#803d5a", roughness: 0.58, metalness: 0.14, clearcoat: 0.22, clearcoatRoughness: 0.4, envMapIntensity: 0.44, emissiveIntensity: 0.02 },
+    { key: "rubyrose", label: "Ruby Rose", finish: "Gloss", hex: "#9f2345", roughness: 0.1, metalness: 0.14, clearcoat: 1.0, clearcoatRoughness: 0.04, envMapIntensity: 1.06, emissiveIntensity: 0.05 },
+    { key: "ultraviolet", label: "Ultraviolet", finish: "Gloss", hex: "#5033a3", roughness: 0.1, metalness: 0.14, clearcoat: 1.0, clearcoatRoughness: 0.04, envMapIntensity: 1.04, emissiveIntensity: 0.05 },
+    { key: "deepviolet", label: "Deep Violet", finish: "Satin", hex: "#4c3565", roughness: 0.6, metalness: 0.14, clearcoat: 0.2, clearcoatRoughness: 0.42, envMapIntensity: 0.4, emissiveIntensity: 0.01 },
+    { key: "sunsetorange", label: "Sunset Orange", finish: "Gloss", hex: "#d95d26", roughness: 0.1, metalness: 0.14, clearcoat: 0.98, clearcoatRoughness: 0.04, envMapIntensity: 1.08, emissiveIntensity: 0.05 },
+    { key: "burntorange", label: "Burnt Orange", finish: "Satin", hex: "#9f5328", roughness: 0.58, metalness: 0.14, clearcoat: 0.22, clearcoatRoughness: 0.4, envMapIntensity: 0.44, emissiveIntensity: 0.02 },
+    { key: "copperbronze", label: "Copper Bronze", finish: "Metallic", hex: "#996047", roughness: 0.14, metalness: 0.78, clearcoat: 0.92, clearcoatRoughness: 0.06, envMapIntensity: 1.24, emissiveIntensity: 0.03 },
+    { key: "satinchampagne", label: "Satin Champagne", finish: "Satin", hex: "#bba27d", textColor: "#111", roughness: 0.5, metalness: 0.18, clearcoat: 0.24, clearcoatRoughness: 0.36, envMapIntensity: 0.52, emissiveIntensity: 0.02 },
+    { key: "icedyellow", label: "Iced Yellow", finish: "Gloss", hex: "#d7d268", textColor: "#111", roughness: 0.1, metalness: 0.12, clearcoat: 0.98, clearcoatRoughness: 0.04, envMapIntensity: 1.02, emissiveIntensity: 0.04 },
+    { key: "frozenwhite", label: "Frozen White", finish: "Matte", hex: "#dbddd8", textColor: "#111", roughness: 0.72, metalness: 0.08, clearcoat: 0.06, clearcoatRoughness: 0.52, envMapIntensity: 0.3, emissiveIntensity: 0.0 },
+    { key: "smurfblue", label: "Smurf Blue", finish: "Gloss", hex: "#2f7dff", roughness: 0.08, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.16, emissiveIntensity: 0.06 },
+    { key: "voodooblue", label: "Voodoo Blue", finish: "Gloss", hex: "#4b95c7", textColor: "#111", roughness: 0.1, metalness: 0.12, clearcoat: 0.98, clearcoatRoughness: 0.04, envMapIntensity: 1.08, emissiveIntensity: 0.04 },
+    { key: "mintgreen", label: "Mint Green", finish: "Gloss", hex: "#74c69d", textColor: "#111", roughness: 0.1, metalness: 0.12, clearcoat: 0.98, clearcoatRoughness: 0.04, envMapIntensity: 1.04, emissiveIntensity: 0.04 },
+    { key: "pythongreen", label: "Python Green", finish: "Gloss", hex: "#2d8f37", roughness: 0.1, metalness: 0.14, clearcoat: 1.0, clearcoatRoughness: 0.04, envMapIntensity: 1.06, emissiveIntensity: 0.04 },
+    { key: "armyolive", label: "Army Olive", finish: "Matte", hex: "#59623c", roughness: 0.72, metalness: 0.08, clearcoat: 0.08, clearcoatRoughness: 0.52, envMapIntensity: 0.26, emissiveIntensity: 0.0 },
+    { key: "satinlavender", label: "Satin Lavender", finish: "Satin", hex: "#8d7cc8", roughness: 0.58, metalness: 0.14, clearcoat: 0.22, clearcoatRoughness: 0.4, envMapIntensity: 0.44, emissiveIntensity: 0.02 },
+    { key: "fuchsiarose", label: "Fuchsia Rose", finish: "Gloss", hex: "#c2185b", roughness: 0.1, metalness: 0.14, clearcoat: 1.0, clearcoatRoughness: 0.04, envMapIntensity: 1.08, emissiveIntensity: 0.05 },
+    { key: "tangerine", label: "Tangerine", finish: "Gloss", hex: "#f77f00", roughness: 0.1, metalness: 0.14, clearcoat: 1.0, clearcoatRoughness: 0.04, envMapIntensity: 1.08, emissiveIntensity: 0.05 },
+    { key: "sunflower", label: "Sunflower", finish: "Gloss", hex: "#f4d03f", textColor: "#111", roughness: 0.1, metalness: 0.12, clearcoat: 0.98, clearcoatRoughness: 0.04, envMapIntensity: 1.04, emissiveIntensity: 0.04 },
+    { key: "irishgreen", label: "Irish Green", finish: "Gloss", hex: "#147a3f", roughness: 0.1, metalness: 0.14, clearcoat: 1.0, clearcoatRoughness: 0.04, envMapIntensity: 1.04, emissiveIntensity: 0.04 }
+];
 
-let camera = new THREE.PerspectiveCamera(
-    50,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-);
+const GENERIC_BODY_INCLUDE = ["paint", "coloured", "colored", "carpaint", "body", "door", "hood", "bonnet", "bumper", "fender", "quarter", "trunk", "boot", "tailgate", "panel", "roof", "side", "ext_", "exterior"];
+const GENERIC_BODY_EXCLUDE = [
+    "glass", "window", "wheel", "rim", "tire", "tyre", "brake", "disc", "caliper", "calliper", "interior", "seat",
+    "grille", "grid", "mesh", "light", "lamp", "mirror", "badge", "logo", "engine", "carbon", "plate", "exhaust", "spoiler",
+    "splitter", "chassis", "undertray", "cockpit", "bucket", "rubber", "plastic", "trim", "speaker", "dashboard", "steering", "gauge", "carpet", "fabric", "leather", "headlight", "taillight", "third_paint", "licen", "surround", "emblem"
+];
 
-let renderer = new THREE.WebGLRenderer({ antialias: true });
+const MODEL_RULES = {
+    "skoda/mods/scene.gltf": {
+        allowedMaterialNames: [
+            "body",
+            "body_01_body_0_body_0",
+            "body_02_body_0_body_0",
+            "body_03_body_0_body_0"
+        ],
+        allowedKeywords: ["body"],
+        distanceFactor: 1.16,
+        heightFactor: 0.18,
+        yOffsetFactor: 0.1,
+        lookAtYFactor: 0.08,
+        stripTextureMaps: true
+    },
+    "skoda/models/scene.gltf": {
+        allowedObjectKeywords: ["body", "door", "bonnet", "bumper", "trunk", "fender", "side"],
+        blockedKeywords: ["light", "glass", "logo", "badge", "mirror", "rim", "wheel", "window", "handle", "dechrome"],
+        distanceFactor: 1.22,
+        heightFactor: 0.18,
+        yOffsetFactor: 0.1,
+        lookAtYFactor: 0.08,
+        stripTextureMaps: true
+    },
+    "seat/smodel/scene.gltf": {
+        allowedMaterialNames: [
+            "body",
+            "cs_body_4"
+        ],
+        allowedKeywords: ["body"],
+        distanceFactor: 1.26,
+        heightFactor: 0.18,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.08
+    },
+    "cupra/modell/scene.gltf": {
+        allowedMaterialNames: [
+            "body",
+            "body.001"
+        ],
+        allowedKeywords: ["body"],
+        distanceFactor: 2.1,
+        heightFactor: 0.15,
+        yOffsetFactor: 0.02,
+        lookAtYFactor: 0.05,
+        initialRotationY: 1.5
+    },
+    "cupra/copraleon/scene.gltf": {
+        allowedMaterialNames: [
+            "body"
+        ],
+        allowedKeywords: ["body"],
+        blockedKeywords: ["spoiler", "mirror", "glass", "grille", "light", "wheel", "rim"],
+        distanceFactor: 1.55,
+        heightFactor: 0.15,
+        yOffsetFactor: 0.06,
+        lookAtYFactor: 0.06,
+        initialRotationY: 0.5,
+        rotationSpeed: 0.0012
+    },
+    "BMW/models/scene.gltf": {
+        allowedMaterialNames: [
+            "untitledbmw_m4competitiong82tnr3_2021painttnr_material_008",
+            "untitledbmw_m4competitiong82tnr3_2021coloured_material_008",
+            "untitledbmw_m4competitiong82tnr3_2021base_material1"
+        ],
+        blockedKeywords: ["spoiler", "mirror", "grille", "glass", "light", "badge", "rim", "wheel"],
+        distanceFactor: 1.18,
+        heightFactor: 0.18,
+        yOffsetFactor: 0.12,
+        lookAtYFactor: 0.08
+    },
+    "BMW/modelbm2/scene.gltf": {
+        allowedMaterialNames: [
+            "bmw_m4couperewardrecycled_2021paint_material",
+            "bmw_m4couperewardrecycled_2021coloured_material",
+            "bmw_m4couperewardrecycled_2021base_material"
+        ],
+        blockedKeywords: ["spoiler", "mirror", "grille", "glass", "light", "badge", "rim", "wheel"],
+        distanceFactor: 1.18,
+        heightFactor: 0.18,
+        yOffsetFactor: 0.12,
+        lookAtYFactor: 0.08
+    },
+    "BMW/modm3/scene.gltf": {
+        allowedObjectKeywords: ["door", "fender", "hood", "boot", "bumper", "skirts"],
+        blockedKeywords: ["spoiler", "mirror", "grille", "glass", "light", "badge", "rim", "wheel"],
+        distanceFactor: 1.24,
+        heightFactor: 0.16,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.07,
+        stripTextureMaps: true
+    },
+    "BMW/modm4/scene.gltf": {
+        allowedObjectKeywords: ["door", "fender", "hood", "boot", "bumper", "skirts"],
+        blockedKeywords: ["spoiler", "mirror", "grille", "glass", "light", "badge", "rim", "wheel"],
+        distanceFactor: 1.24,
+        heightFactor: 0.16,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.07,
+        stripTextureMaps: true
+    },
+    "audi/mod/scene.gltf": {
+        allowedMaterialNames: [
+            "material.006",
+            "material.002"
+        ],
+        blockedKeywords: ["glass", "grille", "light", "wheel", "rim", "badge"],
+        distanceFactor: 1.34,
+        heightFactor: 0.18,
+        yOffsetFactor: 0.1,
+        lookAtYFactor: 0.08
+    },
+    "audi/mod2/scene.gltf": {
+        allowedMaterialNames: [
+            "blue_paint_metallic",
+            "body"
+        ],
+        allowedObjectKeywords: ["door", "hood", "trunk", "body"],
+        blockedKeywords: ["mirror", "glass", "light", "wheel", "rim", "badge", "grille"],
+        distanceFactor: 1.32,
+        heightFactor: 0.18,
+        yOffsetFactor: 0.1,
+        lookAtYFactor: 0.08
+    },
+    "audi/mod3/scene.gltf": {
+        allowedMaterialNames: ["main_color"],
+        blockedKeywords: ["mirror", "glass", "light", "wheel", "rim", "badge", "carbon", "chrome"],
+        distanceFactor: 1.22,
+        heightFactor: 0.16,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.06,
+        stripTextureMaps: true
+    },
+    "audi/mod4/scene.gltf": {
+        allowedMaterialNames: ["mat_rs3_2018_base.004", "mat_details_ext.001"],
+        blockedKeywords: ["mirror", "glass", "light", "wheel", "rim", "badge", "grille", "carbon"],
+        distanceFactor: 1.32,
+        heightFactor: 0.17,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.07,
+        stripTextureMaps: true
+    },
+    "audi/mod5/scene.gltf": {
+        allowedObjectKeywords: ["door", "fender", "hood", "boot", "bumper", "roof"],
+        blockedKeywords: ["spoiler", "mirror", "glass", "light", "wheel", "rim", "badge", "grille"],
+        distanceFactor: 1.34,
+        heightFactor: 0.16,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.07,
+        stripTextureMaps: true
+    },
+    "Ram/modram/scene.gltf": {
+        allowedMaterialNames: [
+            "dcshr_dark_green"
+        ],
+        allowedKeywords: ["dark_green", "body"],
+        blockedKeywords: ["glass", "light", "wheel", "rim", "grille", "mirror", "spoiler"],
+        distanceFactor: 1.52,
+        heightFactor: 0.2,
+        yOffsetFactor: 0.02,
+        lookAtYFactor: 0.1
+    },
+    "Ram/moddg/scene.gltf": {
+        allowedMaterialNames: [
+            "skin_00",
+            "skin_01",
+            "ext_redeye",
+            "ext_red"
+        ],
+        allowedKeywords: ["ext_"],
+        blockedKeywords: ["int_", "wheel", "rim", "light", "glass", "chrome", "rubber", "plastic"],
+        distanceFactor: 1.56,
+        heightFactor: 0.18,
+        yOffsetFactor: 0.03,
+        lookAtYFactor: 0.08,
+        stripTextureMaps: true
+    },
+    "audi/mod6/scene.gltf": {
+        allowedMaterialNames: [
+            "amg_gt_s_130_paint"
+        ],
+        allowedKeywords: ["paint", "hood", "door", "bumperf", "bumperr", "fender", "boot"],
+        blockedKeywords: ["spoiler", "mirror", "grille", "glass", "light", "wheel", "rim", "badge"],
+        distanceFactor: 1.74,
+        heightFactor: 0.16,
+        yOffsetFactor: 0.03,
+        lookAtYFactor: 0.06,
+        initialRotationY: 0.18,
+        rotationSpeed: 0.0013
+    },
+    "cupra/modc7/scene.gltf": {
+        allowedObjectKeywords: ["door", "fender", "hood", "boot", "bumper", "skirts"],
+        blockedKeywords: ["spoiler", "mirror", "grille", "glass", "light", "wheel", "rim", "badge"],
+        distanceFactor: 1.34,
+        heightFactor: 0.16,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.07,
+        stripTextureMaps: true
+    },
+    "seat/ford1/scene.gltf": {
+        allowedObjectKeywords: ["door", "fender", "hood", "boot", "bumper"],
+        blockedKeywords: ["spoiler", "mirror", "grille", "glass", "light", "wheel", "rim", "badge"],
+        distanceFactor: 1.36,
+        heightFactor: 0.17,
+        yOffsetFactor: 0.07,
+        lookAtYFactor: 0.07,
+        stripTextureMaps: true
+    }
+};
+
+const brandSelect = document.getElementById("brandSelect");
+const modelSelect = document.getElementById("modelSelect");
+const viewer = document.getElementById("viewer");
+const colorGrid = document.getElementById("colorGrid");
+const statusText = document.getElementById("statusText");
+
+let currentColorKey = "bluegloss";
+let car;
+let bodyMaterialEntries = [];
+let currentCarPath = "";
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x05070d);
+
+const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 1000);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputEncoding = THREE.sRGBEncoding;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
+renderer.toneMapping = THREE.NoToneMapping;
+renderer.toneMappingExposure = 1.0;
+viewer.appendChild(renderer.domElement);
 
-resizeRenderer();
-document.getElementById("viewer").appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+scene.add(new THREE.HemisphereLight(0xffffff, 0x182033, 1.35));
 
-// Lights
-scene.add(new THREE.HemisphereLight(0xffffff, 0x222233, 1.4));
-const dir = new THREE.DirectionalLight(0xffffff, 1.3);
-dir.position.set(5, 10, 7);
-scene.add(dir);
+const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
+keyLight.position.set(7, 16, 9);
+scene.add(keyLight);
+scene.add(keyLight.target);
 
-// Floor
-const floor = new THREE.Mesh(
-    new THREE.CircleGeometry(6, 64),
-    new THREE.MeshStandardMaterial({ color: 0x111118, roughness: 0.9, metalness: 0.1 })
-);
-floor.rotation.x = -Math.PI / 2;
-scene.add(floor);
+const fillLight = new THREE.DirectionalLight(0xbdd7ff, 0.5);
+fillLight.position.set(-10, 5, -5);
+scene.add(fillLight);
+scene.add(fillLight.target);
 
-// Environment
 const env = new THREE.CubeTextureLoader().load([
     "https://threejs.org/examples/textures/cube/Bridge2/posx.jpg",
     "https://threejs.org/examples/textures/cube/Bridge2/negx.jpg",
@@ -260,123 +831,465 @@ const env = new THREE.CubeTextureLoader().load([
     "https://threejs.org/examples/textures/cube/Bridge2/posz.jpg",
     "https://threejs.org/examples/textures/cube/Bridge2/negz.jpg"
 ]);
+env.encoding = THREE.sRGBEncoding;
 scene.environment = env;
 
-let car;
 const loader = new THREE.GLTFLoader();
+const originalConsoleWarn = console.warn.bind(console);
 
-// Load car
-loader.load(
-    "skoda/models/scene.gltf",
-    function (gltf) {
-        car = gltf.scene;
-        car.scale.set(1.15, 1.15, 1.15);
-
-        const box = new THREE.Box3().setFromObject(car);
-        const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3());
-
-        car.position.set(-center.x, -center.y + size.y * 0.35, -center.z);
-
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const distance = maxDim * 1.0;
-
-        car.position.z -= distance * 0.1;
-
-        camera.position.set(0, distance * 0.25, distance * 1.1);
-        camera.lookAt(0, 0, 0);
-
-        car.traverse(obj => {
-            if (obj.isMesh && obj.material) {
-                obj.material.envMap = env;
-                obj.material.envMapIntensity = 0.9;
-            }
-        });
-
-        scene.add(car);
+console.warn = (...args) => {
+    const message = String(args[0] || "");
+    if (message.includes("Custom UV set 1 for texture normalMap not yet supported")) {
+        return;
     }
-);
-
-// ================== APPLY COLORS (FIXED VERSION) ==================
-document.querySelectorAll(".colorBtn").forEach(btn => {
-    btn.addEventListener("click", function () {
-        if (!car) return;
-
-        const type = this.dataset.color;
-
-        car.traverse(child => {
-            if (!child.isMesh || !child.material) return;
-
-            const name = child.name.toLowerCase();
-
-            // نحدد فقط أجزاء البودي
-            const isBody =
-                name.includes("body") ||
-                name.includes("paint") ||
-                name.includes("carpaint") ||
-                name.includes("door") ||
-                name.includes("hood") ||
-                name.includes("fender") ||
-                name.includes("bumper");
-
-            if (!isBody) return; // باقي الأجزاء ما تتلوّن
-
-            const mat = child.material;
-
-            // RESET
-            mat.metalness = 0.5;
-            mat.roughness = 0.4;
-            mat.envMapIntensity = 1.0;
-
-            // FINISHES
-            if (type === "matte") { mat.metalness = 0.1; mat.roughness = 0.9; }
-            if (type === "satin") { mat.metalness = 0.4; mat.roughness = 0.5; }
-            if (type === "chrome") { mat.metalness = 1.0; mat.roughness = 0.08; }
-            if (type === "gloss") { mat.metalness = 0.6; mat.roughness = 0.2; }
-            if (type === "stealth") { mat.metalness = 0.2; mat.roughness = 0.8; }
-            if (type === "clear") { mat.metalness = 0.5; mat.roughness = 0.3; }
-
-            // COLORS
-            const colors = {
-                "grey":"#6e6e6e","dark-grey":"#3a3a3a","cement":"#b8b8b8","nardo":"#a6a6a6",
-                "red":"#c40000","dark-red":"#7a0000","red-matte":"#8b1a1a","candy-red":"#e60019","burgundy":"#4b0015",
-                "blue":"#0055ff","navy":"#001f4d","blue-matte":"#1f3b73","light-blue":"#4fa3ff","teal":"#008c99",
-                "green":"#0f8a0f","dark-green":"#064d06","green-matte":"#1f4d2f","racing-green":"#003b24","lime":"#8ee000",
-                "yellow":"#ffcc00","yellow-matte":"#d4a800","orange":"#ff7a00","orange-matte":"#cc5f00",
-                "purple":"#6a0dad","purple-matte":"#4b0a7a","magenta":"#ff00aa","pink":"#ff7abf","rose-gold":"#b76e79",
-                "silver":"#c0c0c0","gunmetal":"#43464b","gold":"#d4af37","bronze":"#8c5a2b",
-                "miami":"#00c4ff","baby-blue":"#a8dfff","olive":"#556b2f","sand":"#d2b48c","turquoise":"#00b8a9"
-            };
-
-            if (colors[type]) mat.color.set(colors[type]);
-
-            mat.needsUpdate = true;
-        });
-    });
-});
-
-
-// ================== ANIMATE ==================
-function animate() {
-    requestAnimationFrame(animate);
-    if (car) car.rotation.y += 0.002;
-    renderer.render(scene, camera);
-}
-animate();
-
-// ================== RESIZE ==================
-window.addEventListener("resize", resizeRenderer);
+    originalConsoleWarn(...args);
+};
 
 function resizeRenderer() {
-    const viewer = document.getElementById("viewer");
     const width = viewer.clientWidth || window.innerWidth;
     const height = viewer.clientHeight || window.innerHeight;
-
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
 }
-</script>
 
+function animate() {
+    requestAnimationFrame(animate);
+    if (car) {
+        const rotationSpeed = getModelRule()?.rotationSpeed ?? 0.0022;
+        car.rotation.y += rotationSpeed;
+    }
+    renderer.render(scene, camera);
+}
+
+function getPreset(key) {
+    return COLOR_PRESETS.find((item) => item.key === key);
+}
+
+function srgbHexToLinearColor(hex) {
+    return new THREE.Color(hex).convertSRGBToLinear();
+}
+
+function buildCarMaterial(preset) {
+    const baseColor = srgbHexToLinearColor(preset.hex);
+    const material = new THREE.MeshPhysicalMaterial({
+        color: baseColor,
+        metalness: preset.metalness ?? 0.12,
+        roughness: preset.roughness ?? 0.12,
+        clearcoat: preset.clearcoat ?? 1.0,
+        clearcoatRoughness: preset.clearcoatRoughness ?? 0.03,
+        envMap: env,
+        envMapIntensity: preset.envMapIntensity ?? 1.0,
+        transparent: preset.transparent ?? false,
+        opacity: preset.opacity ?? 1.0,
+        transmission: preset.transmission ?? 0.0
+    });
+
+    if ((preset.emissiveIntensity ?? 0) > 0) {
+        material.emissive = baseColor.clone();
+        material.emissiveIntensity = preset.emissiveIntensity;
+    }
+
+    return material;
+}
+
+function getModelRule() {
+    return MODEL_RULES[currentCarPath] || null;
+}
+
+function normalizeName(value) {
+    return String(value || "").trim().toLowerCase();
+}
+
+function normalizeList(values = []) {
+    return values.map((value) => normalizeName(value)).filter(Boolean);
+}
+
+function getObjectDescriptor(obj, materialName = "") {
+    const names = [];
+    let current = obj;
+
+    while (current) {
+        if (current.name) {
+            names.push(current.name);
+        }
+        current = current.parent;
+    }
+
+    if (materialName) {
+        names.push(materialName);
+    }
+
+    return normalizeName(names.join(" "));
+}
+
+function matchesAnyKeyword(haystack, keywords = []) {
+    return normalizeList(keywords).some((word) => haystack.includes(word));
+}
+
+function isAllowedBodyMaterial(descriptor, materialName) {
+    const normalized = normalizeName(descriptor);
+    const normalizedMaterialName = normalizeName(materialName);
+    const rule = getModelRule();
+    const allowedMaterialNames = normalizeList(rule?.allowedMaterialNames);
+    const allowedKeywords = normalizeList(rule?.allowedKeywords);
+    const allowedObjectKeywords = normalizeList(rule?.allowedObjectKeywords);
+
+    if (isBlockedMaterial(normalized)) {
+        return false;
+    }
+
+    if (allowedObjectKeywords.length && allowedObjectKeywords.some((word) => normalized.includes(word))) {
+        return true;
+    }
+
+    if (allowedMaterialNames.length && allowedMaterialNames.includes(normalizedMaterialName)) {
+        return true;
+    }
+
+    if (allowedKeywords.length && allowedKeywords.some((word) => normalized.includes(word))) {
+        return true;
+    }
+
+    if (normalized.includes("ext_")) {
+        return !["ext_glass", "ext_black_glass", "ext_chrome", "ext_rubber", "ext_plastic"].some((word) => normalized.includes(word));
+    }
+
+    return GENERIC_BODY_INCLUDE.some((word) => normalized.includes(word));
+}
+
+function isBlockedMaterial(descriptor) {
+    const normalized = normalizeName(descriptor);
+    const blockedKeywords = normalizeList(getModelRule()?.blockedKeywords);
+    return GENERIC_BODY_EXCLUDE.some((word) => normalized.includes(word)) || blockedKeywords.some((word) => normalized.includes(word));
+}
+
+function isGlassLikeMaterial(materialName) {
+    const normalized = normalizeName(materialName);
+    return normalized.includes("glass") || normalized.includes("window") || normalized.includes("mirror");
+}
+
+function normalizeSceneMaterial(material, descriptor) {
+    if (!material) {
+        return;
+    }
+
+    material.envMap = env;
+    material.envMapIntensity = isGlassLikeMaterial(descriptor) ? 0.95 : 0.72;
+
+    if (!isGlassLikeMaterial(descriptor)) {
+        material.transparent = false;
+        material.opacity = 1;
+        material.alphaMap = null;
+        material.alphaTest = 0;
+        material.depthWrite = true;
+        material.side = THREE.FrontSide;
+    }
+
+    material.needsUpdate = true;
+}
+
+function cloneAndTuneMaterial(sourceMaterial, preset) {
+    if (!sourceMaterial || typeof sourceMaterial.clone !== "function" || !(sourceMaterial.color instanceof THREE.Color)) {
+        return buildCarMaterial(preset);
+    }
+
+    const material = sourceMaterial.clone();
+    const baseColor = srgbHexToLinearColor(preset.hex);
+    const rule = getModelRule() || {};
+
+    material.color.copy(baseColor);
+    material.map = null;
+    material.emissiveMap = null;
+    material.vertexColors = false;
+
+    if ("metalness" in material) {
+        material.metalness = preset.metalness ?? material.metalness;
+    }
+    if ("roughness" in material) {
+        material.roughness = preset.roughness ?? material.roughness;
+    }
+    if ("clearcoat" in material) {
+        material.clearcoat = preset.clearcoat ?? 1.0;
+        material.clearcoatRoughness = preset.clearcoatRoughness ?? 0.03;
+    }
+    if ("transmission" in material) {
+        material.transmission = preset.transparent ? (preset.transmission ?? 0.0) : 0.0;
+    }
+    if ("opacity" in material) {
+        material.opacity = preset.transparent ? (preset.opacity ?? 1.0) : 1.0;
+    }
+
+    material.transparent = preset.transparent ?? false;
+    material.alphaMap = null;
+    material.alphaTest = 0;
+    material.depthWrite = true;
+    material.side = THREE.FrontSide;
+    material.envMap = env;
+    material.envMapIntensity = preset.envMapIntensity ?? 1.0;
+    if ("emissive" in material) {
+        material.emissive.set(0x000000);
+        material.emissiveIntensity = 0;
+    }
+
+    if (rule.stripTextureMaps) {
+        material.map = null;
+        material.normalMap = null;
+        material.roughnessMap = null;
+        material.metalnessMap = null;
+        material.bumpMap = null;
+        material.aoMap = null;
+        material.clearcoatNormalMap = null;
+        material.emissiveMap = null;
+    }
+
+    if ((preset.emissiveIntensity ?? 0) > 0 && "emissive" in material) {
+        material.emissive.copy(baseColor);
+        material.emissiveIntensity = preset.emissiveIntensity;
+    }
+
+    material.needsUpdate = true;
+
+    return material;
+}
+
+function updateStatus(message) {
+    statusText.textContent = message;
+}
+
+function setActiveColorButton() {
+    document.querySelectorAll(".colorBtn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.color === currentColorKey);
+    });
+}
+
+function renderColorButtons() {
+    colorGrid.innerHTML = "";
+
+    COLOR_PRESETS.forEach((preset) => {
+        const button = document.createElement("button");
+        button.className = "colorBtn";
+        button.dataset.color = preset.key;
+        button.style.background = preset.gradient || preset.hex;
+        button.style.color = preset.textColor || "#ffffff";
+
+        const swatch = document.createElement("span");
+        swatch.className = "swatch";
+        swatch.style.background = preset.gradient || preset.hex;
+
+        const textWrap = document.createElement("span");
+        textWrap.className = "btnText";
+        textWrap.innerHTML = `<span class="btnTitle">${preset.label}</span><span class="btnFinish">${preset.finish}</span>`;
+
+        button.appendChild(swatch);
+        button.appendChild(textWrap);
+        button.addEventListener("click", () => {
+            currentColorKey = preset.key;
+            setActiveColorButton();
+            changeCarColor(currentColorKey);
+            updateStatus(`تم اختيار ${preset.label}.`);
+        });
+
+        colorGrid.appendChild(button);
+    });
+
+    setActiveColorButton();
+}
+
+function populateModels() {
+    const brand = brandSelect.value;
+    modelSelect.innerHTML = '<option value="">اختر الموديل</option>';
+
+    if (!brand || !carModels[brand]) {
+        return;
+    }
+
+    Object.entries(carModels[brand]).forEach(([modelName, path]) => {
+        const option = document.createElement("option");
+        option.value = path;
+        option.textContent = modelName;
+        modelSelect.appendChild(option);
+    });
+}
+
+function formatBrandLabel(brandKey) {
+    const labels = {
+        bmw: "BMW",
+        ram: "RAM",
+        landrover: "Land Rover",
+        alfa: "Alfa Romeo"
+    };
+
+    if (labels[brandKey]) {
+        return labels[brandKey];
+    }
+
+    return brandKey
+        .replace(/([a-z])([A-Z])/g, "$1 $2")
+        .replace(/[_-]+/g, " ")
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function populateBrands() {
+    brandSelect.innerHTML = '<option value="">اختر الشركة</option>';
+
+    Object.keys(carModels).forEach((brandKey) => {
+        const option = document.createElement("option");
+        option.value = brandKey;
+        option.textContent = formatBrandLabel(brandKey);
+        brandSelect.appendChild(option);
+    });
+}
+
+function buildBodyMaterialEntries(root) {
+    const entries = [];
+    const fallbackEntries = [];
+
+    root.traverse((obj) => {
+        if (!obj.isMesh || !obj.material) {
+            return;
+        }
+
+        const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+
+        materials.forEach((material, index) => {
+            if (!material) {
+                return;
+            }
+
+            const materialName = normalizeName(material.name);
+            const descriptor = getObjectDescriptor(obj, material.name);
+
+            normalizeSceneMaterial(material, descriptor);
+
+            if (material.color instanceof THREE.Color && isAllowedBodyMaterial(descriptor, material.name)) {
+                entries.push({
+                    mesh: obj,
+                    originalMaterial: material,
+                    index: Array.isArray(obj.material) ? index : null
+                });
+                return;
+            }
+
+            if (material.color instanceof THREE.Color && !isBlockedMaterial(descriptor) && GENERIC_BODY_INCLUDE.some((word) => descriptor.includes(word))) {
+                fallbackEntries.push({
+                    mesh: obj,
+                    originalMaterial: material,
+                    index: Array.isArray(obj.material) ? index : null
+                });
+            }
+
+            if (isBlockedMaterial(descriptor)) {
+                material.envMapIntensity = isGlassLikeMaterial(descriptor) ? 0.95 : 0.7;
+            }
+        });
+    });
+
+    return entries.length > 0 ? entries : fallbackEntries;
+}
+
+function frameCar() {
+    const box = new THREE.Box3().setFromObject(car);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const rule = getModelRule() || {};
+
+    car.position.set(-center.x, -center.y + size.y * (rule.yOffsetFactor ?? 0.12), -center.z);
+
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const isCompactLayout = window.innerWidth <= 980;
+    const desktopDistanceFactor = rule.distanceFactor ?? 1.2;
+    const mobileDistanceFactor = desktopDistanceFactor + 0.12;
+    const distance = maxDim * (isCompactLayout ? mobileDistanceFactor : desktopDistanceFactor);
+    const heightFactor = rule.heightFactor ?? 0.18;
+
+    camera.position.set(0, distance * (isCompactLayout ? Math.max(heightFactor - 0.01, 0.11) : heightFactor), distance);
+    camera.lookAt(0, size.y * (rule.lookAtYFactor ?? 0.08), 0);
+    camera.near = Math.max(maxDim / 100, 0.1);
+    camera.far = maxDim * 12;
+    camera.updateProjectionMatrix();
+}
+
+function changeCarColor(colorKey) {
+    if (!car || bodyMaterialEntries.length === 0) {
+        return;
+    }
+
+    const preset = getPreset(colorKey);
+    if (!preset) {
+        return;
+    }
+
+    bodyMaterialEntries.forEach((entry) => {
+        if (entry.index === null) {
+            entry.mesh.material = cloneAndTuneMaterial(entry.originalMaterial, preset);
+            return;
+        }
+
+        const nextMaterials = Array.isArray(entry.mesh.material) ? [...entry.mesh.material] : [entry.mesh.material];
+        nextMaterials[entry.index] = cloneAndTuneMaterial(entry.originalMaterial, preset);
+        entry.mesh.material = nextMaterials;
+    });
+}
+
+function loadCar(path) {
+    currentCarPath = path;
+    updateStatus("جاري تحميل السيارة...");
+
+    loader.load(
+        path,
+        (gltf) => {
+            if (car) {
+                scene.remove(car);
+            }
+
+            car = gltf.scene;
+            const rule = getModelRule() || {};
+            car.rotation.set(0, rule.initialRotationY ?? 0, 0);
+            car.scale.set(1, 1, 1);
+            bodyMaterialEntries = buildBodyMaterialEntries(car);
+
+            frameCar();
+            scene.add(car);
+
+            if (bodyMaterialEntries.length === 0) {
+                updateStatus("تم تحميل السيارة، لكن لم يتم العثور على خامات البودي المناسبة تلقائيًا.");
+            } else {
+                changeCarColor(currentColorKey);
+                const selectedModel = modelSelect.options[modelSelect.selectedIndex]?.text || "السيارة";
+                updateStatus(`تم تحميل ${selectedModel} وتطبيق اللون الحالي على ${bodyMaterialEntries.length} خامة من البودي.`);
+            }
+        },
+        undefined,
+        (error) => {
+            console.error(error);
+            updateStatus("حدث خطأ أثناء تحميل السيارة. تأكد من ملفات الموديل والمسار.");
+        }
+    );
+}
+
+brandSelect.addEventListener("change", () => {
+    populateModels();
+    updateStatus("اختر الموديل من القائمة.");
+});
+
+modelSelect.addEventListener("change", () => {
+    if (modelSelect.value) {
+        loadCar(modelSelect.value);
+    }
+});
+
+window.addEventListener("resize", () => {
+    resizeRenderer();
+    if (car) {
+        frameCar();
+    }
+});
+
+populateBrands();
+renderColorButtons();
+resizeRenderer();
+animate();
+</script>
 </body>
 </html>

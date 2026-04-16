@@ -1,0 +1,11 @@
+Model Information:
+* title:	2016 Custom Land Rover Range Rover Sport
+* source:	https://sketchfab.com/3d-models/2016-custom-land-rover-range-rover-sport-54b717eea6ab44f9820736cbbc4dd566
+* author:	Ken Davie (https://sketchfab.com/KEN_AutomotiveDesigns)
+
+Model License:
+* license type:	CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
+* requirements:	Author must be credited. Modified versions must have the same license. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "2016 Custom Land Rover Range Rover Sport" (https://sketchfab.com/3d-models/2016-custom-land-rover-range-rover-sport-54b717eea6ab44f9820736cbbc4dd566) by Ken Davie (https://sketchfab.com/KEN_AutomotiveDesigns) licensed under CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)

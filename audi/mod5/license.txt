@@ -1,0 +1,11 @@
+Model Information:
+* title:	2019 Audi S5 Sportback
+* source:	https://sketchfab.com/3d-models/2019-audi-s5-sportback-e20acc33be2442e5a5d7a81da831e058
+* author:	adrianaflak09 (https://sketchfab.com/adrianaflak09)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "2019 Audi S5 Sportback" (https://sketchfab.com/3d-models/2019-audi-s5-sportback-e20acc33be2442e5a5d7a81da831e058) by adrianaflak09 (https://sketchfab.com/adrianaflak09) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
