@@ -1,231 +1,187 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="StyleSheet1.css">
-
+    <meta name="theme-color" content="#0a1320">
     <title>أعمالنا - Gloss Boss</title>
-
-    <style>
-        body {
-            background: #111;
-            color: white;
-            font-family: Arial;
-            text-align: center;
-            margin: 0;
-            direction: rtl;
-        }
-
-        h1 {
-            padding: 20px;
-        }
-
-        /* زر اللغة */
-        .lang-btn {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 8px;
-            background: #25D366;
-            color: white;
-            cursor: pointer;
-            z-index: 1000;
-        }
-
-        /* قبل / بعد */
-        .compare {
-            position: relative;
-            width: 90%;
-            max-width: 600px;
-            margin: 30px auto;
-            overflow: hidden;
-            border-radius: 10px;
-        }
-
-            .compare img {
-                width: 100%;
-                display: block;
-            }
-
-        .after {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 50%;
-            overflow: hidden;
-            height: 100%;
-        }
-
-            .after img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-        .slider {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 3px;
-            height: 100%;
-            background: #25D366;
-            cursor: ew-resize;
-            z-index: 5;
-        }
-
-            .slider::before {
-                content: "↔";
-                position: absolute;
-                top: 50%;
-                left: -15px;
-                background: #25D366;
-                color: white;
-                padding: 6px 9px;
-                border-radius: 50%;
-                transform: translateY(-50%);
-            }
-
-        /* فيديو */
-        .videos {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-
-            .videos video {
-                width: 300px;
-                border-radius: 10px;
-            }
-
-        h2 {
-            margin-top: 50px;
-        }
-
-        /* موبايل */
-        @media (max-width: 768px) {
-            .videos video {
-                width: 90%;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="StyleSheet2.css">
 </head>
-<script src="js/script.js"></script>
-
 <body>
-
-    <button onclick="toggleLanguage()" class="lang-btn">🌐تغيير اللغه/שנה שפה</button>
-    <a href="index.html" class="back-btn">العودة للصفحة الرئيسية</a>
-
-    <br>
-    <br>
-    <br>
-    <h2>أعمالنا (قبل / بعد</h2>
-
-    <div class="compare">
-        <img src="before.jpeg">
-        <div class="after ">
-            <img src="after.jpeg">
+    <div class="pageShell">
+        <div class="siteTopbar">
+            <div class="topbarInner">
+                <div class="brandLockup">
+                    <div class="brandMark">GB</div>
+                    <div class="brandText">
+                        <strong>Gloss Boss Detailing</strong>
+                        <span data-ar="قبل وبعد من شغلنا الحقيقي" data-he="לפני ואחרי מהעבודות האמיתיות שלנו">قبل وبعد من شغلنا الحقيقي</span>
+                    </div>
+                </div>
+                <div class="navLinks">
+                    <a class="navPill" href="index.html" data-ar="الرئيسية" data-he="דף הבית">الرئيسية</a>
+                    <a class="navPill" href="HtmlPage6.html" data-ar="المنتجات" data-he="המוצרים">المنتجات</a>
+                    <a class="navPill" href="ppf-preview.html" data-ar="معاينة PPF" data-he="תצוגת PPF">معاينة PPF</a>
+                    <button type="button" onclick="toggleLanguage()" class="lang-btn" data-ar="🌐 العربية / עברית" data-he="🌐 עברית / العربية">🌐 العربية / עברית</button>
+                </div>
+            </div>
         </div>
-        <div class="slider"></div>
-    </div>
 
-    <div class="compare">
-        <img src="before2.jpeg">
-        <div class="after">
-            <img src="after2.jpeg">
-        </div>
-        <div class="slider"></div>
-    </div>
+        <section class="pageHero">
+            <h1 data-ar="أعمالنا قبل وبعد" data-he="העבודות שלנו לפני ואחרי">أعمالنا قبل وبعد</h1>
+            <p data-ar="حرّك السلايدر وشوف الفرق بنفسك. الصفحة صارت أنظف وأسهل للموبايل، والفيديوهات والصور مرتبة داخل بطاقات أوضح." data-he="הזז את הסליידר וראה את ההבדל בעצמך. העמוד עכשיו נקי יותר, מותאם יותר למובייל והתמונות והסרטונים מסודרים בכרטיסים ברורים.">حرّك السلايدر وشوف الفرق بنفسك. الصفحة صارت أنظف وأسهل للموبايل، والفيديوهات والصور مرتبة داخل بطاقات أوضح.</p>
+        </section>
 
-    <div class="compare ">
-        <img src="mozdw.jpeg">
-    </div>
+        <section class="sectionCard">
+            <div class="sectionHeader">
+                <div>
+                    <h2 data-ar="نتائج مباشرة" data-he="תוצאות ישירות">نتائج مباشرة</h2>
+                    <p class="sectionLead" data-ar="مقارنة قبل وبعد بشكل حي وواضح حتى تقدر تلاحظ اللمعة، العمق، ونظافة السطح." data-he="השוואת לפני ואחרי חיה וברורה כדי שתוכל להבחין בברק, בעומק ובניקיון המשטח.">مقارنة قبل وبعد بشكل حي وواضح حتى تقدر تلاحظ اللمعة، العمق، ونظافة السطح.</p>
+                </div>
+            </div>
 
-    <h2>فيديوهات من شغلنا</h2>
+            <div class="cardsGrid videoGrid">
+                <article class="compareCard">
+                    <h3 data-ar="تصحيح ولمعة" data-he="תיקון וברק">تصحيح ولمعة</h3>
+                    <p data-ar="اسحب المؤشر يمين ويسار وشوف الفرق بالتشطيب النهائي." data-he="גרור את המחוון ימינה ושמאלה וראה את ההבדל בגימור הסופי.">اسحب المؤشر يمين ويسار وشوف الفرق بالتشطيب النهائي.</p>
+                    <div class="compare">
+                        <img src="before.jpeg" alt="Before" loading="lazy">
+                        <div class="after">
+                            <img src="after.jpeg" alt="After" loading="lazy">
+                        </div>
+                        <div class="slider"></div>
+                    </div>
+                    <div class="compareLabels">
+                        <span class="miniBadge" data-ar="قبل" data-he="לפני">قبل</span>
+                        <span class="miniBadge" data-ar="بعد" data-he="אחרי">بعد</span>
+                    </div>
+                </article>
 
-    <div class="videos">
-        <video controls>
-            <source src="ppfvido.mp4" type="video/mp4">
-        </video>
+                <article class="compareCard">
+                    <h3 data-ar="وضوح انعكاس البودي" data-he="בהירות השתקפות המרכב">وضوح انعكاس البودي</h3>
+                    <p data-ar="لما التفاصيل الصغيرة تنضبط، فرق الصورة يبان لحاله." data-he="כשהפרטים הקטנים מסודרים, ההבדל בתמונה בולט לבד.">لما التفاصيل الصغيرة تنضبط، فرق الصورة يبان لحاله.</p>
+                    <div class="compare">
+                        <img src="before2.jpeg" alt="Before" loading="lazy">
+                        <div class="after">
+                            <img src="after2.jpeg" alt="After" loading="lazy">
+                        </div>
+                        <div class="slider"></div>
+                    </div>
+                    <div class="compareLabels">
+                        <span class="miniBadge" data-ar="قبل" data-he="לפני">قبل</span>
+                        <span class="miniBadge" data-ar="بعد" data-he="אחרי">بعد</span>
+                    </div>
+                </article>
+            </div>
+        </section>
 
-        <video controls>
-            <source src="video2.mp4" type="video/mp4">
-        </video>
+        <section class="sectionCard">
+            <div class="sectionHeader">
+                <div>
+                    <h2 data-ar="لقطة إضافية" data-he="תמונה נוספת">لقطة إضافية</h2>
+                    <p class="sectionLead" data-ar="صورة ثابتة من شغلنا داخل إطار أبسط وأرتب يركز على السيارة نفسها." data-he="צילום נוסף מהעבודות שלנו בתוך מסגרת נקייה ומסודרת שמדגישה את הרכב עצמו.">صورة ثابتة من شغلنا داخل إطار أبسط وأرتب يركز على السيارة نفسها.</p>
+                </div>
+            </div>
+
+            <article class="galleryCard">
+                <div class="galleryFrame">
+                    <img src="mozdw.jpeg" alt="Gloss Boss work sample" loading="lazy">
+                </div>
+            </article>
+        </section>
+
+        <section class="sectionCard">
+            <div class="sectionHeader">
+                <div>
+                    <h2 data-ar="فيديوهات من شغلنا" data-he="סרטונים מהעבודות שלנו">فيديوهات من شغلنا</h2>
+                    <p class="sectionLead" data-ar="فيديوهات مرتبة داخل بطاقات خفيفة على الصفحة وتعطي انطباع أسرع وأوضح." data-he="סרטונים מסודרים בתוך כרטיסים קלים בעמוד, שנותנים רושם מהיר וברור יותר.">فيديوهات مرتبة داخل بطاقات خفيفة على الصفحة وتعطي انطباع أسرع وأوضح.</p>
+                </div>
+            </div>
+
+            <div class="cardsGrid videoGrid">
+                <article class="videoCard">
+                    <h3 data-ar="فيديو 1" data-he="סרטון 1">فيديو 1</h3>
+                    <p data-ar="عرض قريب للشغل واللمعة النهائية." data-he="תצוגה קרובה של העבודה והברק הסופי.">عرض قريب للشغل واللمعة النهائية.</p>
+                    <div class="videoFrame">
+                        <video controls playsinline preload="metadata">
+                            <source src="ppfvido.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </article>
+
+                <article class="videoCard">
+                    <h3 data-ar="فيديو 2" data-he="סרטון 2">فيديو 2</h3>
+                    <p data-ar="لقطة ثانية توضح النتيجة على أرض الواقع." data-he="צילום נוסף שממחיש את התוצאה במציאות.">لقطة ثانية توضح النتيجة على أرض الواقع.</p>
+                    <div class="videoFrame">
+                        <video controls playsinline preload="metadata">
+                            <source src="video2.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="ctaCard">
+            <div>
+                <h3 data-ar="بدك نفس النتيجة على سيارتك؟" data-he="רוצה את אותה התוצאה על הרכב שלך?">بدك نفس النتيجة على سيارتك؟</h3>
+                <p data-ar="ابعث صورة السيارة أو اسم الموديل على الواتساب ونرتب لك الأنسب بسرعة." data-he="שלח תמונה של הרכב או את שם הדגם בוואטסאפ ונכוון אותך במהירות לאפשרות המתאימה.">ابعث صورة السيارة أو اسم الموديل على الواتساب ونرتب لك الأنسب بسرعة.</p>
+            </div>
+            <div class="cardActions">
+                <a href="https://wa.me/972533044605?text=مرحبا%20اريد%20الحجز" target="_blank" class="btnWhatsapp" data-ar="احجز الآن" data-he="הזמן עכשיו">احجز الآن</a>
+                <a href="index.html" class="btnGhost" data-ar="رجوع للرئيسية" data-he="חזרה לדף הבית">رجوع للرئيسية</a>
+            </div>
+        </section>
+
+        <footer class="siteFooter">© 2025 Gloss Boss Detailing</footer>
     </div>
 
     <script>
-        /* ===== سلايدر (كمبيوتر + موبايل) ===== */
-        const sliders = document.querySelectorAll(".slider");
+        function moveSlider(x, slider) {
+            const container = slider.parentElement;
+            const rect = container.getBoundingClientRect();
+            let percent = ((x - rect.left) / rect.width) * 100;
+            if (percent < 0) percent = 0;
+            if (percent > 100) percent = 100;
+            slider.style.left = percent + "%";
+            container.querySelector(".after").style.width = percent + "%";
+        }
 
-        sliders.forEach(slider => {
+        document.querySelectorAll(".slider").forEach((slider) => {
+            let dragging = false;
 
-            let isDown = false;
-
-            function move(x, slider) {
-                let container = slider.parentElement;
-                let rect = container.getBoundingClientRect();
-                let pos = x - rect.left;
-
-                let percent = (pos / rect.width) * 100;
-                if (percent < 0) percent = 0;
-                if (percent > 100) percent = 100;
-
-                slider.style.left = percent + "%";
-                container.querySelector(".after").style.width = percent + "%";
-            }
-
-            // كمبيوتر
-            slider.addEventListener("mousedown", () => isDown = true);
-            window.addEventListener("mouseup", () => isDown = false);
-            window.addEventListener("mousemove", e => {
-                if (!isDown) return;
-                move(e.clientX, slider);
+            slider.addEventListener("mousedown", () => dragging = true);
+            window.addEventListener("mouseup", () => dragging = false);
+            window.addEventListener("mousemove", (event) => {
+                if (!dragging) return;
+                moveSlider(event.clientX, slider);
             });
 
-            // موبايل
-            slider.addEventListener("touchstart", () => isDown = true);
-            window.addEventListener("touchend", () => isDown = false);
-            window.addEventListener("touchmove", e => {
-                if (!isDown) return;
-                move(e.touches[0].clientX, slider);
-            });
-
+            slider.addEventListener("touchstart", () => dragging = true, { passive: true });
+            window.addEventListener("touchend", () => dragging = false, { passive: true });
+            window.addEventListener("touchmove", (event) => {
+                if (!dragging) return;
+                moveSlider(event.touches[0].clientX, slider);
+            }, { passive: true });
         });
 
-        /* ===== ترجمة الصفحة ===== */
-        let isArabic = true;
+        function applyLanguage(lang) {
+            document.documentElement.lang = lang;
+            document.body.dir = "rtl";
+            document.querySelectorAll("[data-ar]").forEach((el) => {
+                const nextValue = el.dataset[lang];
+                if (typeof nextValue === "string") {
+                    el.textContent = nextValue;
+                }
+            });
+            localStorage.setItem("lang", lang);
+        }
 
         function toggleLanguage() {
-            isArabic = !isArabic;
-
-            if (isArabic) {
-                location.reload();
-            } else {
-                document.body.dir = "rtl";
-
-                const map = [
-                    ["أعمالنا (قبل / بعد)", "העבודות שלנו (לפני / אחרי)"],
-                    ["فيديوهات من شغلنا", "סרטונים מהעבודות שלנו"]
-                ];
-
-                document.querySelectorAll("*").forEach(el => {
-                    if (el.children.length === 0) {
-                        let text = el.innerText;
-                        if (text) {
-                            map.forEach(item => {
-                                text = text.replaceAll(item[0], item[1]);
-                            });
-                            el.innerText = text;
-                        }
-                    }
-                });
-            }
+            const current = localStorage.getItem("lang") || "ar";
+            applyLanguage(current === "ar" ? "he" : "ar");
         }
-    </script>
 
+        applyLanguage(localStorage.getItem("lang") || "ar");
+    </script>
 </body>
 </html>

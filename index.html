@@ -1,314 +1,219 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="StyleSheet1.css">
+    <meta name="theme-color" content="#0a1320">
+    <title>Gloss Boss Detailing</title>
+    <link rel="stylesheet" href="StyleSheet2.css">
+</head>
+<body>
+    <div class="pageShell">
+        <div class="siteTopbar">
+            <div class="topbarInner">
+                <div class="brandLockup">
+                    <div class="brandMark">GB</div>
+                    <div class="brandText">
+                        <strong>Gloss Boss Detailing</strong>
+                        <span data-ar="حماية، لمعة، وفخامة للسيارات" data-he="הגנה, ברק ויוקרה לרכב">حماية، لمعة، وفخامة للسيارات</span>
+                    </div>
+                </div>
+                <div class="navLinks">
+                    <a class="navPill" href="HtmlPage5.html" data-ar="أعمالنا" data-he="העבודות שלנו">أعمالنا</a>
+                    <a class="navPill" href="HtmlPage6.html" data-ar="المنتجات" data-he="המוצרים">المنتجات</a>
+                    <a class="navPill" href="ppf-preview.html" data-ar="معاينة PPF" data-he="תצוגת PPF">معاينة PPF</a>
+                    <button type="button" onclick="toggleLanguage()" class="lang-btn" data-ar="🌐 العربية / עברית" data-he="🌐 עברית / العربية">🌐 العربية / עברית</button>
+                </div>
+            </div>
+        </div>
 
-    <style>
-    section {
-    background: #0a0a0a; /* بدل الأسود الفاضي */
-    border-radius: 10px;
-    margin: 20px auto;
-    width: 95%;
-    padding: 25px;
-    box-shadow: 0 0 10px #000;
-}
+        <section class="pageIntro">
+            <div class="heroPanel">
+                <div class="heroContent">
+                    <div class="eyebrow">
+                        <span data-ar="استوديو عناية فاخر" data-he="סטודיו טיפוח יוקרתי">استوديو عناية فاخر</span>
+                    </div>
+                    <h1 data-ar="تشطيب نظيف، حماية محترمة، ولوك يليق بسيارتك" data-he="גימור נקי, הגנה חזקה ולוק שמתאים לרכב שלך">تشطيب نظيف، حماية محترمة، ولوك يليق بسيارتك</h1>
+                    <p class="heroLead" data-ar="من PPF ولمعان النانو إلى التظليل والإضافات، نشتغل على النتيجة النهائية كأن السيارة خارجة الآن من تصوير وكالة. الحجز سريع، العرض مرتب، والخدمة مناسبة للجوال والواتساب." data-he="מ-PPF וליטוש ננו ועד הצללה ותוספות, אנחנו עובדים על התוצאה הסופית כאילו הרכב יצא עכשיו מצילומי סוכנות. ההזמנה מהירה, התצוגה מסודרת ומתאימה למובייל ולוואטסאפ.">من PPF ولمعان النانو إلى التظليل والإضافات، نشتغل على النتيجة النهائية كأن السيارة خارجة الآن من تصوير وكالة. الحجز سريع، العرض مرتب، والخدمة مناسبة للجوال والواتساب.</p>
 
+                    <div class="ctaRow">
+                        <a href="https://wa.me/972533044605?text=مرحبا%20اريد%20الحجز" target="_blank" class="btnWhatsapp" data-ar="احجز الآن" data-he="הזמן עכשיו">احجز الآن</a>
+                        <a href="ppf-preview.html" class="btnPrimary" data-ar="جرّب ألوان PPF على سيارتك" data-he="נסה צבעי PPF על הרכב">جرّب ألوان PPF على سيارتك</a>
+                        <a href="HtmlPage5.html" class="btnGhost" data-ar="شوف الشغل الحقيقي" data-he="צפה בעבודות האמיתיות">شوف الشغل الحقيقي</a>
+                    </div>
 
-        .whatsapp-btn {
-            background-color: #25D366;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            text-decoration: none;
-        }
+                    <div class="statsGrid">
+                        <div class="statCard">
+                            <div class="statLabel" data-ar="تركيزنا" data-he="הפוקוס שלנו">تركيزنا</div>
+                            <div class="statValue" data-ar="OEM Look" data-he="OEM Look">OEM Look</div>
+                        </div>
+                        <div class="statCard">
+                            <div class="statLabel" data-ar="طريقة التواصل" data-he="דרך התקשרות">طريقة التواصل</div>
+                            <div class="statValue">WhatsApp</div>
+                        </div>
+                        <div class="statCard">
+                            <div class="statLabel" data-ar="عرض الألوان" data-he="תצוגת צבעים">عرض الألوان</div>
+                            <div class="statValue" data-ar="PPF Preview" data-he="PPF Preview">PPF Preview</div>
+                        </div>
+                    </div>
+                </div>
 
-            .whatsapp-btn:hover {
-                background-color: #1ebe57;
-            }
+                <div class="heroVisual">
+                    <div class="heroVisualOverlay">
+                        <h2 data-ar="لمعة فخمة بدون فوضى" data-he="ברק יוקרתי בלי בלגן">لمعة فخمة بدون فوضى</h2>
+                        <p data-ar="واجهة أسرع، تفاصيل أوضح، وتجربة مرتبة تحكي نفس مستوى الشغل على السيارة." data-he="ממשק מהיר יותר, פרטים ברורים יותר וחוויה מסודרת שמשקפת את רמת העבודה על הרכב.">واجهة أسرع، تفاصيل أوضح، وتجربة مرتبة تحكي نفس مستوى الشغل على السيارة.</p>
+                        <div class="tagRow">
+                            <span class="tag">PPF</span>
+                            <span class="tag" data-ar="بوليش نانو" data-he="פוליש ננו">بوليش نانو</span>
+                            <span class="tag" data-ar="تظليل حراري" data-he="הצללה תרמית">تظليل حراري</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        .whatsapp-float {
-            position: fixed;
-            width: 55px;
-            height: 55px;
-            bottom: 15px;
-            right: 15px;
-            background-color: #25D366;
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            font-size: 26px;
-            box-shadow: 2px 2px 5px #888;
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+        <section class="sectionCard">
+            <div class="sectionHeader">
+                <div>
+                    <h2 data-ar="خدماتنا" data-he="השירותים שלנו">خدماتنا</h2>
+                    <p class="sectionLead" data-ar="خدمات مرتبة على شكل باقات واضحة، مع نتيجة نهائية نظيفة ومناسبة للاستعمال اليومي والسيارات الفخمة." data-he="שירותים מסודרים כחבילות ברורות, עם תוצאה סופית נקייה שמתאימה לשימוש יומיומי ולרכבי יוקרה.">خدمات مرتبة على شكل باقات واضحة، مع نتيجة نهائية نظيفة ومناسبة للاستعمال اليومي والسيارات الفخمة.</p>
+                </div>
+            </div>
 
-            .whatsapp-float:hover {
-                background-color: #1ebe57;
-            }
+            <div class="cardsGrid servicesGrid">
+                <article class="serviceCard">
+                    <div class="cardIcon">PPF</div>
+                    <h3>PPF</h3>
+                    <p data-ar="حماية كاملة للبودي ضد الخدوش اليومية والضربات الخفيفة مع شكل نظيف ولمعة مدروسة." data-he="הגנה מלאה למרכב מפני שריטות יומיומיות ופגיעות קלות עם מראה נקי וברק מדויק.">حماية كاملة للبودي ضد الخدوش اليومية والضربات الخفيفة مع شكل نظيف ولمعة مدروسة.</p>
+                    <div class="cardActions">
+                        <a href="https://wa.me/972533044605?text=PPF" target="_blank" class="inlineButton" data-ar="احجز خدمة PPF" data-he="הזמן שירות PPF">احجز خدمة PPF</a>
+                    </div>
+                </article>
 
-        .service-box button {
-            background-color: #25D366;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
+                <article class="serviceCard">
+                    <div class="cardIcon">Nano</div>
+                    <h3 data-ar="بوليش نانو" data-he="פוליש ננו">بوليش نانو</h3>
+                    <p data-ar="إزالة عيوب خفيفة واسترجاع اللمعة بطريقة تبين الخطوط والانعكاس بشكل أنظف." data-he="הסרת פגמים קלים והחזרת הברק כך שהקווים וההשתקפות ייראו נקיים יותר.">إزالة عيوب خفيفة واسترجاع اللمعة بطريقة تبين الخطوط والانعكاس بشكل أنظف.</p>
+                    <div class="cardActions">
+                        <a href="https://wa.me/972533044605?text=بوليش%20نانو" target="_blank" class="inlineButton" data-ar="احجز بوليش نانو" data-he="הזמן פוליש ננו">احجز بوليش نانو</a>
+                    </div>
+                </article>
 
-            .service-box button:hover {
-                background-color: #1ebe57;
-            }
+                <article class="serviceCard">
+                    <div class="cardIcon">Tint</div>
+                    <h3 data-ar="قزاز أسود" data-he="חלונות כהים">قزاز أسود</h3>
+                    <p data-ar="تظليل حراري بجودة عالية يقلل الإزعاج ويعطي السيارة لوك أفخم وأكثر خصوصية." data-he="הצללה תרמית איכותית שמפחיתה הפרעות ומעניקה לרכב מראה יוקרתי ופרטיות טובה יותר.">تظليل حراري بجودة عالية يقلل الإزعاج ويعطي السيارة لوك أفخم وأكثر خصوصية.</p>
+                    <div class="cardActions">
+                        <a href="https://wa.me/972533044605?text=قزاز%20أسود" target="_blank" class="inlineButton" data-ar="احجز التظليل" data-he="הזמן הצללה">احجز التظليل</a>
+                    </div>
+                </article>
 
-        header {
-            background-image: url('glos.jpeg');
-            background-size: cover;
-            background-position: center;
-            padding: 120px 20px;
-            text-align: center;
-            color: white;
-        }
+                <article class="serviceCard">
+                    <div class="cardIcon">+</div>
+                    <h3 data-ar="أمور إضافية" data-he="שירותים נוספים">أمور إضافية</h3>
+                    <p data-ar="سبويلر، شفة، خياطة ستيرنج، ولمسات تفصيلية تكمل شكل السيارة من الخارج والداخل." data-he="ספוילר, שפה, תפירת הגה ונגיעות משלימות לחלק החיצוני והפנימי של הרכב.">سبويلر، شفة، خياطة ستيرنج، ولمسات تفصيلية تكمل شكل السيارة من الخارج والداخل.</p>
+                    <div class="cardActions">
+                        <a href="https://wa.me/972533044605?text=إضافات" target="_blank" class="inlineButton" data-ar="اطلب الإضافات" data-he="הזמן תוספות">اطلب الإضافات</a>
+                    </div>
+                </article>
+            </div>
+        </section>
 
-            header h1 {
-                font-size: 28px;
-            }
+        <section class="sectionCard">
+            <div class="sectionHeader">
+                <div>
+                    <h2 data-ar="تنقل سريع" data-he="ניווט מהיר">تنقل سريع</h2>
+                    <p class="sectionLead" data-ar="كل صفحة صارت أقرب لهدف واضح: تشوف شغل، تطلب منتج، أو تجرّب لون PPF بدون لف ودوران." data-he="כל עמוד מכוון למטרה ברורה: לראות עבודות, להזמין מוצר או לנסות צבע PPF בלי להסתבך.">كل صفحة صارت أقرب لهدف واضح: تشوف شغل، تطلب منتج، أو تجرّب لون PPF بدون لف ودوران.</p>
+                </div>
+            </div>
 
-            header p {
-                font-size: 16px;
-            }
+            <div class="cardsGrid featureGrid">
+                <article class="featureCard">
+                    <div class="cardIcon">01</div>
+                    <h3 data-ar="أعمالنا" data-he="העבודות שלנו">أعمالنا</h3>
+                    <p data-ar="قبل وبعد وفيديوهات من الشغل الحقيقي حتى تشوف الفرق بشكل مباشر وواضح." data-he="לפני ואחרי וסרטונים מהעבודות האמיתיות כדי לראות את ההבדל בצורה ברורה.">قبل وبعد وفيديوهات من الشغل الحقيقي حتى تشوف الفرق بشكل مباشر وواضح.</p>
+                    <div class="cardActions">
+                        <a href="HtmlPage5.html" class="btnGhost" data-ar="افتح الصفحة" data-he="פתח עמוד">افتح الصفحة</a>
+                    </div>
+                </article>
 
-        section {
-            padding: 15px;
-        }
+                <article class="featureCard">
+                    <div class="cardIcon">02</div>
+                    <h3 data-ar="المنتجات" data-he="המוצרים">المنتجات</h3>
+                    <p data-ar="بطاقات منتجات أوضح، شكل أرتب، ووصول أسرع للطلب المباشر من الواتساب." data-he="כרטיסי מוצרים ברורים יותר, עיצוב מסודר יותר וגישה מהירה יותר להזמנה ישירה בוואטסאפ.">بطاقات منتجات أوضح، شكل أرتب، ووصول أسرع للطلب المباشر من الواتساب.</p>
+                    <div class="cardActions">
+                        <a href="HtmlPage6.html" class="btnGhost" data-ar="شوف المنتجات" data-he="צפה במוצרים">شوف المنتجات</a>
+                    </div>
+                </article>
 
-        .services {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
+                <article class="featureCard">
+                    <div class="cardIcon">03</div>
+                    <h3 data-ar="معاينة PPF" data-he="תצוגת PPF">معاينة PPF</h3>
+                    <p data-ar="اختر السيارة، جرّب الألوان، وشوف الشكل النهائي بطريقة أخف وأسرع على الجوال." data-he="בחר את הרכב, נסה צבעים וראה את המראה הסופי בצורה קלה ומהירה יותר במובייל.">اختر السيارة، جرّب الألوان، وشوف الشكل النهائي بطريقة أخف وأسرع على الجوال.</p>
+                    <div class="cardActions">
+                        <a href="ppf-preview.html" class="btnGhost" data-ar="ابدأ المعاينة" data-he="התחל תצוגה">ابدأ المعاينة</a>
+                    </div>
+                </article>
+            </div>
+        </section>
 
-        .service-box {
-            width: 280px;
-            text-align: center;
-        }
+        <section class="sectionCard">
+            <div class="splitGrid">
+                <article class="infoCard">
+                    <h3 data-ar="موقعنا" data-he="המיקום שלנו">موقعنا</h3>
+                    <p data-ar="الوصول إلنا صار بخطوة واحدة. افتح الموقع على Waze وخذ أقصر طريق مباشرة." data-he="להגיע אלינו עכשיו זה בצעד אחד. פתח את המיקום ב-Waze וקבל את הדרך הקצרה ביותר.">الوصول إلنا صار بخطوة واحدة. افتح الموقع على Waze وخذ أقصر طريق مباشرة.</p>
+                    <div class="cardActions">
+                        <a href="https://waze.com/ul/hsvc4gmwpk" target="_blank" class="btnPrimary" data-ar="افتح Waze" data-he="פתח Waze">افتح Waze</a>
+                    </div>
+                </article>
 
-        @media (max-width: 768px) {
+                <article class="infoCard">
+                    <h3 data-ar="من نحن" data-he="אודותינו">من نحن</h3>
+                    <p data-ar="Gloss Boss Detailing متخصصون في العناية الفاخرة بالسيارات. نشتغل على التفاصيل الصغيرة قبل الكبيرة حتى تطلع النتيجة مرتبة، فخمة، ومقنعة من أول نظرة." data-he="Gloss Boss Detailing מתמחים בטיפוח רכבים יוקרתי. אנחנו עובדים על הפרטים הקטנים לפני הגדולים כדי שהתוצאה תיראה מסודרת, יוקרתית ומשכנעת מהמבט הראשון.">Gloss Boss Detailing متخصصون في العناية الفاخرة بالسيارات. نشتغل على التفاصيل الصغيرة قبل الكبيرة حتى تطلع النتيجة مرتبة، فخمة، ومقنعة من أول نظرة.</p>
+                    <div class="tagRow">
+                        <span class="tag" data-ar="تشطيب نظيف" data-he="גימור נקי">تشطيب نظيف</span>
+                        <span class="tag" data-ar="سرعة بالحجز" data-he="הזמנה מהירה">سرعة بالحجز</span>
+                        <span class="tag" data-ar="مناسب للجوال" data-he="מותאם למובייל">مناسب للجوال</span>
+                    </div>
+                </article>
+            </div>
+        </section>
 
-            header {
-                padding: 80px 10px;
-            }
+        <section class="ctaCard">
+            <div>
+                <h3 data-ar="جاهز نجهز سيارتك؟" data-he="מוכן להכין את הרכב שלך?">جاهز نجهز سيارتك؟</h3>
+                <p data-ar="إحجز من الواتساب أو جرّب ألوان الـ PPF أولًا، وبعدها كمل معنا على الخيار اللي ناسبك." data-he="הזמן דרך וואטסאפ או נסה קודם את צבעי ה-PPF, ואז המשך איתנו לאפשרות שמתאימה לך.">إحجز من الواتساب أو جرّب ألوان الـ PPF أولًا، وبعدها كمل معنا على الخيار اللي ناسبك.</p>
+            </div>
+            <div class="cardActions">
+                <a href="https://wa.me/972533044605?text=مرحبا%20اريد%20التواصل" target="_blank" class="btnWhatsapp" data-ar="تواصل مباشر" data-he="יצירת קשר">تواصل مباشر</a>
+                <a href="ppf-preview.html" class="btnGhost" data-ar="معاينة الألوان" data-he="תצוגת צבעים">معاينة الألوان</a>
+            </div>
+        </section>
 
-            .service-box {
-                width: 90%;
-            }
+        <footer class="siteFooter">© 2025 Gloss Boss Detailing</footer>
+    </div>
 
-            header h1 {
-                font-size: 22px;
-            }
-
-            header p {
-                font-size: 14px;
-            }
-        }
-
-        /* زر اللغة */
-        .lang-btn {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 999;
-            padding: 8px 12px;
-            border: none;
-            background: #333;
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-    </style>
+    <a href="https://wa.me/972533044605?text=مرحبا%20اريد%20التواصل" target="_blank" class="whatsappFloat" aria-label="WhatsApp">💬</a>
 
     <script>
-        let isArabic = true;
+        function applyLanguage(lang) {
+            document.documentElement.lang = lang;
+            document.body.dir = "rtl";
+            document.querySelectorAll("[data-ar]").forEach((el) => {
+                const nextValue = el.dataset[lang];
+                if (typeof nextValue === "string") {
+                    el.textContent = nextValue;
+                }
+            });
+            localStorage.setItem("lang", lang);
+        }
 
         function toggleLanguage() {
-            isArabic = !isArabic;
-
-            document.body.dir = "rtl";
-
-            if (isArabic) {
-                document.documentElement.lang = "ar";
-                location.reload();
-
-            } else {
-                document.documentElement.lang = "he";
-
-                document.querySelectorAll("*").forEach(el => {
-                    if (el.children.length === 0) {
-                        if (el.innerText) {
-                            el.innerText = translateToHebrew(el.innerText);
-                        }
-                    }
-                });
-            }
+            const current = localStorage.getItem("lang") || "ar";
+            applyLanguage(current === "ar" ? "he" : "ar");
         }
 
-        /* ترجمة النصوص */
-        function translateToHebrew(text) {
-
-            const map = [
-                ["Gloss Boss Detailing", "Gloss Boss Detailing"],
-                ["حماية • لمعان • فخامة", "הגנה • ברק • יוקרה"],
-
-                ["احجز الآن", "הזמן עכשיו"],
-                ["شوف أعمالنا", "צפה בעבודות"],
-                ["شراء وطلب منتجات", "מוצרים והזמנות"],
-
-                ["موقعنا", "המיקום שלנו"],
-                ["اضغط على الزر لفتح الموقع على Waze:", "לחץ על הכפתור לפתיחת Waze:"],
-                ["افتح Waze", "פתח Waze"],
-
-                ["خدماتنا", "השירותים שלנו"],
-
-                ["PPF", "PPF"],
-                ["بوليش نانو", "פוליש ננו"],
-                ["قزاز أسود", "חלונות כהים"],
-                ["أمور إضافية", "שירותים נוספים"],
-
-                ["من نحن", "אודותינו"],
-
-                ["حماية كاملة لطلاء السيارة ضد الخدوش والصدمات الخفيفة",
-                    "הגנה מלאה לצבע הרכב מפני שריטות ופגיעות קלות"],
-
-                ["إزالة الخدوش الخفيفة ولمعان نانو يدوم طويلاً",
-                    "הסרת שריטות קלות וברק ננו שמחזיק לאורך זמן"],
-
-                ["تظليل حراري عالي الجودة مع حماية من الأشعة",
-                    "הצללה תרמית איכותית עם הגנה מקרני השמש"],
-
-                ["سبويلر، شفه، خياطة ستيرنج، وغيرها",
-                    "ספוילר, שפה, תפירת הגה ועוד"],
-
-                ["Gloss Boss Detailing متخصصون في العناية الفاخرة بالسيارات، نقدم أعلى معايير الجودة باستخدام أفضل المنتجات والتقنيات الحديثة.",
-                    "Gloss Boss Detailing מתמחים בטיפוח רכבים יוקרתי, אנו מספקים סטנדרטים גבוהים תוך שימוש במוצרים ובטכנולוגיות המתקדמות ביותר."],
-                ["احجز خدمة PPF", "הזמינו שרות PPF"],
-                ["احجز خدمة פוליש ננו", "הזמינו שרות פוליש ננו"],
-                ["احجز خدمة إضافية", "הזמינו שירות נוסף"]
-            ];
-
-            let result = text;
-
-            map.forEach(item => {
-                result = result.replaceAll(item[0], item[1]);
-            });
-
-            return result;
-        }
+        applyLanguage(localStorage.getItem("lang") || "ar");
     </script>
-
-</head>
-
-<body>
-
-    <!-- زر اللغة (تم نقله من head) -->
-    <button onclick="toggleLanguage()" class="lang-btn">🌐تغيير اللغه/שנה שפה</button>
-    <header>
-
-        <h1>Gloss Boss Detailing</h1>
-        <p id="subtitle">حماية • لمعان • فخامة</p>
-
-        <a href="https://wa.me/972533044605?text=مرحبا%20اريد%20الحجز"
-           target="_blank" class="whatsapp-btn">
-            احجز الآن
-        </a>
-
-        <br><br>
-
-        <a href="HtmlPage5.html">
-            <button style="padding:10px 16px;">شوف أعمالنا 🔥</button>
-        </a>
-
-        <a href="HtmlPage6.html">
-            <button style="padding:10px 16px;">شراء وطلب منتجات 🔥</button>
-        </a>
-<a href="ppf-preview.html">
-            <button style="padding:10px 16px;">ال ppf على سيارتك🔥</button>
-</a>
-    </header>
-
-    <section style="text-align:center;">
-        <h2>موقعنا</h2>
-        <p>اضغط على الزر لفتح الموقع على Waze:</p>
-
-        <a href="https://waze.com/ul/hsvc4gmwpk" target="_blank">
-            <button>افتح Waze</button>
-        </a>
-    </section>
-
-    <section>
-        <h2 style="text-align:center;">خدماتنا</h2>
-
-        <div class="services ">
-
-            <div class="service-box ">
-                <h3>PPF</h3>
-                <p>حماية كاملة لطلاء السيارة ضد الخدوش والصدمات الخفيفة</p>
-                <a href="https://wa.me/972533044605?text=PPF" target="_blank">
-                    <button>احجز خدمة PPF</button>
-                </a>
-            </div>
-
-            <div class="service-box ">
-                <h3>بوليش نانو</h3>
-                <p>إزالة الخدوش الخفيفة ولمعان نانو يدوم طويلاً</p>
-                <a href="https://wa.me/972533044605?text=بوليش%20نانو" target="_blank">
-                    <button>احجز خدمة بوليش نانو</button>
-                </a>
-            </div>
-
-            <div class="service-box ">
-                <h3>قزاز أسود</h3>
-                <p>تظليل حراري عالي الجودة مع حماية من الأشعة</p>
-                <a href="https://wa.me/972533044605?text=قزاز%20أسود" target="_blank">
-                    <button>احجز خدمة القزاز الأسود</button>
-                </a>
-            </div>
-
-            <div class="service-box" >
-                <h3>أمور إضافية</h3>
-                <p>سبويلر، شفه، خياطة ستيرنج، وغيرها</p>
-                <a href="https://wa.me/972533044605?text=إضافات" target="_blank">
-                    <button>احجز خدمة إضافية</button>
-                </a>
-            </div>
-
-        </div>
-    </section>
-
-    <section>
-        <h2>من نحن</h2>
-        <p>
-            Gloss Boss Detailing متخصصون في العناية الفاخرة بالسيارات،
-            نقدم أعلى معايير الجودة باستخدام أفضل المنتجات والتقنيات الحديثة.
-        </p>
-    </section>
-
-    <footer style="text-align:center; padding:10px;">
-        © 2025 Gloss Boss Detailing
-    </footer>
-
-    <!-- زر واتساب عائم -->
-    <a href="https://wa.me/972533044605?text=مرحبا%20اريد%20التواصل"
-       target="_blank"
-       class="whatsapp-float">
-        💬
-    </a>
-
 </body>
 </html>

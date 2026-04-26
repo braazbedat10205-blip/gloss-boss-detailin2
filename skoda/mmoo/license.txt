@@ -1,0 +1,8 @@
+Model Information:
+* title:	Skoda Superb
+* source:	https://sketchfab.com/3d-models/skoda-superb-2d6363dd7ea7408f82efd160534455a7
+* author:	KOElkast1007 (https://sketchfab.com/koelkastasbers)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works
