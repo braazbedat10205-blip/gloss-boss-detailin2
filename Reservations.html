@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08111b">
+  <title>الحجوزات | Gloss Boss</title>
+  <link rel="stylesheet" href="portal.css">
+</head>
+<body class="portalPage">
+  <div class="pageWrap">
+    <header class="pageNav">
+      <a class="brandBlock" href="index.html">
+        <span class="brandMark">GB</span>
+        <span class="brandText">
+          <strong>Gloss Boss Detailing</strong>
+          <span>نظام الحجز والمواعيد</span>
+        </span>
+      </a>
+
+      <div class="navActions">
+        <a class="navButton ghostAction" href="index.html">الرئيسية</a>
+        <a id="adminLink" class="navButton ghostAction hidden" href="admin.html">الإدارة</a>
+        <span id="userBadge" class="userBadge hidden"></span>
+        <button id="logoutBtn" type="button" class="navButton">تسجيل خروج</button>
+      </div>
+    </header>
+
+    <main class="stack">
+      <section class="heroPanel">
+        <span class="hintBadge">الحجز أونلاين</span>
+        <h1>اختر الخدمة، الموعد، واترك رقمك لتأكيد الحجز.</h1>
+        <p>
+          أي موعد يتم حجزه يصبح مقفول فورًا على باقي الزبائن، لذلك إذا كان الدور محجوز سيظهر مباشرة
+          باللون الأحمر ولن يمكن اختياره.
+        </p>
+
+        <div class="heroMeta">
+          <span class="hintBadge">تأكيد عبر الهاتف</span>
+          <span class="hintBadge">منع تضارب المواعيد</span>
+          <span class="hintBadge">صاحب المحل يشوفه من صفحة الإدارة</span>
+        </div>
+      </section>
+
+      <section class="panel panelGrid">
+        <div class="bookingSummary">
+          <div>
+            <span class="hintBadge">الأدوار المتاحة</span>
+            <h2 class="sectionTitle">المواعيد</h2>
+            <p>اختر تاريخًا أولًا، وبعدها حدد الدور المناسب. الأزرق متاح، الأحمر محجوز.</p>
+          </div>
+
+          <div id="slots" class="slotGrid"></div>
+
+          <div class="noteCard">
+            <strong>الموعد المختار</strong>
+            <p id="selectionText">اختر خدمة وتاريخ ثم اضغط على الوقت المناسب.</p>
+          </div>
+
+          <div class="noteCard">
+            <strong>مهم</strong>
+            <p>
+              بعد إرسال الطلب، سيتم حفظه بحالة <strong>بانتظار التأكيد</strong> وسيتواصل معك صاحب المحل
+              على الرقم الذي تضعه هنا.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <div>
+            <span class="hintBadge">بيانات الحجز</span>
+            <h2 class="sectionTitle">املأ المعلومات</h2>
+          </div>
+
+          <form id="bookingForm" class="formGrid">
+            <div class="fieldGroup">
+              <label class="fieldLabel" for="customerName">الاسم</label>
+              <input id="customerName" class="fieldInput" type="text" placeholder="اسم الزبون" autocomplete="name">
+            </div>
+
+            <div class="fieldGroup">
+              <label class="fieldLabel" for="phoneNumber">رقم الهاتف</label>
+              <input id="phoneNumber" class="fieldInput" type="tel" placeholder="مثال: 05xxxxxxxx" autocomplete="tel">
+            </div>
+
+            <div class="fieldGroup">
+              <label class="fieldLabel" for="serviceSelect">الخدمة</label>
+              <select id="serviceSelect" class="fieldSelect">
+                <option style="color: black;" value="PPF">PPF</option>
+                <option style="color: black;" value="Nano Polish">Nano Polish</option>
+                <option style="color: black;" value="قزاز أسود">قزاز أسود</option>
+                <option style="color: black;" value="خياطة مقود">خياطة مقود</option>
+                <option style="color: black;" value="إضافات">إضافات</option>
+              </select>
+            </div>
+
+            <div class="fieldGroup">
+              <label class="fieldLabel" for="bookingDate">التاريخ</label>
+              <input id="bookingDate" class="fieldInput" type="date">
+            </div>
+
+            <div class="fieldGroup">
+              <label class="fieldLabel" for="vehicleName">نوع السيارة أو الموديل</label>
+              <input id="vehicleName" class="fieldInput" type="text" placeholder="اختياري">
+            </div>
+
+            <div class="fieldGroup">
+              <label class="fieldLabel" for="notes">ملاحظات إضافية</label>
+              <textarea id="notes" class="fieldTextarea" placeholder="مثال: لون السيارة، طلب معين، أو أي ملاحظة"></textarea>
+            </div>
+
+            <button id="bookBtn" class="primaryAction" type="submit">تأكيد طلب الحجز</button>
+          </form>
+
+          <div id="messageBox" class="messageBox">اختر الخدمة والتاريخ والوقت ثم أرسل الطلب.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import {
+      collection,
+      doc,
+      getDocs,
+      query,
+      runTransaction,
+      serverTimestamp,
+      where,
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { db } from "./firebase-config.js";
+    import {
+      getUserProfile,
+      isAdmin,
+      logoutAndGo,
+      mapFirebaseError,
+      requireUser,
+      saveUserProfile,
+    } from "./app-auth.js";
+
+    const WORK_TIMES = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
+
+    const bookingForm = document.getElementById("bookingForm");
+    const customerNameInput = document.getElementById("customerName");
+    const phoneNumberInput = document.getElementById("phoneNumber");
+    const serviceSelect = document.getElementById("serviceSelect");
+    const bookingDateInput = document.getElementById("bookingDate");
+    const vehicleNameInput = document.getElementById("vehicleName");
+    const notesInput = document.getElementById("notes");
+    const slotsContainer = document.getElementById("slots");
+    const selectionText = document.getElementById("selectionText");
+    const messageBox = document.getElementById("messageBox");
+    const bookBtn = document.getElementById("bookBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const adminLink = document.getElementById("adminLink");
+    const userBadge = document.getElementById("userBadge");
+
+    let currentUser = null;
+    let selectedTime = "";
+    let bookedTimes = new Set();
+
+    currentUser = await requireUser({ messageCode: "reservation_required" });
+    if (!currentUser) {
+      throw new Error("AUTH_REQUIRED");
+    }
+
+    const admin = await isAdmin(currentUser);
+    if (admin) {
+      adminLink.classList.remove("hidden");
+    }
+
+    userBadge.textContent = currentUser.displayName || currentUser.email || "مستخدم";
+    userBadge.classList.remove("hidden");
+    logoutBtn.addEventListener("click", () => logoutAndGo());
+
+    await hydrateCustomerData();
+
+    bookingDateInput.min = getTodayString();
+    bookingDateInput.addEventListener("change", loadSlots);
+    serviceSelect.addEventListener("change", updateSelectionText);
+    bookingForm.addEventListener("submit", createBooking);
+
+    applyServiceQuery();
+    renderSlots();
+    updateSelectionText();
+
+    async function hydrateCustomerData() {
+      const profile = await getUserProfile(currentUser.uid);
+
+      if (profile?.name) {
+        customerNameInput.value = profile.name;
+      } else if (currentUser.displayName) {
+        customerNameInput.value = currentUser.displayName;
+      }
+
+      if (profile?.phone) {
+        phoneNumberInput.value = profile.phone;
+      }
+    }
+
+    function applyServiceQuery() {
+      const service = new URLSearchParams(window.location.search).get("service");
+
+      if (!service) {
+        return;
+      }
+
+      const option = Array.from(serviceSelect.options).find((entry) => entry.value === service);
+      if (option) {
+        serviceSelect.value = service;
+      }
+    }
+
+    async function loadSlots() {
+      const selectedDate = bookingDateInput.value;
+
+      if (!selectedDate) {
+        bookedTimes = new Set();
+        selectedTime = "";
+        renderSlots();
+        updateSelectionText();
+        return;
+      }
+
+      setMessage("جاري فحص المواعيد المتاحة...", "info");
+
+      try {
+        const slotQuery = query(collection(db, "bookingSlots"), where("date", "==", selectedDate));
+        const snapshot = await getDocs(slotQuery);
+        const nextBookedTimes = new Set();
+
+        snapshot.forEach((documentSnapshot) => {
+          nextBookedTimes.add(documentSnapshot.data().time);
+        });
+
+        bookedTimes = nextBookedTimes;
+
+        if (selectedTime && bookedTimes.has(selectedTime)) {
+          selectedTime = "";
+          setMessage("الموعد الذي اخترته انحجز الآن. اختر موعدًا آخر.", "error");
+        }
+
+        renderSlots();
+        updateSelectionText();
+      } catch (error) {
+        setMessage("تعذر تحميل المواعيد الآن. حاول مرة ثانية.", "error");
+      }
+    }
+
+    function renderSlots() {
+      slotsContainer.innerHTML = "";
+
+      WORK_TIMES.forEach((time) => {
+        const isBooked = bookedTimes.has(time);
+        const isSelected = selectedTime === time;
+        const slotButton = document.createElement("button");
+
+        slotButton.type = "button";
+        slotButton.className = "slotButton";
+        slotButton.dataset.state = isBooked ? "booked" : (isSelected ? "selected" : "free");
+        slotButton.disabled = isBooked;
+        slotButton.textContent = isBooked ? `${time} - محجوز` : time;
+
+        if (!isBooked) {
+          slotButton.addEventListener("click", () => {
+            selectedTime = time;
+            renderSlots();
+            updateSelectionText();
+          });
+        }
+
+        slotsContainer.appendChild(slotButton);
+      });
+    }
+
+    async function createBooking(event) {
+      event.preventDefault();
+
+      const customerName = customerNameInput.value.trim();
+      const phone = phoneNumberInput.value.trim();
+      const service = serviceSelect.value;
+      const date = bookingDateInput.value;
+      const vehicle = vehicleNameInput.value.trim();
+      const notes = notesInput.value.trim();
+
+      if (!customerName || !phone || !date || !selectedTime) {
+        setMessage("كمل الاسم، رقم الهاتف، التاريخ، والوقت.", "error");
+        return;
+      }
+
+      if (!/^[0-9+\-\s]{7,20}$/.test(phone)) {
+        setMessage("رقم الهاتف غير صحيح. اكتب رقمًا صالحًا حتى يتم التأكيد.", "error");
+        return;
+      }
+
+      const slotKey = buildSlotKey(date, selectedTime);
+      const bookingRef = doc(db, "bookings", slotKey);
+      const slotRef = doc(db, "bookingSlots", slotKey);
+      const profileRef = doc(db, "users", currentUser.uid);
+
+      toggleBusy(true);
+
+      try {
+        await runTransaction(db, async (transaction) => {
+          const slotSnapshot = await transaction.get(slotRef);
+
+          if (slotSnapshot.exists()) {
+            throw new Error("SLOT_ALREADY_BOOKED");
+          }
+
+          transaction.set(slotRef, {
+            slotKey,
+            date,
+            time: selectedTime,
+            service,
+            userId: currentUser.uid,
+            createdAt: serverTimestamp(),
+          });
+
+          transaction.set(bookingRef, {
+            slotKey,
+            date,
+            time: selectedTime,
+            service,
+            customerName,
+            phone,
+            vehicle,
+            notes,
+            status: "pending",
+            userId: currentUser.uid,
+            userEmail: currentUser.email || "",
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
+
+          transaction.set(
+            profileRef,
+            {
+              uid: currentUser.uid,
+              email: currentUser.email || "",
+              name: customerName,
+              phone,
+              updatedAt: serverTimestamp(),
+            },
+            { merge: true }
+          );
+        });
+
+        await saveUserProfile(currentUser, { name: customerName, phone });
+        bookedTimes.add(selectedTime);
+        selectedTime = "";
+        setMessage("تم إرسال الحجز بنجاح. سنتواصل معك على الرقم لتأكيد الموعد.", "success");
+        notesInput.value = "";
+        renderSlots();
+      } catch (error) {
+        if (error.message === "SLOT_ALREADY_BOOKED") {
+          bookedTimes.add(selectedTime);
+          selectedTime = "";
+          renderSlots();
+          updateSelectionText();
+          setMessage("هذا الدور محجوز بالفعل. اختر موعدًا آخر.", "error");
+          return;
+        }
+
+        setMessage(mapFirebaseError(error), "error");
+      } finally {
+        toggleBusy(false);
+        updateSelectionText();
+      }
+    }
+
+    function updateSelectionText() {
+      const date = bookingDateInput.value;
+      const service = serviceSelect.value;
+
+      if (!date || !selectedTime) {
+        selectionText.textContent = "اختر خدمة وتاريخ ثم اضغط على الوقت المناسب.";
+        return;
+      }
+
+      selectionText.textContent = `الخدمة: ${service} | التاريخ: ${date} | الوقت: ${selectedTime}`;
+    }
+
+    function setMessage(text, type = "info") {
+      messageBox.textContent = text;
+      messageBox.className = `messageBox is-${type}`;
+    }
+
+    function toggleBusy(isBusy) {
+      bookBtn.disabled = isBusy;
+      bookBtn.textContent = isBusy ? "جاري حفظ الحجز..." : "تأكيد طلب الحجز";
+    }
+
+    function buildSlotKey(date, time) {
+      return `${date}_${time.replace(":", "-")}`;
+    }
+
+    function getTodayString() {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+  </script>
+</body>
+</html>

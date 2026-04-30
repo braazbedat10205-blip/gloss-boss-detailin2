@@ -1,0 +1,12 @@
+# Browser automation / preview temp data
+.edge-*/
+.edge-profile/
+.edge-verify-dom-*.html
+view-*.png
+dom-*.html
+*-dom.txt
+
+# Editor / OS noise
+.vscode/
+Thumbs.db
+.DS_Store

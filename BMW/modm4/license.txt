@@ -1,0 +1,11 @@
+Model Information:
+* title:	2019 BMW M2 Competition
+* source:	https://sketchfab.com/3d-models/2019-bmw-m2-competition-5107e598e6244992809298e4c1ca5f4f
+* author:	Galaxy Car Showroom (https://sketchfab.com/adrianaflak09)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "2019 BMW M2 Competition" (https://sketchfab.com/3d-models/2019-bmw-m2-competition-5107e598e6244992809298e4c1ca5f4f) by Galaxy Car Showroom (https://sketchfab.com/adrianaflak09) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

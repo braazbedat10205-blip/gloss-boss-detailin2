@@ -1,0 +1,679 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Manrope:wght@600;700;800&display=swap");
+
+:root {
+  --bg: #06101b;
+  --bg-deep: #03070d;
+  --panel: rgba(9, 15, 26, 0.86);
+  --panel-strong: rgba(13, 20, 34, 0.96);
+  --line: rgba(230, 237, 247, 0.1);
+  --text: #f3f7ff;
+  --muted: #9eabbe;
+  --accent: #d6b06b;
+  --accent-strong: #f2ca7f;
+  --cool: #68d9ff;
+  --cool-strong: #9fe8ff;
+  --success: #2fd977;
+  --danger: #ff6a7a;
+  --warning: #ffcf66;
+  --shadow: 0 28px 72px rgba(0, 0, 0, 0.3);
+  --radius-xl: 28px;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --font-display: "Manrope", "Cairo", sans-serif;
+  --font-body: "Cairo", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body.portalPage {
+  margin: 0;
+  min-height: 100vh;
+  direction: rtl;
+  font-family: var(--font-body);
+  color: var(--text);
+  background:
+    radial-gradient(circle at top right, rgba(104, 217, 255, 0.17), transparent 24%),
+    radial-gradient(circle at top left, rgba(214, 176, 107, 0.12), transparent 22%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+}
+
+body.portalPage::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.95), transparent 88%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.pageWrap {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 20px 0 44px;
+}
+
+.pageWrap.narrow {
+  width: min(1040px, calc(100% - 28px));
+}
+
+.pageNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(7, 11, 19, 0.72);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+}
+
+.brandBlock {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brandMark {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: #08111c;
+  background: linear-gradient(135deg, var(--accent-strong), var(--cool-strong));
+}
+
+.brandText strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 15px;
+}
+
+.brandText span {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.navActions,
+.inlineActions,
+.toolbarActions,
+.statusActions,
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.navButton,
+.primaryAction,
+.secondaryAction,
+.ghostAction,
+.textAction,
+.slotButton,
+.filterField {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.navButton,
+.secondaryAction,
+.ghostAction,
+.textAction {
+  padding: 11px 18px;
+  cursor: pointer;
+}
+
+.navButton,
+.secondaryAction,
+.ghostAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  border-color: var(--line);
+}
+
+.navButton.primary,
+.primaryAction {
+  background: linear-gradient(135deg, var(--accent), var(--cool));
+  color: #07111b;
+  font-weight: 800;
+}
+
+.primaryAction {
+  width: 100%;
+  min-height: 52px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.secondaryAction {
+  background: rgba(47, 217, 119, 0.1);
+  border-color: rgba(47, 217, 119, 0.22);
+  color: #b1f5cb;
+}
+
+.ghostAction {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.textAction {
+  background: transparent;
+  color: var(--cool-strong);
+  border-color: rgba(104, 217, 255, 0.15);
+}
+
+.navButton:hover,
+.primaryAction:hover,
+.secondaryAction:hover,
+.ghostAction:hover,
+.textAction:hover,
+.slotButton:hover,
+.statusButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
+}
+
+.userBadge,
+.statusBadge,
+.hintBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.stack {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.heroPanel,
+.panel,
+.authHero {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+}
+
+.heroPanel,
+.authHero {
+  overflow: hidden;
+}
+
+.heroPanel {
+  padding: 28px;
+  display: grid;
+  gap: 14px;
+  background:
+    linear-gradient(135deg, rgba(104, 217, 255, 0.1), rgba(214, 176, 107, 0.08)),
+    var(--panel-strong);
+}
+
+.heroPanel h1,
+.panel h2,
+.authHero h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  line-height: 1.1;
+}
+
+.heroPanel h1,
+.authHero h1 {
+  font-size: clamp(32px, 5vw, 56px);
+}
+
+.heroPanel p,
+.panel p,
+.authHero p,
+.fieldHint,
+.emptyState p {
+  color: var(--muted);
+  line-height: 1.9;
+}
+
+.heroMeta,
+.heroList,
+.summaryList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.panel {
+  padding: 24px;
+}
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.96fr) minmax(280px, 1.04fr);
+  gap: 18px;
+}
+
+.authLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.94fr) minmax(360px, 0.86fr);
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.authHero {
+  padding: 32px;
+  background:
+    linear-gradient(180deg, rgba(9, 15, 26, 0.28), rgba(9, 15, 26, 0.88)),
+    url("glos.jpeg") center/cover no-repeat;
+}
+
+.authHero .heroList {
+  margin-top: 18px;
+}
+
+.authCard {
+  display: grid;
+  gap: 18px;
+}
+
+.modeSwitch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.modeButton {
+  min-height: 48px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.modeButton.is-active {
+  color: #07111b;
+  background: linear-gradient(135deg, var(--accent-strong), var(--cool-strong));
+  font-weight: 800;
+}
+
+.formGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.fieldGroup {
+  display: grid;
+  gap: 8px;
+}
+
+.fieldLabel {
+  font-size: 14px;
+  color: #eaf1fb;
+}
+
+.fieldInput,
+.fieldSelect,
+.fieldTextarea,
+.filterField {
+  width: 100%;
+  min-height: 50px;
+  padding: 13px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  outline: none;
+}
+
+.fieldTextarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.fieldInput::placeholder,
+.fieldTextarea::placeholder {
+  color: #7f8aa0;
+}
+
+.fieldInput:focus,
+.fieldSelect:focus,
+.fieldTextarea:focus,
+.filterField:focus {
+  border-color: rgba(104, 217, 255, 0.5);
+  box-shadow: 0 0 0 4px rgba(104, 217, 255, 0.08);
+}
+
+.bookingSummary {
+  display: grid;
+  gap: 14px;
+}
+
+.slotGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
+}
+
+.slotButton {
+  min-height: 58px;
+  padding: 10px 14px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+.slotButton[data-state="free"] {
+  background: rgba(104, 217, 255, 0.08);
+  border-color: rgba(104, 217, 255, 0.28);
+}
+
+.slotButton[data-state="selected"] {
+  color: #07111b;
+  background: linear-gradient(135deg, var(--accent-strong), var(--cool-strong));
+  border-color: transparent;
+  font-weight: 800;
+}
+
+.slotButton[data-state="booked"] {
+  cursor: not-allowed;
+  color: #ffd2d7;
+  background: rgba(255, 106, 122, 0.12);
+  border-color: rgba(255, 106, 122, 0.28);
+}
+
+.slotButton:disabled {
+  opacity: 0.9;
+}
+
+.messageBox {
+  min-height: 48px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+}
+
+.messageBox.is-success {
+  color: #b4f8cf;
+  border-color: rgba(47, 217, 119, 0.2);
+  background: rgba(47, 217, 119, 0.08);
+}
+
+.messageBox.is-error {
+  color: #ffd1d6;
+  border-color: rgba(255, 106, 122, 0.2);
+  background: rgba(255, 106, 122, 0.08);
+}
+
+.messageBox.is-info {
+  color: #d8eefe;
+  border-color: rgba(104, 217, 255, 0.16);
+  background: rgba(104, 217, 255, 0.08);
+}
+
+.statsGrid,
+.bookingGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.statsGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.statCard,
+.bookingCard,
+.emptyState,
+.noteCard {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.statCard {
+  padding: 18px;
+}
+
+.statCard strong {
+  display: block;
+  font-size: 28px;
+  font-family: var(--font-display);
+}
+
+.statCard span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.bookingGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bookingCard {
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.bookingHead,
+.bookingMeta,
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bookingHead h3,
+.sectionTitle {
+  margin: 0;
+  font-family: var(--font-display);
+}
+
+.bookingMeta {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.detailList {
+  display: grid;
+  gap: 10px;
+}
+
+.detailRow {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detailRow:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.detailLabel {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.detailValue {
+  text-align: left;
+  word-break: break-word;
+}
+
+.statusBadge.pending {
+  color: #ffe3a9;
+  border-color: rgba(255, 207, 102, 0.18);
+  background: rgba(255, 207, 102, 0.08);
+}
+
+.statusBadge.confirmed {
+  color: #b6f6ff;
+  border-color: rgba(104, 217, 255, 0.2);
+  background: rgba(104, 217, 255, 0.08);
+}
+
+.statusBadge.completed {
+  color: #b4f8cf;
+  border-color: rgba(47, 217, 119, 0.22);
+  background: rgba(47, 217, 119, 0.08);
+}
+
+.statusBadge.cancelled {
+  color: #ffd4d9;
+  border-color: rgba(255, 106, 122, 0.22);
+  background: rgba(255, 106, 122, 0.08);
+}
+
+.statusButton {
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.statusButton[data-action="confirm"] {
+  border-color: rgba(104, 217, 255, 0.22);
+  color: #c8f4ff;
+}
+
+.statusButton[data-action="complete"] {
+  border-color: rgba(47, 217, 119, 0.22);
+  color: #b4f8cf;
+}
+
+.statusButton[data-action="cancel"] {
+  border-color: rgba(255, 106, 122, 0.22);
+  color: #ffd4d9;
+}
+
+.emptyState {
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.noteCard {
+  padding: 18px;
+}
+
+.filterBar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 960px) {
+  .panelGrid,
+  .authLayout,
+  .bookingGrid,
+  .statsGrid,
+  .filterBar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .pageWrap,
+  .pageWrap.narrow {
+    width: calc(100% - 16px);
+  }
+
+  .pageNav,
+  .heroPanel,
+  .panel,
+  .authHero,
+  .bookingCard,
+  .statCard,
+  .noteCard,
+  .emptyState {
+    border-radius: 22px;
+    padding: 16px;
+  }
+
+  .pageNav {
+    border-radius: 24px;
+  }
+
+  .navButton,
+  .primaryAction,
+  .secondaryAction,
+  .ghostAction,
+  .textAction,
+  .userBadge {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .navActions,
+  .inlineActions,
+  .toolbarActions,
+  .statusActions,
+  .cardActions {
+    width: 100%;
+  }
+
+  .slotGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .detailRow {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .detailValue {
+    text-align: right;
+  }
+}

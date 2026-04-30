@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08111b">
+  <title>تسجيل الدخول | Gloss Boss</title>
+  <link rel="stylesheet" href="portal.css">
+</head>
+<body class="portalPage">
+  <div class="pageWrap narrow">
+    <header class="pageNav">
+      <a class="brandBlock" href="login.html">
+        <span class="brandMark">GB</span>
+        <span class="brandText">
+          <strong>Gloss Boss Detailing</strong>
+          <span>دخول العميل وصلاحية صاحب المحل</span>
+        </span>
+      </a>
+
+      <div class="navActions">
+        <a class="navButton ghostAction" href="ppf-preview.html">معاينة PPF</a>
+      </div>
+    </header>
+
+    <main class="authLayout">
+      <section class="authHero">
+        <span class="hintBadge">نظام الحجز الجديد</span>
+        <h1>سجل دخولك ثم أكمل للحجز أو متابعة الموقع.</h1>
+        <p>
+          بعد تسجيل الدخول، الزبون يدخل على الصفحة الرئيسية ثم يختار الخدمة والموعد من صفحة الحجوزات.
+          وصفحة الإدارة تبقى فقط لصاحب المحل بعد تفعيل صلاحية الـ UID داخل Firebase.
+        </p>
+
+        <div class="heroList">
+          <span class="hintBadge">حجز PPF</span>
+          <span class="hintBadge">Nano Polish</span>
+          <span class="hintBadge">قزاز أسود</span>
+          <span class="hintBadge">منع تضارب المواعيد</span>
+          <span class="hintBadge">رقم هاتف إجباري</span>
+        </div>
+      </section>
+
+      <section class="panel authCard">
+        <div>
+          <span class="hintBadge">الحساب</span>
+          <h2>ابدأ من هنا</h2>
+          <p>إذا كنت أول مرة، اعمل حساب جديد. وإذا عندك حساب، سجل دخول مباشرة.</p>
+        </div>
+
+        <div class="modeSwitch">
+          <button type="button" id="loginModeBtn" class="modeButton is-active">تسجيل دخول</button>
+          <button type="button" id="signupModeBtn" class="modeButton">إنشاء حساب</button>
+        </div>
+
+        <form id="authForm" class="formGrid">
+          <div id="nameGroup" class="fieldGroup hidden">
+            <label class="fieldLabel" for="fullName">الاسم الكامل</label>
+            <input id="fullName" class="fieldInput" type="text" placeholder="مثال: محمد أحمد" autocomplete="name">
+          </div>
+
+          <div class="fieldGroup">
+            <label class="fieldLabel" for="email">البريد الإلكتروني</label>
+            <input id="email" class="fieldInput" type="email" placeholder="name@example.com" autocomplete="email">
+          </div>
+
+          <div class="fieldGroup">
+            <label class="fieldLabel" for="password">كلمة المرور</label>
+            <input id="password" class="fieldInput" type="password" placeholder="6 أحرف أو أكثر" autocomplete="current-password">
+          </div>
+
+          <div id="confirmGroup" class="fieldGroup hidden">
+            <label class="fieldLabel" for="confirmPassword">تأكيد كلمة المرور</label>
+            <input id="confirmPassword" class="fieldInput" type="password" placeholder="أعد كتابة كلمة المرور" autocomplete="new-password">
+          </div>
+
+          <button id="submitBtn" class="primaryAction" type="submit">تسجيل الدخول</button>
+        </form>
+
+        <div class="inlineActions">
+          <button id="resetPasswordBtn" type="button" class="textAction">نسيت كلمة المرور؟</button>
+          <button id="resendVerificationBtn" type="button" class="textAction hidden">إعادة إرسال رابط التفعيل</button>
+        </div>
+
+        <div id="messageBox" class="messageBox">  • إذا ما وصلك إيميل التفعيل أو استرجاع كلمة المرور، افحص صندوق <strong>Spam</strong>.<br>
+    • وإذا لقيت الرسالة داخل Spam، اضغط <strong>Not Spam</strong> عشان تصير توصلك الرسائل بشكل طبيعي.
+</p></div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import {
+      createUserWithEmailAndPassword,
+      sendEmailVerification,
+      sendPasswordResetEmail,
+      signInWithEmailAndPassword,
+      signOut,
+      updateProfile,
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { auth, authReady } from "./firebase-config.js";
+    import {
+      mapFirebaseError,
+      messageFromCode,
+      readMessageCode,
+      saveUserProfile,
+      waitForUser,
+    } from "./app-auth.js";
+
+    const authForm = document.getElementById("authForm");
+    const loginModeBtn = document.getElementById("loginModeBtn");
+    const signupModeBtn = document.getElementById("signupModeBtn");
+    const submitBtn = document.getElementById("submitBtn");
+    const resetPasswordBtn = document.getElementById("resetPasswordBtn");
+    const resendVerificationBtn = document.getElementById("resendVerificationBtn");
+    const messageBox = document.getElementById("messageBox");
+    const nameGroup = document.getElementById("nameGroup");
+    const confirmGroup = document.getElementById("confirmGroup");
+    const fullNameInput = document.getElementById("fullName");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+
+    const viewState = {
+      mode: "login",
+      canResendVerification: false,
+    };
+
+    await authReady.catch(() => {});
+
+    const existingUser = await waitForUser();
+    if (existingUser?.emailVerified) {
+      window.location.replace("index.html");
+    }
+
+    if (existingUser && !existingUser.emailVerified) {
+      viewState.canResendVerification = true;
+      resendVerificationBtn.classList.remove("hidden");
+      setMessage("فعّل بريدك الإلكتروني أولًا. إذا لم يصلك الرابط، أرسله مرة ثانية.", "info");
+    } else {
+      const urlMessage = messageFromCode(readMessageCode());
+      if (urlMessage) {
+        setMessage(urlMessage, "info");
+      }
+    }
+
+    loginModeBtn.addEventListener("click", () => setMode("login"));
+    signupModeBtn.addEventListener("click", () => setMode("signup"));
+    authForm.addEventListener("submit", handleSubmit);
+    resetPasswordBtn.addEventListener("click", handlePasswordReset);
+    resendVerificationBtn.addEventListener("click", resendVerificationEmail);
+
+    function setMode(mode) {
+      viewState.mode = mode;
+      const signupMode = mode === "signup";
+
+      nameGroup.classList.toggle("hidden", !signupMode);
+      confirmGroup.classList.toggle("hidden", !signupMode);
+      loginModeBtn.classList.toggle("is-active", !signupMode);
+      signupModeBtn.classList.toggle("is-active", signupMode);
+      submitBtn.textContent = signupMode ? "إنشاء الحساب" : "تسجيل الدخول";
+
+      if (!signupMode) {
+        confirmPasswordInput.value = "";
+      }
+    }
+
+    async function handleSubmit(event) {
+      event.preventDefault();
+
+      if (viewState.mode === "signup") {
+        await createAccount();
+        return;
+      }
+
+      await login();
+    }
+
+    async function createAccount() {
+      const fullName = fullNameInput.value.trim();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+
+      if (!fullName) {
+        setMessage("اكتب الاسم الكامل.", "error");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setMessage("تأكيد كلمة المرور غير مطابق.", "error");
+        return;
+      }
+
+      toggleBusy(true);
+
+      try {
+        const credential = await createUserWithEmailAndPassword(auth, email, password);
+
+        await updateProfile(credential.user, { displayName: fullName });
+        await saveUserProfile(credential.user, { name: fullName });
+        await sendEmailVerification(credential.user);
+        await signOut(auth);
+
+        viewState.canResendVerification = false;
+        resendVerificationBtn.classList.add("hidden");
+        setMode("login");
+        authForm.reset();
+        setMessage("تم إنشاء الحساب. تحقق من بريدك الإلكتروني ثم سجل دخولك.", "success");
+      } catch (error) {
+        setMessage(mapFirebaseError(error), "error");
+      } finally {
+        toggleBusy(false);
+      }
+    }
+
+    async function login() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      toggleBusy(true);
+
+      try {
+        const credential = await signInWithEmailAndPassword(auth, email, password);
+
+        if (!credential.user.emailVerified) {
+          viewState.canResendVerification = true;
+          resendVerificationBtn.classList.remove("hidden");
+          setMessage("الحساب موجود لكن البريد غير مفعل. فعل الإيميل أولًا أو أعد إرسال الرابط.", "info");
+          return;
+        }
+
+        setMessage("تم تسجيل الدخول بنجاح. يتم تحويلك الآن...", "success");
+        window.setTimeout(() => {
+          window.location.replace("index.html");
+        }, 700);
+      } catch (error) {
+        setMessage(mapFirebaseError(error), "error");
+      } finally {
+        toggleBusy(false);
+      }
+    }
+
+    async function handlePasswordReset() {
+      const email = emailInput.value.trim();
+
+      if (!email) {
+        setMessage("اكتب البريد الإلكتروني أولًا لإرسال رابط إعادة التعيين.", "error");
+        return;
+      }
+
+      try {
+        await sendPasswordResetEmail(auth, email);
+        setMessage("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك.", "success");
+      } catch (error) {
+        setMessage(mapFirebaseError(error), "error");
+      }
+    }
+
+    async function resendVerificationEmail() {
+      const currentUser = auth.currentUser;
+
+      if (!currentUser) {
+        setMessage("سجل الدخول أولًا بالحساب غير المفعل ثم أعد إرسال الرابط.", "error");
+        return;
+      }
+
+      try {
+        await sendEmailVerification(currentUser);
+        setMessage("تم إرسال رابط التفعيل مرة ثانية.", "success");
+      } catch (error) {
+        setMessage(mapFirebaseError(error), "error");
+      }
+    }
+
+    function toggleBusy(isBusy) {
+      submitBtn.disabled = isBusy;
+      submitBtn.textContent = isBusy
+        ? (viewState.mode === "signup" ? "جاري إنشاء الحساب..." : "جاري تسجيل الدخول...")
+        : (viewState.mode === "signup" ? "إنشاء الحساب" : "تسجيل الدخول");
+    }
+
+    function setMessage(text, type = "info") {
+      messageBox.textContent = text;
+      messageBox.className = `messageBox is-${type}`;
+    }
+  </script>
+</body>
+</html>
