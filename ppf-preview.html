@@ -237,6 +237,36 @@
         gap: 10px;
     }
 
+    .colorToolbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(140px, 0.8fr);
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .toolbarInput,
+    .toolbarSelect {
+        width: 100%;
+        min-height: 44px;
+        padding: 11px 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        outline: none;
+        font-size: 13px;
+    }
+
+    .toolbarInput::placeholder {
+        color: var(--muted);
+    }
+
+    .toolbarInput:focus,
+    .toolbarSelect:focus {
+        border-color: rgba(102, 200, 255, 0.42);
+        box-shadow: 0 0 0 3px rgba(102, 200, 255, 0.1);
+    }
+
     .colorBtn {
         position: relative;
         display: flex;
@@ -368,6 +398,10 @@
         .colorGrid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
+
+        .colorToolbar {
+            grid-template-columns: 1fr;
+        }
     }
 
     @media (max-width: 640px) {
@@ -437,6 +471,12 @@
         <div class="colorsCard">
             <h3 class="cardTitle">ألوان وخامات PPF</h3>
             <p id="paletteHint" class="cardHint">ألوان أساسية، باتوني، ودرجات PPF واقعية كثيرة مثل Nardo Grey وBrooklyn Grey وMiami Blue وBritish Racing Green وBatuni Grey.</p>
+            <div class="colorToolbar">
+                <input id="colorSearch" class="toolbarInput" type="search" placeholder="ابحث عن اللون أو الخامة">
+                <select id="finishFilter" class="toolbarSelect">
+                    <option value="all">كل الخامات</option>
+                </select>
+            </div>
             <div id="colorGrid" class="colorGrid"></div>
         </div>
 
@@ -510,7 +550,20 @@ const carModels = {
     }
 };
 
-const COLOR_PRESETS = [
+const FINISH_PROFILES = {
+    "Gloss": { roughness: 0.1, metalness: 0.14, clearcoat: 1.0, clearcoatRoughness: 0.04, envMapIntensity: 1.1, reflectivity: 0.92, emissiveIntensity: 0.04 },
+    "Matte": { roughness: 0.8, metalness: 0.08, clearcoat: 0.05, clearcoatRoughness: 0.58, envMapIntensity: 0.28, reflectivity: 0.34, emissiveIntensity: 0.0 },
+    "Satin": { roughness: 0.58, metalness: 0.14, clearcoat: 0.22, clearcoatRoughness: 0.42, envMapIntensity: 0.44, reflectivity: 0.56, emissiveIntensity: 0.01 },
+    "Metallic": { roughness: 0.2, metalness: 0.64, clearcoat: 0.9, clearcoatRoughness: 0.08, envMapIntensity: 1.04, reflectivity: 0.88, emissiveIntensity: 0.02 },
+    "OEM Style": { roughness: 0.28, metalness: 0.18, clearcoat: 0.78, clearcoatRoughness: 0.14, envMapIntensity: 0.82, reflectivity: 0.8, emissiveIntensity: 0.02 },
+    "Pearl": { roughness: 0.1, metalness: 0.14, clearcoat: 1.0, clearcoatRoughness: 0.04, envMapIntensity: 1.08, reflectivity: 0.94, emissiveIntensity: 0.04 },
+    "Candy": { roughness: 0.1, metalness: 0.15, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.14, reflectivity: 0.92, emissiveIntensity: 0.06 },
+    "Chrome": { roughness: 0.1, metalness: 0.96, clearcoat: 0.82, clearcoatRoughness: 0.08, envMapIntensity: 1.5, reflectivity: 1.0, emissiveIntensity: 0.0 },
+    "Clear": { roughness: 0.04, metalness: 0.02, clearcoat: 1.0, clearcoatRoughness: 0.02, envMapIntensity: 1.2, reflectivity: 0.98, emissiveIntensity: 0.04, transparent: true, opacity: 0.78, transmission: 0.14 },
+    "Stealth": { roughness: 0.76, metalness: 0.1, clearcoat: 0.12, clearcoatRoughness: 0.6, envMapIntensity: 0.32, reflectivity: 0.4, emissiveIntensity: 0.0 }
+};
+
+const BASE_COLOR_PRESETS = [
     { key: "gloss", label: "Gloss White", finish: "Gloss", hex: "#ffffff", textColor: "#111", roughness: 0.08, metalness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.2, emissiveIntensity: 0.06 },
     { key: "matte", label: "Matte Black", finish: "Matte", hex: "#000000", roughness: 1.0, metalness: 0.08, clearcoat: 0.0, envMapIntensity: 0.15, emissiveIntensity: 0.0 },
     { key: "satin", label: "Satin Silver", finish: "Satin", hex: "#8c939b", textColor: "#111", roughness: 0.62, metalness: 0.2, clearcoat: 0.3, clearcoatRoughness: 0.46, envMapIntensity: 0.4, emissiveIntensity: 0.02 },
@@ -625,6 +678,68 @@ const COLOR_PRESETS = [
     { key: "aubergine", label: "Aubergine", finish: "Metallic", hex: "#432544", roughness: 0.2, metalness: 0.34, clearcoat: 0.86, clearcoatRoughness: 0.12, envMapIntensity: 0.78, emissiveIntensity: 0.02 },
     { key: "frozenamethyst", label: "Frozen Amethyst", finish: "Satin", hex: "#6d5d88", roughness: 0.6, metalness: 0.16, clearcoat: 0.22, clearcoatRoughness: 0.42, envMapIntensity: 0.42, emissiveIntensity: 0.01 }
 ];
+
+const EXTRA_COLOR_PRESETS = [
+    { key: "silverstonegrey", label: "Silverstone Grey", finish: "OEM Style", hex: "#878a8e", textColor: "#111" },
+    { key: "dolomitesilver", label: "Dolomite Silver", finish: "Metallic", hex: "#a8adb1", textColor: "#111" },
+    { key: "moonsilver", label: "Moon Silver", finish: "Gloss", hex: "#c5ccd3", textColor: "#111" },
+    { key: "anthracitemetal", label: "Anthracite Metal", finish: "Metallic", hex: "#4d5157" },
+    { key: "satinanthracite", label: "Satin Anthracite", finish: "Satin", hex: "#50555c" },
+    { key: "frozenanthracite", label: "Frozen Anthracite", finish: "Matte", hex: "#55585c" },
+    { key: "grigiotelesto", label: "Grigio Telesto", finish: "OEM Style", hex: "#7d7f82", textColor: "#111" },
+    { key: "grigionimbus", label: "Grigio Nimbus", finish: "Metallic", hex: "#7a7c80", textColor: "#111" },
+    { key: "slategrey", label: "Slate Grey", finish: "Satin", hex: "#6b7075" },
+    { key: "frozenpuregrey", label: "Frozen Pure Grey", finish: "Matte", hex: "#8f9397", textColor: "#111" },
+    { key: "quartzgrey", label: "Quartz Grey", finish: "Metallic", hex: "#676a6d" },
+    { key: "moonstonegrey", label: "Moonstone Grey", finish: "OEM Style", hex: "#979d9f", textColor: "#111" },
+    { key: "alpinawhite", label: "Alpina White", finish: "Gloss", hex: "#f5f5f1", textColor: "#111" },
+    { key: "mineralwhite", label: "Mineral White", finish: "Pearl", hex: "#f4f2ec", textColor: "#111" },
+    { key: "frozenivory", label: "Frozen Ivory", finish: "Matte", hex: "#d8d5cd", textColor: "#111" },
+    { key: "satinivory", label: "Satin Ivory", finish: "Satin", hex: "#e0ddd5", textColor: "#111" },
+    { key: "chalkwhiteoem", label: "Chalk White", finish: "OEM Style", hex: "#ece7df", textColor: "#111" },
+    { key: "lightbone", label: "Light Bone", finish: "Satin", hex: "#d3ccc0", textColor: "#111" },
+    { key: "obsidianchrome", label: "Obsidian Chrome", finish: "Chrome", gradient: "linear-gradient(135deg, #80858d 0%, #2a2d33 45%, #949aa2 100%)", hex: "#505760" },
+    { key: "titaniumchrome", label: "Titanium Chrome", finish: "Chrome", gradient: "linear-gradient(135deg, #edf1f4 0%, #9da7b1 45%, #d9e0e6 100%)", textColor: "#111", hex: "#bcc5cc" },
+    { key: "smokedchrome", label: "Smoked Chrome", finish: "Chrome", gradient: "linear-gradient(135deg, #b0b6bd 0%, #585e66 45%, #c4cad0 100%)", textColor: "#111", hex: "#70767d" },
+    { key: "brushedaluminum", label: "Brushed Aluminum", finish: "Metallic", hex: "#b6bcc1", textColor: "#111" },
+    { key: "tungstensilver", label: "Tungsten Silver", finish: "Metallic", hex: "#8b9094", textColor: "#111" },
+    { key: "icedgraphite", label: "Iced Graphite", finish: "Satin", hex: "#70767c", textColor: "#111" },
+    { key: "frozenstone", label: "Frozen Stone", finish: "Matte", hex: "#908a82", textColor: "#111" },
+    { key: "sandbeigegloss", label: "Sand Beige", finish: "Gloss", hex: "#b29d81", textColor: "#111" },
+    { key: "duneolive", label: "Dune Olive", finish: "Satin", hex: "#7d7961", textColor: "#111" },
+    { key: "desertkhaki", label: "Desert Khaki", finish: "Matte", hex: "#857d69", textColor: "#111" },
+    { key: "mochaash", label: "Mocha Ash", finish: "Satin", hex: "#7e6f66", textColor: "#111" },
+    { key: "satinespresso", label: "Satin Espresso", finish: "Satin", hex: "#5a463d" },
+    { key: "walnutbrown", label: "Walnut Brown", finish: "Gloss", hex: "#5d4037" },
+    { key: "havanabrown", label: "Havana Brown", finish: "Metallic", hex: "#634b40" },
+    { key: "frozenbrownstone", label: "Frozen Brownstone", finish: "Matte", hex: "#75675c", textColor: "#111" },
+    { key: "auroragreen", label: "Aurora Green", finish: "Gloss", hex: "#0b5b46" },
+    { key: "malachitegreen", label: "Malachite Green", finish: "Metallic", hex: "#0f634c" },
+    { key: "satinforest", label: "Satin Forest", finish: "Satin", hex: "#375544" },
+    { key: "frozenforest", label: "Frozen Forest", finish: "Matte", hex: "#3d4c42" },
+    { key: "pinegreen", label: "Pine Green", finish: "OEM Style", hex: "#24463d" },
+    { key: "oakgreenmetal", label: "Oak Green", finish: "Metallic", hex: "#315044" },
+    { key: "mintsatin", label: "Mint Satin", finish: "Satin", hex: "#7db7ab", textColor: "#111" },
+    { key: "petrolblue", label: "Petrol Blue", finish: "Metallic", hex: "#244b66" },
+    { key: "atlanticblue", label: "Atlantic Blue", finish: "Gloss", hex: "#1d6ba3" },
+    { key: "frozenatlantic", label: "Frozen Atlantic", finish: "Matte", hex: "#607d96", textColor: "#111" },
+    { key: "satingulfblue", label: "Satin Gulf Blue", finish: "Satin", hex: "#5b88b8", textColor: "#111" },
+    { key: "denimblue", label: "Denim Blue", finish: "OEM Style", hex: "#5d7da5", textColor: "#111" },
+    { key: "steelblue", label: "Steel Blue", finish: "Metallic", hex: "#5f7489", textColor: "#111" },
+    { key: "frozenmidnight", label: "Frozen Midnight", finish: "Matte", hex: "#273343" },
+    { key: "merlotred", label: "Merlot Red", finish: "Metallic", hex: "#6b1f29" },
+    { key: "garnetred", label: "Garnet Red", finish: "Gloss", hex: "#8c1c24" },
+    { key: "satinburgundy", label: "Satin Burgundy", finish: "Satin", hex: "#6f3640" },
+    { key: "frozengarnet", label: "Frozen Garnet", finish: "Matte", hex: "#6b353c" },
+    { key: "copperred", label: "Copper Red", finish: "Metallic", hex: "#8e4336" },
+    { key: "frozenorange", label: "Frozen Orange", finish: "Matte", hex: "#ad643a", textColor: "#111" },
+    { key: "satinpapaya", label: "Satin Papaya", finish: "Satin", hex: "#d47a45", textColor: "#111" },
+    { key: "dakaryellow", label: "Dakar Yellow", finish: "Gloss", hex: "#d6b52b", textColor: "#111" },
+    { key: "satinmustard", label: "Satin Mustard", finish: "Satin", hex: "#b99637", textColor: "#111" },
+    { key: "frozenmustard", label: "Frozen Mustard", finish: "Matte", hex: "#9c8441", textColor: "#111" }
+];
+
+const COLOR_PRESETS = normalizeColorCatalog([...BASE_COLOR_PRESETS, ...EXTRA_COLOR_PRESETS]);
 
 const GENERIC_BODY_INCLUDE = ["paint", "coloured", "colored", "carpaint", "body", "door", "hood", "bonnet", "bumper", "fender", "quarter", "trunk", "boot", "tailgate", "panel", "roof", "side", "ext_", "exterior", "car_body", "vehicle_body", "auto_body", "chassis_body"];
 const GENERIC_BODY_EXCLUDE = [
@@ -926,6 +1041,8 @@ const modelSelect = document.getElementById("modelSelect");
 const viewer = document.getElementById("viewer");
 const colorGrid = document.getElementById("colorGrid");
 const paletteHint = document.getElementById("paletteHint");
+const colorSearch = document.getElementById("colorSearch");
+const finishFilter = document.getElementById("finishFilter");
 const statusText = document.getElementById("statusText");
 const debugPanel = document.getElementById("debugPanel");
 
@@ -934,6 +1051,8 @@ let car;
 let bodyMaterialEntries = [];
 let lastMaterialScan = [];
 let currentCarPath = "";
+let currentColorSearch = "";
+let currentFinishFilter = "all";
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x05070d);
@@ -1065,6 +1184,57 @@ function getPreset(key) {
     return COLOR_PRESETS.find((item) => item.key === key);
 }
 
+function getFinishProfile(finish) {
+    return FINISH_PROFILES[finish] || FINISH_PROFILES["Gloss"];
+}
+
+function normalizeColorCatalog(catalog) {
+    return catalog.map((preset) => {
+        const finishProfile = getFinishProfile(preset.finish);
+        const normalizedPreset = {
+            ...finishProfile,
+            ...preset
+        };
+
+        normalizedPreset.textColor = preset.textColor || inferTextColor(preset.hex);
+        normalizedPreset.envMapIntensity = Math.max(normalizedPreset.envMapIntensity ?? 1.0, finishProfile.envMapIntensity ?? 1.0);
+
+        if (preset.finish === "Chrome") {
+            normalizedPreset.metalness = Math.max(preset.metalness ?? 0, 0.92);
+            normalizedPreset.roughness = Math.min(preset.roughness ?? 0.12, 0.14);
+            normalizedPreset.clearcoat = Math.max(preset.clearcoat ?? 0.72, 0.72);
+        }
+
+        if (preset.finish === "Matte") {
+            normalizedPreset.clearcoat = Math.min(preset.clearcoat ?? 0.08, 0.08);
+            normalizedPreset.envMapIntensity = Math.min(normalizedPreset.envMapIntensity, 0.32);
+        }
+
+        if (preset.finish === "Satin") {
+            normalizedPreset.envMapIntensity = Math.min(normalizedPreset.envMapIntensity, 0.58);
+        }
+
+        return normalizedPreset;
+    });
+}
+
+function inferTextColor(hex) {
+    if (!hex) {
+        return "#ffffff";
+    }
+
+    const safeHex = hex.replace("#", "");
+    const expandedHex = safeHex.length === 3
+        ? safeHex.split("").map((char) => char + char).join("")
+        : safeHex;
+    const red = Number.parseInt(expandedHex.slice(0, 2), 16);
+    const green = Number.parseInt(expandedHex.slice(2, 4), 16);
+    const blue = Number.parseInt(expandedHex.slice(4, 6), 16);
+    const brightness = (red * 299 + green * 587 + blue * 114) / 1000;
+
+    return brightness > 160 ? "#111111" : "#ffffff";
+}
+
 function srgbHexToLinearColor(hex) {
     return new THREE.Color(hex).convertSRGBToLinear();
 }
@@ -1083,6 +1253,10 @@ function buildCarMaterial(preset) {
         opacity: preset.opacity ?? 1.0,
         transmission: preset.transmission ?? 0.0
     });
+
+    if ("reflectivity" in material) {
+        material.reflectivity = preset.reflectivity ?? material.reflectivity;
+    }
 
     if ((preset.emissiveIntensity ?? 0) > 0) {
         material.emissive = baseColor.clone();
@@ -1341,6 +1515,9 @@ function cloneAndTuneMaterial(sourceMaterial, preset) {
     material.side = THREE.FrontSide;
     material.envMap = env;
     material.envMapIntensity = preset.envMapIntensity ?? 1.0;
+    if ("reflectivity" in material) {
+        material.reflectivity = preset.reflectivity ?? material.reflectivity;
+    }
     if ("emissive" in material) {
         material.emissive.set(0x000000);
         material.emissiveIntensity = 0;
@@ -1421,8 +1598,9 @@ function setActiveColorButton() {
 
 function renderColorButtons() {
     colorGrid.innerHTML = "";
+    const visiblePresets = getVisibleColorPresets();
 
-    COLOR_PRESETS.forEach((preset) => {
+    visiblePresets.forEach((preset) => {
         const button = document.createElement("button");
         button.className = "colorBtn";
         button.dataset.color = preset.key;
@@ -1451,10 +1629,41 @@ function renderColorButtons() {
 
     if (paletteHint) {
         const finishCount = new Set(COLOR_PRESETS.map((preset) => preset.finish)).size;
-        paletteHint.textContent = `كتالوج موسّع يضم ${COLOR_PRESETS.length} لونًا عبر ${finishCount} خامات مختلفة، من درجات OEM الهادية إلى الكروم والساتن والألوان الجريئة.`;
+        const totalColors = COLOR_PRESETS.length;
+        const visibleCount = visiblePresets.length;
+        const filterLabel = currentFinishFilter === "all" ? "كل الخامات" : currentFinishFilter;
+        paletteHint.textContent = `كتالوج PPF واقعي يضم ${totalColors} لونًا. المعروض الآن ${visibleCount} لونًا ضمن ${filterLabel} عبر ${finishCount} خامات.`;
     }
 
     setActiveColorButton();
+}
+
+function getVisibleColorPresets() {
+    const searchTerm = currentColorSearch.trim().toLowerCase();
+
+    return COLOR_PRESETS.filter((preset) => {
+        const matchesFinish = currentFinishFilter === "all" || preset.finish === currentFinishFilter;
+        const matchesSearch = !searchTerm || `${preset.label} ${preset.finish}`.toLowerCase().includes(searchTerm);
+        return matchesFinish && matchesSearch;
+    });
+}
+
+function populateFinishFilter() {
+    const finishes = Array.from(new Set(COLOR_PRESETS.map((preset) => preset.finish)));
+    const priorityOrder = ["Gloss", "Matte", "Satin", "Metallic", "OEM Style", "Pearl", "Candy", "Chrome", "Clear", "Stealth"];
+    const sortedFinishes = [
+        ...priorityOrder.filter((finish) => finishes.includes(finish)),
+        ...finishes.filter((finish) => !priorityOrder.includes(finish)).sort((left, right) => left.localeCompare(right))
+    ];
+
+    finishFilter.innerHTML = '<option value="all">كل الخامات</option>';
+
+    sortedFinishes.forEach((finish) => {
+        const option = document.createElement("option");
+        option.value = finish;
+        option.textContent = finish;
+        finishFilter.appendChild(option);
+    });
 }
 
 function populateModels() {
@@ -1702,6 +1911,16 @@ brandSelect.addEventListener("change", () => {
     updateStatus("اختر الموديل من القائمة.");
 });
 
+colorSearch.addEventListener("input", () => {
+    currentColorSearch = colorSearch.value || "";
+    renderColorButtons();
+});
+
+finishFilter.addEventListener("change", () => {
+    currentFinishFilter = finishFilter.value || "all";
+    renderColorButtons();
+});
+
 modelSelect.addEventListener("change", () => {
     if (modelSelect.value) {
         loadCar(modelSelect.value);
@@ -1716,6 +1935,7 @@ window.addEventListener("resize", () => {
 });
 
 populateBrands();
+populateFinishFilter();
 renderColorButtons();
 applyInitialSelectionFromQuery();
 resizeRenderer();
