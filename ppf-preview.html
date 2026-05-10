@@ -1699,7 +1699,11 @@ function createStudioEnvironmentTexture() {
     return texture;
 }
 
-const renderer = new THREE.WebGLRenderer({ antialias: !LOW_POWER_DEVICE && window.innerWidth > 520, alpha: false, powerPreference: "high-performance" });
+const renderer = new THREE.WebGLRenderer({
+    antialias: !(LOW_POWER_DEVICE && window.innerWidth <= 380),
+    alpha: false,
+    powerPreference: "high-performance"
+});
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.NoToneMapping;
 renderer.toneMappingExposure = 1.0;
@@ -1732,7 +1736,7 @@ const MAX_TEXTURE_ANISOTROPY = Math.max(
     1,
     Math.min(
         typeof renderer.capabilities.getMaxAnisotropy === "function" ? renderer.capabilities.getMaxAnisotropy() : 1,
-        LOW_POWER_DEVICE ? 4 : 8
+        LOW_POWER_DEVICE ? 6 : 8
     )
 );
 
@@ -1776,9 +1780,9 @@ function resizeRenderer() {
     const height = viewer.clientHeight || window.innerHeight;
     const devicePixelRatio = window.devicePixelRatio || 1;
     const targetPixelRatio = LOW_POWER_DEVICE
-        ? 1.05
-        : window.innerWidth <= 640 ? 1.18
-        : window.innerWidth <= 980 ? 1.55
+        ? 1.6
+        : window.innerWidth <= 640 ? 2
+        : window.innerWidth <= 980 ? 1.85
         : 2;
     renderer.setPixelRatio(Math.max(1, Math.min(devicePixelRatio, targetPixelRatio)));
     camera.aspect = width / height;

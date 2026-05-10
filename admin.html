@@ -14,13 +14,14 @@
         <span class="brandMark">GB</span>
         <span class="brandText">
           <strong>Gloss Boss Detailing</strong>
-          <span>لوحة إدارة الحجوزات</span>
+          <span>لوحة إدارة الحجوزات والمنتجات</span>
         </span>
       </a>
 
       <div class="navActions">
         <a class="navButton ghostAction" href="index.html">الرئيسية</a>
-        <a class="navButton ghostAction" href="Reservations.html">الحجوزات</a>
+        <a class="navButton ghostAction" href="#bookingList">الحجوزات</a>
+        <a class="navButton ghostAction" href="#productsPanel">المنتجات</a>
         <span id="userBadge" class="userBadge hidden"></span>
         <button id="logoutBtn" type="button" class="navButton">تسجيل خروج</button>
       </div>
@@ -29,10 +30,10 @@
     <main class="stack">
       <section class="heroPanel">
         <span class="hintBadge">صاحب المحل فقط</span>
-        <h1>كل الحجوزات في مكان واحد.</h1>
+        <h1>إدارة الحجوزات والمنتجات بسرعة.</h1>
         <p>
-          هنا تستطيع مشاهدة الطلبات الجديدة، الاتصال بالزبون لتأكيد الحجز، وتغيير حالة الموعد
-          إلى مؤكد أو منجز أو ملغي. عند إلغاء الموعد، يعود الدور متاحًا للزبائن مباشرة.
+          تابع الحجوزات الجديدة من أول الصفحة، أكد الموعد أو ألغيه أو أنجزه، وبعدها أدر المنتجات بدون ما تضيع وقتك بالتمرير الطويل.
+          عند إلغاء الموعد أو إنهائه يرجع الوقت متاحًا للحجز من جديد.
         </p>
       </section>
 
@@ -86,62 +87,62 @@
         <div id="messageBox" class="messageBox" aria-live="polite">يتم تحميل الحجوزات...</div>
       </section>
 
-      <section class="panel">
+      <section id="bookingList" class="bookingGrid"></section>
+
+      <section id="productsPanel" class="panel">
         <div class="toolbar">
           <div>
-            <span class="hintBadge">Products</span>
-            <h2 class="sectionTitle">Upload product image</h2>
+            <span class="hintBadge">المنتجات</span>
+            <h2 class="sectionTitle">إضافة أو تعديل منتج</h2>
           </div>
           <span id="uploadBadge" class="hintBadge">WebP + Firestore</span>
         </div>
 
         <form id="galleryUploadForm" class="uploadGrid" novalidate>
           <label class="uploadField">
-            <span>Product number</span>
-            <input id="productNumber" class="filterField" type="text" maxlength="40" placeholder="SKU / number">
+            <span>رقم المنتج</span>
+            <input id="productNumber" class="filterField" type="text" maxlength="40" placeholder="SKU / رقم المنتج">
           </label>
           <label class="uploadField">
-            <span>Product title</span>
-            <input id="galleryTitle" class="filterField" type="text" maxlength="80" placeholder="Product title">
+            <span>اسم المنتج</span>
+            <input id="galleryTitle" class="filterField" type="text" maxlength="80" placeholder="اسم المنتج">
           </label>
           <label class="uploadField">
-            <span>Price</span>
-            <input id="productPrice" class="filterField" type="text" maxlength="40" placeholder="Price">
+            <span>السعر</span>
+            <input id="productPrice" class="filterField" type="text" maxlength="40" placeholder="السعر">
           </label>
           <label class="uploadField uploadCheck">
-            <span>Offer</span>
+            <span>عرض</span>
             <label class="checkRow">
               <input id="productOffer" type="checkbox">
-              <span>Show as offer</span>
+              <span>إظهار كعرض</span>
             </label>
           </label>
           <label class="uploadField uploadCheck">
-            <span>Availability</span>
+            <span>التوفر</span>
             <label class="checkRow">
               <input id="productAvailable" type="checkbox" checked>
-              <span>Product available</span>
+              <span>المنتج متوفر</span>
             </label>
           </label>
           <label class="uploadField">
-            <span>Offer text</span>
-            <input id="productOfferText" class="filterField" type="text" maxlength="60" placeholder="Special offer / sale price">
+            <span>نص العرض</span>
+            <input id="productOfferText" class="filterField" type="text" maxlength="60" placeholder="خصم / سعر العرض">
           </label>
           <label class="uploadField">
-            <span>Image file</span>
+            <span>صورة المنتج</span>
             <input id="galleryFile" class="filterField" type="file" accept="image/*">
           </label>
-          <button id="galleryUploadBtn" class="secondaryAction" type="submit">Save product</button>
-          <button id="cancelProductEditBtn" class="ghostAction hidden" type="button">Cancel edit</button>
+          <button id="galleryUploadBtn" class="secondaryAction" type="submit">حفظ المنتج</button>
+          <button id="cancelProductEditBtn" class="ghostAction hidden" type="button">إلغاء التعديل</button>
         </form>
 
-        <div id="uploadMessage" class="messageBox is-info" aria-live="polite">Choose a product photo. It will be resized, converted to WebP, and saved directly in Firestore products.</div>
+        <div id="uploadMessage" class="messageBox is-info" aria-live="polite">اختر صورة المنتج، وسيتم ضغطها وتحويلها إلى WebP ثم حفظها في صفحة المنتجات.</div>
         <div id="galleryAdminGrid" class="adminGalleryGrid"></div>
       </section>
-
-      <section id="bookingList" class="bookingGrid"></section>
     </main>
   </div>
 
-  <script type="module" src="./admin-dashboard.js?v=20260506-products-edit"></script>
+  <script type="module" src="./admin-dashboard.js?v=20260511-admin-bookings-first"></script>
 </body>
 </html>

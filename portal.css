@@ -80,6 +80,9 @@ textarea {
 }
 
 .pageNav {
+  position: sticky;
+  top: 12px;
+  z-index: 30;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -91,6 +94,11 @@ textarea {
   background: rgba(7, 11, 19, 0.72);
   backdrop-filter: blur(16px);
   box-shadow: var(--shadow);
+}
+
+#bookingList,
+#productsPanel {
+  scroll-margin-top: 110px;
 }
 
 .brandBlock {
