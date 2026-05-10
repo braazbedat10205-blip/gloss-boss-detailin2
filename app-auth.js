@@ -124,6 +124,10 @@ export function readMessageCode() {
 }
 
 export function messageFromCode(code) {
+  if (code === "password_reset_done") {
+    return "إذا انتهيت من تغيير كلمة المرور، سجل دخولك من هنا.";
+  }
+
   const messages = {
     login_required: "سجل دخولك أولًا حتى تدخل على الموقع.",
     verify_email: "فعّل البريد الإلكتروني أولًا ثم سجل الدخول.",

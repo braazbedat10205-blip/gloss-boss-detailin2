@@ -37,8 +37,7 @@
 
         <div class="heroMeta">
           <span class="hintBadge">تأكيد عبر الهاتف</span>
-          <span class="hintBadge">منع تضارب المواعيد</span>
-          <span class="hintBadge">صاحب المحل يشوفه من صفحة الإدارة</span>
+          <span class="hintBadge">يرجى الاتصال بنا اذا تريد الغاء الحجز</span>
         </div>
       </section>
 
@@ -139,6 +138,8 @@
     } from "./app-auth.js";
 
     const WORK_TIMES = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
+    const RESERVATION_COLLECTION = "reservations";
+    const LEGACY_BOOKING_COLLECTION = "bookings";
 
     const bookingForm = document.getElementById("bookingForm");
     const customerNameInput = document.getElementById("customerName");
@@ -294,7 +295,8 @@
       }
 
       const slotKey = buildSlotKey(date, selectedTime);
-      const bookingRef = doc(db, "bookings", slotKey);
+      const bookingRef = doc(db, RESERVATION_COLLECTION, slotKey);
+      const legacyBookingRef = doc(db, LEGACY_BOOKING_COLLECTION, slotKey);
       const slotRef = doc(db, "bookingSlots", slotKey);
       const profileRef = doc(db, "users", currentUser.uid);
 
@@ -317,7 +319,7 @@
             createdAt: serverTimestamp(),
           });
 
-          transaction.set(bookingRef, {
+          const bookingPayload = {
             slotKey,
             date,
             time: selectedTime,
@@ -331,7 +333,10 @@
             userEmail: currentUser.email || "",
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
-          });
+          };
+
+          transaction.set(bookingRef, bookingPayload);
+          transaction.set(legacyBookingRef, bookingPayload);
 
           transaction.set(
             profileRef,

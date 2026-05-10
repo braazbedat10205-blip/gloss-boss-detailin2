@@ -73,6 +73,10 @@ video {
     max-width: 100%;
 }
 
+.hidden {
+    display: none !important;
+}
+
 button,
 input,
 select,
@@ -414,6 +418,10 @@ textarea {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.uploadedGalleryGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .productsGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -469,6 +477,222 @@ textarea {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
+}
+
+.reviewsLayout {
+    align-items: start;
+}
+
+.reviewScoreCard {
+    min-width: min(100%, 240px);
+    padding: 18px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.04);
+    display: grid;
+    gap: 10px;
+    box-shadow: var(--shadow-md);
+}
+
+.reviewScoreCard strong {
+    font-family: var(--font-display);
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 1;
+}
+
+.reviewStars {
+    color: #ffd779;
+    letter-spacing: 0.12em;
+    font-size: 20px;
+}
+
+.reviewMetaText {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.reviewFormCard,
+.reviewsColumn {
+    display: grid;
+    gap: 18px;
+}
+
+.reviewForm {
+    display: grid;
+    gap: 14px;
+}
+
+.reviewFieldGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.reviewField,
+.ratingField {
+    display: grid;
+    gap: 8px;
+}
+
+.reviewField span,
+.ratingField legend {
+    color: #eef4ff;
+    font-size: 14px;
+}
+
+.ratingField {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.ratingPicker {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.ratingOption {
+    position: relative;
+    cursor: pointer;
+}
+
+.ratingOption input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.ratingOption span,
+.reviewInput,
+.reviewNotice,
+.reviewToolbar {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.ratingOption span {
+    min-height: 52px;
+    display: grid;
+    place-items: center;
+    color: var(--text);
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ratingOption input:checked + span {
+    color: #09111a;
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-cool-strong));
+    border-color: transparent;
+    font-weight: 800;
+}
+
+.reviewInput {
+    width: 100%;
+    min-height: 50px;
+    padding: 13px 16px;
+    color: var(--text);
+    outline: none;
+}
+
+.reviewInput:focus {
+    border-color: rgba(103, 216, 255, 0.42);
+    box-shadow: 0 0 0 4px rgba(103, 216, 255, 0.08);
+}
+
+.reviewTextarea {
+    min-height: 128px;
+    resize: vertical;
+}
+
+.reviewNotice {
+    padding: 12px 14px;
+    color: var(--muted);
+}
+
+.reviewNotice.is-success {
+    color: #b8f7ce;
+    border-color: rgba(37, 211, 102, 0.2);
+    background: rgba(37, 211, 102, 0.08);
+}
+
+.reviewNotice.is-error {
+    color: #ffd4d8;
+    border-color: rgba(255, 106, 122, 0.22);
+    background: rgba(255, 106, 122, 0.08);
+}
+
+.reviewNotice.is-info {
+    color: #dbeaf9;
+    border-color: rgba(103, 216, 255, 0.18);
+    background: rgba(103, 216, 255, 0.08);
+}
+
+.reviewToolbar {
+    padding: 14px;
+}
+
+.reviewsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.reviewCard {
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: var(--shadow-md);
+    display: grid;
+    gap: 14px;
+}
+
+.reviewCardHeader,
+.reviewCardFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.reviewCardHeader strong {
+    font-family: var(--font-display);
+    font-size: 18px;
+}
+
+.reviewServiceTag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    color: #07121c;
+    font-weight: 800;
+    background: linear-gradient(135deg, rgba(243, 197, 111, 0.96), rgba(150, 229, 255, 0.96));
+}
+
+.reviewCardRating {
+    color: #ffd779;
+    letter-spacing: 0.12em;
+    font-size: 18px;
+}
+
+.reviewCommentText {
+    margin: 0;
+    color: #d8e0ec;
+    line-height: 1.9;
+}
+
+.reviewCardEmpty {
+    grid-column: 1 / -1;
+    text-align: center;
+}
+
+.reviewCardEmpty h3 {
+    margin: 0;
+    font-family: var(--font-display);
 }
 
 .pageHero {
@@ -575,8 +799,25 @@ textarea {
 .galleryFrame img {
     width: 100%;
     aspect-ratio: 4 / 3;
-    object-fit: cover;
     transition: transform 0.24s ease;
+}
+
+.productMedia {
+    min-height: clamp(260px, 26vw, 390px);
+    display: grid;
+    place-items: center;
+}
+
+.productMedia img {
+    aspect-ratio: 1 / 1;
+    height: 100%;
+    max-height: clamp(260px, 26vw, 390px);
+    object-fit: contain;
+    padding: 14px;
+}
+
+.galleryFrame img {
+    object-fit: cover;
 }
 
 .productCard:hover .productMedia img,
@@ -602,6 +843,26 @@ textarea {
     color: #9ff1bd;
     border: 1px solid rgba(37, 211, 102, 0.18);
     font-weight: 700;
+}
+
+.productOfferBadge {
+    width: fit-content;
+    color: #07111b;
+    background: linear-gradient(135deg, var(--accent), var(--accent-cool));
+    border-color: transparent;
+    font-weight: 800;
+}
+
+.productUnavailableBadge {
+    color: #ffd6d6;
+    background: rgba(255, 92, 92, 0.12);
+    border-color: rgba(255, 92, 92, 0.28);
+}
+
+.orderDisabled {
+    opacity: 0.62;
+    cursor: not-allowed;
+    filter: grayscale(0.35);
 }
 
 .infoCard iframe {
@@ -663,6 +924,7 @@ textarea {
     .splitGrid,
     .servicesGrid,
     .featureGrid,
+    .uploadedGalleryGrid,
     .productsGrid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -695,8 +957,11 @@ textarea {
 
     .heroPanel,
     .splitGrid,
+    .reviewFieldGrid,
+    .reviewsGrid,
     .servicesGrid,
     .featureGrid,
+    .uploadedGalleryGrid,
     .productsGrid,
     .videoGrid {
         grid-template-columns: 1fr;
@@ -716,6 +981,14 @@ textarea {
 
     .heroVisual {
         min-height: 360px;
+    }
+
+    .productMedia {
+        min-height: 300px;
+    }
+
+    .productMedia img {
+        max-height: 300px;
     }
 
     .heroContent h1 {
@@ -749,6 +1022,15 @@ textarea {
         padding: 12px;
     }
 
+    .productMedia {
+        min-height: 280px;
+    }
+
+    .productMedia img {
+        max-height: 280px;
+        padding: 10px;
+    }
+
     .brandText strong {
         font-size: 14px;
     }
@@ -759,7 +1041,8 @@ textarea {
     .btnGhost,
     .btnWhatsapp,
     .inlineButton,
-    .order-btn {
+    .order-btn,
+    .reviewSubmit {
         width: 100%;
         min-height: 46px;
     }
@@ -777,8 +1060,13 @@ textarea {
     .videoCard p,
     .productCard p,
     .ctaCard p,
-    .infoCard p {
+    .infoCard p,
+    .reviewCommentText {
         font-size: 13px;
+    }
+
+    .ratingPicker {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .whatsappFloat {

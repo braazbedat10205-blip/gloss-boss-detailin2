@@ -1,4 +1,5 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() {
@@ -10,20 +11,8 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return signedIn() &&
-        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
-    }
-
-    function validText(value, min, max) {
-      return value is string && value.size() >= min && value.size() <= max;
-    }
-
-    function validOptionalText(value, max) {
-      return value == null || (value is string && value.size() <= max);
-    }
-
-    function validPhone(value) {
-      return value is string && value.size() >= 7 && value.size() <= 20;
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
     match /admins/{uid} {
@@ -33,19 +22,7 @@ service cloud.firestore {
 
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();
-      allow create, update: if isOwner(uid)
-        && request.resource.data.uid == uid
-        && request.resource.data.email == request.auth.token.email
-        && validText(request.resource.data.name, 1, 80)
-        && validOptionalText(request.resource.data.phone, 20)
-        && request.resource.data.keys().hasOnly([
-          'uid',
-          'email',
-          'name',
-          'phone',
-          'createdAt',
-          'updatedAt'
-        ]);
+      allow create, update: if isOwner(uid);
       allow delete: if false;
     }
 
@@ -53,18 +30,7 @@ service cloud.firestore {
       allow read: if signedIn();
       allow create: if signedIn()
         && request.resource.data.slotKey == slotKey
-        && request.resource.data.userId == request.auth.uid
-        && validText(request.resource.data.date, 10, 10)
-        && validText(request.resource.data.time, 5, 5)
-        && validText(request.resource.data.service, 1, 60)
-        && request.resource.data.keys().hasOnly([
-          'slotKey',
-          'date',
-          'time',
-          'service',
-          'userId',
-          'createdAt'
-        ]);
+        && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAdmin();
     }
 
@@ -73,63 +39,30 @@ service cloud.firestore {
       allow create: if signedIn()
         && request.resource.data.slotKey == slotKey
         && request.resource.data.userId == request.auth.uid
-        && request.resource.data.userEmail == request.auth.token.email
-        && validText(request.resource.data.date, 10, 10)
-        && validText(request.resource.data.time, 5, 5)
-        && validText(request.resource.data.service, 1, 60)
-        && validText(request.resource.data.customerName, 1, 80)
-        && validPhone(request.resource.data.phone)
-        && validOptionalText(request.resource.data.vehicle, 80)
-        && validOptionalText(request.resource.data.notes, 240)
-        && request.resource.data.status == 'pending'
-        && request.resource.data.keys().hasOnly([
-          'slotKey',
-          'date',
-          'time',
-          'service',
-          'customerName',
-          'phone',
-          'vehicle',
-          'notes',
-          'status',
-          'userId',
-          'userEmail',
-          'createdAt',
-          'updatedAt'
-        ]);
-      allow update: if isAdmin()
-        && request.resource.data.slotKey == resource.data.slotKey
-        && request.resource.data.userId == resource.data.userId
-        && request.resource.data.userEmail == resource.data.userEmail
-        && request.resource.data.date == resource.data.date
-        && request.resource.data.time == resource.data.time
-        && request.resource.data.service == resource.data.service
-        && request.resource.data.customerName == resource.data.customerName
-        && request.resource.data.phone == resource.data.phone
-        && validOptionalText(request.resource.data.vehicle, 80)
-        && validOptionalText(request.resource.data.notes, 240)
-        && (
-          request.resource.data.status == 'pending' ||
-          request.resource.data.status == 'confirmed' ||
-          request.resource.data.status == 'completed' ||
-          request.resource.data.status == 'cancelled'
-        )
-        && request.resource.data.keys().hasOnly([
-          'slotKey',
-          'date',
-          'time',
-          'service',
-          'customerName',
-          'phone',
-          'vehicle',
-          'notes',
-          'status',
-          'userId',
-          'userEmail',
-          'createdAt',
-          'updatedAt'
-        ]);
-      allow delete: if false;
+        && request.resource.data.userEmail == request.auth.token.email;
+      allow update, delete: if isAdmin();
+    }
+
+    match /reservations/{slotKey} {
+      allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow create: if signedIn()
+        && request.resource.data.slotKey == slotKey
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.userEmail == request.auth.token.email;
+      allow update, delete: if isAdmin();
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.userEmail == request.auth.token.email;
+      allow update, delete: if false;
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
     }
   }
 }

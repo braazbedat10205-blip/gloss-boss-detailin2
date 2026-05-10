@@ -65,6 +65,7 @@
           </div>
 
           <div class="toolbarActions">
+            <span id="syncBadge" class="hintBadge">كاش محلي</span>
             <button id="refreshBtn" type="button" class="secondaryAction">تحديث</button>
           </div>
         </div>
@@ -72,286 +73,75 @@
         <div class="filterBar">
           <input id="filterDate" class="filterField" type="date">
           <select id="filterStatus" class="filterField">
-            <option style="color: black;" value="all">كل الحالات</option>
+            <option style="color: black;" value="today">حجوزات اليوم</option>
             <option style="color: black;" value="pending">بانتظار التأكيد</option>
             <option style="color: black;" value="confirmed">مؤكد</option>
             <option style="color: black;" value="completed">منجز</option>
             <option style="color: black;" value="cancelled">ملغي</option>
+            <option style="color: black;" value="all">آخر الحجوزات</option>
           </select>
           <input id="searchTerm" class="filterField" type="search" placeholder="ابحث بالاسم أو الهاتف أو الخدمة">
         </div>
 
-        <div id="messageBox" class="messageBox">يتم تحميل الحجوزات...</div>
+        <div id="messageBox" class="messageBox" aria-live="polite">يتم تحميل الحجوزات...</div>
+      </section>
+
+      <section class="panel">
+        <div class="toolbar">
+          <div>
+            <span class="hintBadge">Products</span>
+            <h2 class="sectionTitle">Upload product image</h2>
+          </div>
+          <span id="uploadBadge" class="hintBadge">WebP + Firestore</span>
+        </div>
+
+        <form id="galleryUploadForm" class="uploadGrid" novalidate>
+          <label class="uploadField">
+            <span>Product number</span>
+            <input id="productNumber" class="filterField" type="text" maxlength="40" placeholder="SKU / number">
+          </label>
+          <label class="uploadField">
+            <span>Product title</span>
+            <input id="galleryTitle" class="filterField" type="text" maxlength="80" placeholder="Product title">
+          </label>
+          <label class="uploadField">
+            <span>Price</span>
+            <input id="productPrice" class="filterField" type="text" maxlength="40" placeholder="Price">
+          </label>
+          <label class="uploadField uploadCheck">
+            <span>Offer</span>
+            <label class="checkRow">
+              <input id="productOffer" type="checkbox">
+              <span>Show as offer</span>
+            </label>
+          </label>
+          <label class="uploadField uploadCheck">
+            <span>Availability</span>
+            <label class="checkRow">
+              <input id="productAvailable" type="checkbox" checked>
+              <span>Product available</span>
+            </label>
+          </label>
+          <label class="uploadField">
+            <span>Offer text</span>
+            <input id="productOfferText" class="filterField" type="text" maxlength="60" placeholder="Special offer / sale price">
+          </label>
+          <label class="uploadField">
+            <span>Image file</span>
+            <input id="galleryFile" class="filterField" type="file" accept="image/*">
+          </label>
+          <button id="galleryUploadBtn" class="secondaryAction" type="submit">Save product</button>
+          <button id="cancelProductEditBtn" class="ghostAction hidden" type="button">Cancel edit</button>
+        </form>
+
+        <div id="uploadMessage" class="messageBox is-info" aria-live="polite">Choose a product photo. It will be resized, converted to WebP, and saved directly in Firestore products.</div>
+        <div id="galleryAdminGrid" class="adminGalleryGrid"></div>
       </section>
 
       <section id="bookingList" class="bookingGrid"></section>
     </main>
   </div>
 
-  <script type="module">
-    import {
-      collection,
-      doc,
-      getDocs,
-      runTransaction,
-      serverTimestamp,
-      updateDoc,
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { db } from "./firebase-config.js";
-    import { logoutAndGo, requireAdmin } from "./app-auth.js";
-
-    const totalCount = document.getElementById("totalCount");
-    const pendingCount = document.getElementById("pendingCount");
-    const confirmedCount = document.getElementById("confirmedCount");
-    const completedCount = document.getElementById("completedCount");
-    const filterDate = document.getElementById("filterDate");
-    const filterStatus = document.getElementById("filterStatus");
-    const searchTerm = document.getElementById("searchTerm");
-    const refreshBtn = document.getElementById("refreshBtn");
-    const bookingList = document.getElementById("bookingList");
-    const messageBox = document.getElementById("messageBox");
-    const userBadge = document.getElementById("userBadge");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    const state = {
-      bookings: [],
-    };
-
-    const currentUser = await requireAdmin();
-    if (!currentUser) {
-      throw new Error("ADMIN_REQUIRED");
-    }
-
-    userBadge.textContent = currentUser.displayName || currentUser.email || "Admin";
-    userBadge.classList.remove("hidden");
-    logoutBtn.addEventListener("click", () => logoutAndGo());
-
-    refreshBtn.addEventListener("click", loadBookings);
-    filterDate.addEventListener("input", renderBookings);
-    filterStatus.addEventListener("change", renderBookings);
-    searchTerm.addEventListener("input", renderBookings);
-    bookingList.addEventListener("click", handleBookingAction);
-
-    await loadBookings();
-
-    async function loadBookings() {
-      refreshBtn.disabled = true;
-      refreshBtn.textContent = "جاري التحديث...";
-      setMessage("يتم تحميل الحجوزات...", "info");
-
-      try {
-        const snapshot = await getDocs(collection(db, "bookings"));
-        state.bookings = snapshot.docs
-          .map((documentSnapshot) => documentSnapshot.data())
-          .sort((left, right) => {
-            const leftKey = `${left.date} ${left.time}`;
-            const rightKey = `${right.date} ${right.time}`;
-            return leftKey.localeCompare(rightKey);
-          });
-
-        renderBookings();
-      } catch (error) {
-        setMessage("تعذر تحميل الحجوزات من Firebase.", "error");
-      } finally {
-        refreshBtn.disabled = false;
-        refreshBtn.textContent = "تحديث";
-      }
-    }
-
-    function renderBookings() {
-      const normalizedSearch = searchTerm.value.trim().toLowerCase();
-      const dateFilter = filterDate.value;
-      const statusFilter = filterStatus.value;
-
-      const filteredBookings = state.bookings.filter((booking) => {
-        const matchesDate = !dateFilter || booking.date === dateFilter;
-        const matchesStatus = statusFilter === "all" || booking.status === statusFilter;
-        const matchesSearch = !normalizedSearch || [
-          booking.customerName,
-          booking.phone,
-          booking.service,
-          booking.userEmail,
-        ].some((value) => String(value || "").toLowerCase().includes(normalizedSearch));
-
-        return matchesDate && matchesStatus && matchesSearch;
-      });
-
-      updateStats(state.bookings);
-
-      if (!filteredBookings.length) {
-        bookingList.innerHTML = `
-          <div class="emptyState">
-            <h3>لا توجد حجوزات مطابقة</h3>
-            <p>جرّب تغيير الفلاتر أو انتظر وصول طلبات جديدة.</p>
-          </div>
-        `;
-        setMessage("تم تحميل الحجوزات.", "success");
-        return;
-      }
-
-      bookingList.innerHTML = filteredBookings.map((booking) => {
-        const statusLabel = getStatusLabel(booking.status);
-        const vehicle = booking.vehicle?.trim() ? booking.vehicle : "غير مذكور";
-        const notes = booking.notes?.trim() ? booking.notes : "لا توجد ملاحظات";
-        const actionButtons = getActionButtons(booking);
-
-        return `
-          <article class="bookingCard">
-            <div class="bookingHead">
-              <h3>${escapeHtml(booking.customerName)}</h3>
-              <span class="statusBadge ${escapeHtml(booking.status)}">${statusLabel}</span>
-            </div>
-
-            <div class="bookingMeta">
-              <span>${escapeHtml(booking.date)} | ${escapeHtml(booking.time)}</span>
-              <span>${escapeHtml(booking.service)}</span>
-            </div>
-
-            <div class="detailList">
-              <div class="detailRow">
-                <span class="detailLabel">الهاتف</span>
-                <span class="detailValue"><a href="tel:${escapeHtml(booking.phone)}">${escapeHtml(booking.phone)}</a></span>
-              </div>
-              <div class="detailRow">
-                <span class="detailLabel">البريد</span>
-                <span class="detailValue">${escapeHtml(booking.userEmail || "-")}</span>
-              </div>
-              <div class="detailRow">
-                <span class="detailLabel">السيارة</span>
-                <span class="detailValue">${escapeHtml(vehicle)}</span>
-              </div>
-              <div class="detailRow">
-                <span class="detailLabel">الملاحظات</span>
-                <span class="detailValue">${escapeHtml(notes)}</span>
-              </div>
-            </div>
-
-            <div class="statusActions">
-              ${actionButtons}
-            </div>
-          </article>
-        `;
-      }).join("");
-
-      setMessage("تم تحميل الحجوزات.", "success");
-    }
-
-    async function handleBookingAction(event) {
-      const button = event.target.closest("[data-action]");
-      if (!button) {
-        return;
-      }
-
-      const action = button.dataset.action;
-      const slotKey = button.dataset.slot;
-
-      if (!slotKey) {
-        return;
-      }
-
-      button.disabled = true;
-
-      try {
-        if (action === "confirm") {
-          await updateDoc(doc(db, "bookings", slotKey), {
-            status: "confirmed",
-            updatedAt: serverTimestamp(),
-          });
-          setMessage("تم تأكيد الحجز.", "success");
-        }
-
-        if (action === "complete") {
-          await updateDoc(doc(db, "bookings", slotKey), {
-            status: "completed",
-            updatedAt: serverTimestamp(),
-          });
-          setMessage("تم تحويل الحجز إلى منجز.", "success");
-        }
-
-        if (action === "cancel") {
-          await runTransaction(db, async (transaction) => {
-            const bookingRef = doc(db, "bookings", slotKey);
-            const slotRef = doc(db, "bookingSlots", slotKey);
-            const bookingSnapshot = await transaction.get(bookingRef);
-
-            if (!bookingSnapshot.exists()) {
-              throw new Error("BOOKING_NOT_FOUND");
-            }
-
-            transaction.update(bookingRef, {
-              status: "cancelled",
-              updatedAt: serverTimestamp(),
-            });
-            transaction.delete(slotRef);
-          });
-
-          setMessage("تم إلغاء الموعد وإعادته كموعد متاح.", "success");
-        }
-
-        await loadBookings();
-      } catch (error) {
-        setMessage("تعذر تحديث حالة الحجز. حاول مرة ثانية.", "error");
-      } finally {
-        button.disabled = false;
-      }
-    }
-
-    function updateStats(bookings) {
-      totalCount.textContent = String(bookings.length);
-      pendingCount.textContent = String(bookings.filter((booking) => booking.status === "pending").length);
-      confirmedCount.textContent = String(bookings.filter((booking) => booking.status === "confirmed").length);
-      completedCount.textContent = String(bookings.filter((booking) => booking.status === "completed").length);
-    }
-
-    function getStatusLabel(status) {
-      const labels = {
-        pending: "بانتظار التأكيد",
-        confirmed: "مؤكد",
-        completed: "منجز",
-        cancelled: "ملغي",
-      };
-
-      return labels[status] || status;
-    }
-
-    function getActionButtons(booking) {
-      const slot = escapeHtml(booking.slotKey);
-
-      if (booking.status === "cancelled") {
-        return `<span class="hintBadge">الموعد ملغي</span>`;
-      }
-
-      if (booking.status === "completed") {
-        return `<span class="hintBadge">تم إنجاز الخدمة</span>`;
-      }
-
-      if (booking.status === "confirmed") {
-        return `
-          <button type="button" class="statusButton" data-action="complete" data-slot="${slot}">تم الإنجاز</button>
-          <button type="button" class="statusButton" data-action="cancel" data-slot="${slot}">إلغاء الموعد</button>
-        `;
-      }
-
-      return `
-        <button type="button" class="statusButton" data-action="confirm" data-slot="${slot}">تأكيد</button>
-        <button type="button" class="statusButton" data-action="complete" data-slot="${slot}">تم الإنجاز</button>
-        <button type="button" class="statusButton" data-action="cancel" data-slot="${slot}">إلغاء الموعد</button>
-      `;
-    }
-
-    function setMessage(text, type = "info") {
-      messageBox.textContent = text;
-      messageBox.className = `messageBox is-${type}`;
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
-    }
-  </script>
+  <script type="module" src="./admin-dashboard.js?v=20260506-products-edit"></script>
 </body>
 </html>

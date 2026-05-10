@@ -1,0 +1,11 @@
+Model Information:
+* title:	Volkswagen Golf GTI 2021
+* source:	https://sketchfab.com/3d-models/volkswagen-golf-gti-2021-82a55610817646539ce699a6aaa5dda0
+* author:	ItsDiyor (https://sketchfab.com/ItsDiyor)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Volkswagen Golf GTI 2021" (https://sketchfab.com/3d-models/volkswagen-golf-gti-2021-82a55610817646539ce699a6aaa5dda0) by ItsDiyor (https://sketchfab.com/ItsDiyor) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

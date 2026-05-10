@@ -10,3 +10,12 @@ dom-*.html
 .vscode/
 Thumbs.db
 .DS_Store
+firebase-debug.log
+*.log
+
+# Local function environment secrets
+node_modules/
+functions/node_modules/
+functions/.env
+functions/.env.*
+!functions/.env.example

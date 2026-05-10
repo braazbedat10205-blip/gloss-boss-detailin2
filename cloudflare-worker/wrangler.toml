@@ -1,0 +1,13 @@
+name = "gloss-boss-email"
+main = "email-worker.js"
+compatibility_date = "2026-05-10"
+account_id = "2fec2a9164b0a23d9ac92e29def161e4"
+
+[vars]
+BREVO_SENDER_EMAIL = "bookings@your-domain.com"
+BREVO_SENDER_NAME = "Gloss Boss Detailing"
+APP_URL = "https://gloos-boos-site.firebaseapp.com"
+
+# Do not put BREVO_API_KEY here.
+# Add it as a Cloudflare Worker secret:
+# npx wrangler secret put BREVO_API_KEY

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
@@ -61,6 +61,7 @@
 
     .heroCard,
     .pickerCard,
+    .effectsCard,
     .colorsCard,
     .tipsCard {
         background: var(--panel);
@@ -146,6 +147,12 @@
         gap: 10px;
     }
 
+    .effectsGrid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
     .fieldLabel {
         font-size: 12px;
         color: var(--muted);
@@ -180,6 +187,15 @@
         position: relative;
     }
 
+    #viewer canvas {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        display: block;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
     .viewerOverlay {
         position: absolute;
         top: 18px;
@@ -201,6 +217,115 @@
         color: #eef5ff;
         backdrop-filter: blur(12px);
         font-size: 13px;
+    }
+
+    .viewerControls {
+        position: absolute;
+        right: 18px;
+        bottom: 18px;
+        z-index: 2;
+        display: flex;
+        gap: 10px;
+        pointer-events: auto;
+    }
+
+    .controlBtn {
+        min-width: 44px;
+        min-height: 44px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(10, 12, 20, 0.62);
+        color: #eef5ff;
+        cursor: pointer;
+        backdrop-filter: blur(12px);
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .loadingOverlay {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        background: radial-gradient(circle at center, rgba(102, 200, 255, 0.12), transparent 34%);
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.18s ease;
+    }
+
+    .loadingOverlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .loadingCard {
+        width: min(280px, 82vw);
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(10, 12, 20, 0.72);
+        color: #eef5ff;
+        text-align: center;
+        backdrop-filter: blur(12px);
+    }
+
+    .loadingBar {
+        height: 6px;
+        margin-top: 12px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .loadingBar span {
+        display: block;
+        width: var(--load-progress, 12%);
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #66c8ff, #f3c56f);
+        transition: width 0.2s ease;
+    }
+
+    .fallbackPoster {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: none;
+        place-items: center;
+        padding: 24px;
+        text-align: center;
+        background:
+            linear-gradient(rgba(5, 7, 13, 0.48), rgba(5, 7, 13, 0.78)),
+            url("ppf3.jpeg") center / cover no-repeat;
+    }
+
+    .fallbackPoster.active {
+        display: grid;
+    }
+
+    .fallbackPosterContent {
+        width: min(420px, 86vw);
+        padding: 18px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(10, 12, 20, 0.72);
+        color: #eef5ff;
+        backdrop-filter: blur(12px);
+    }
+
+    .fallbackPosterContent strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 18px;
+    }
+
+    .fallbackPosterContent p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
     }
 
     .statusText {
@@ -336,7 +461,7 @@
     @media (max-width: 980px) {
         .appShell {
             grid-template-columns: 1fr;
-            grid-template-rows: minmax(46svh, 54svh) minmax(46svh, auto);
+            grid-template-rows: minmax(52svh, 60svh) minmax(40svh, auto);
             height: auto;
             min-height: 100svh;
         }
@@ -347,7 +472,7 @@
             padding: 12px;
             border-right: none;
             border-top: 1px solid var(--panel-border);
-            max-height: 50svh;
+            max-height: 46svh;
         }
 
         .viewerWrap {
@@ -356,8 +481,8 @@
         }
 
         #viewer {
-            height: 54svh;
-            min-height: 46svh;
+            height: 60svh;
+            min-height: 52svh;
         }
 
         .viewerOverlay {
@@ -367,8 +492,14 @@
             justify-content: flex-end;
         }
 
+        .viewerControls {
+            right: 12px;
+            bottom: 12px;
+        }
+
         .heroCard,
         .pickerCard,
+        .effectsCard,
         .colorsCard,
         .tipsCard {
             border-radius: 18px;
@@ -402,6 +533,10 @@
         .colorToolbar {
             grid-template-columns: 1fr;
         }
+
+        .effectsGrid {
+            grid-template-columns: 1fr;
+        }
     }
 
     @media (max-width: 640px) {
@@ -410,7 +545,7 @@
         }
 
         .appShell {
-            grid-template-rows: minmax(42svh, 48svh) minmax(52svh, auto);
+            grid-template-rows: minmax(50svh, 58svh) minmax(42svh, auto);
         }
 
         .cardHint,
@@ -430,7 +565,12 @@
         }
 
         .sidePanel {
-            max-height: 56svh;
+            max-height: 48svh;
+        }
+
+        .controlBtn {
+            min-width: 42px;
+            min-height: 42px;
         }
     }
 </style>
@@ -445,13 +585,13 @@
                 <span class="brandBadge">Gloss Boss PPF</span>
             </div>
             <h1>معاينة ألوان PPF على السيارات</h1>
-            <p>اختر السيارة ثم جرّب خامات وألوان PPF المشهورة. التلوين الآن صار يعتمد على اسم القطعة والخامة معًا حتى يركّز على البودي ويتجنب الضو والداخلية والجنطات.</p>
+            <p>اختر السيارة ثم جرّب خامات وألوان PPF مباشرة على المجسم. تم تحسين ملفات السيارات لتظهر أسرع على الجوال.</p>
             <div id="statusText" class="statusText">اختر الماركة والموديل للبدء.</div>
         </div>
 
         <div class="pickerCard">
             <h3 class="cardTitle">اختيار السيارة</h3>
-            <p class="cardHint">اختر الماركة ثم الموديل. سيتم حفظ آخر لون اخترته وتطبيقه على السيارة الجديدة تلقائيًا.</p>
+            <p class="cardHint">ابدأ باختيار الماركة والموديل، ثم جرّب الألوان والخامات من اللوحة.</p>
             <div class="selectGrid">
                 <div>
                     <label class="fieldLabel" for="brandSelect">الماركة</label>
@@ -468,9 +608,45 @@
             </div>
         </div>
 
+        <div class="effectsCard">
+            <h3 class="cardTitle">خيارات إضافية</h3>
+            <p class="cardHint">أضف تظليل الزجاج أو لون البريكات لمعاينة الشكل النهائي للسيارة.</p>
+            <div class="effectsGrid">
+                <div>
+                    <label class="fieldLabel" for="tintSelect">تظليل الزجاج</label>
+                    <select id="tintSelect">
+                        <option value="stock">بدون تظليل</option>
+                        <option value="nano5">خفيف جدًا 5%</option>
+                        <option value="light15">خفيف 15%</option>
+                        <option value="light">خفيف 20%</option>
+                        <option value="medium25">متوسط 25%</option>
+                        <option value="medium">متوسط 35%</option>
+                        <option value="dark50">غامق 50%</option>
+                        <option value="dark">غامق 60%</option>
+                        <option value="limo">أسود قوي 70%</option>
+                        <option value="limo85">أسود قوي جدًا 85%</option>
+
+                    </select>
+                </div>
+                <div>
+                    <label class="fieldLabel" for="brakeColorSelect">لون البريكات</label>
+                    <select id="brakeColorSelect">
+                        <option value="stock">اللون الأصلي</option>
+                        <option value="red">أحمر سبورت</option>
+                        <option value="yellow">أصفر</option>
+                        <option value="blue">أزرق</option>
+                        <option value="orange">برتقالي</option>
+                        <option value="green">أخضر</option>
+                        <option value="black">أسود</option>
+                        <option value="silver">فضي</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <div class="colorsCard">
             <h3 class="cardTitle">ألوان وخامات PPF</h3>
-            <p id="paletteHint" class="cardHint">ألوان أساسية، باتوني، ودرجات PPF واقعية كثيرة مثل Nardo Grey وBrooklyn Grey وMiami Blue وBritish Racing Green وBatuni Grey.</p>
+            <p id="paletteHint" class="cardHint">اختر من مجموعة واسعة من ألوان PPF وخامات Gloss وMatte وSatin وChrome وClear.</p>
             <div class="colorToolbar">
                 <input id="colorSearch" class="toolbarInput" type="search" placeholder="ابحث عن اللون أو الخامة">
                 <select id="finishFilter" class="toolbarSelect">
@@ -481,13 +657,14 @@
         </div>
 
         <div class="tipsCard">
-            <h3 class="cardTitle">ملاحظات سريعة</h3>
-            <ul>
-                <li>الكود صار يقرأ أسماء أجزاء السيارة نفسها مثل body وdoor وhood وbumper وfender وليس أسماء خامات محدودة فقط.</li>
-                <li>أي خامة Body عليها texture لونية يتم فصلها وقت التلوين حتى لا يتحول الرمادي والساتن إلى أبيض.</li>
-                <li>إضافة سيارة جديدة صارت أسهل لأن القواعد العامة أوسع، وتحتاج override فقط إذا كان الموديل اسمه غير واضح جدًا.</li>
-            </ul>
-        </div>
+    <h3 class="cardTitle">قبل الحجز معنا</h3>
+    <ul>
+        <li>المعاينة تقريبية وتساعدك على اختيار اللون والخامة قبل التواصل.</li>
+        <li>النتيجة النهائية تعتمد على لون السيارة والإضاءة وحالة البودي.</li>
+        <li>لأفضل اختيار، أرسل لنا صورة السيارة وننصحك بالخامة المناسبة.</li>
+    </ul>
+</div>
+
     </aside>
 
     <main class="viewerWrap">
@@ -495,58 +672,85 @@
             <div class="viewerChip">اختر سيارة ولون من اللوحة الجانبية</div>
             <a class="ghostBtn" href="index.html">Home</a>
         </div>
+        <div id="loadingOverlay" class="loadingOverlay" aria-live="polite">
+            <div class="loadingCard">
+                <strong id="loadingLabel">Loading car...</strong>
+                <div class="loadingBar"><span id="loadingProgress"></span></div>
+            </div>
+        </div>
+        <div id="fallbackPoster" class="fallbackPoster" aria-live="polite">
+            <div class="fallbackPosterContent">
+                <strong>تعذر تحميل المعاينة ثلاثية الأبعاد</strong>
+                <p>يمكنك تجربة موديل آخر أو التواصل معنا لاختيار لون PPF المناسب لسيارتك.</p>
+            </div>
+        </div>
+        <div class="viewerControls" aria-label="Car view controls">
+            <button id="zoomOutBtn" class="controlBtn" type="button" title="Zoom out">-</button>
+            <button id="resetViewBtn" class="controlBtn" type="button" title="Reset view">Reset</button>
+            <button id="zoomInBtn" class="controlBtn" type="button" title="Zoom in">+</button>
+        </div>
         <div id="viewer"></div>
         <pre id="debugPanel" hidden></pre>
     </main>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/DRACOLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
 
 <script>
     
 const carModels = {
     skoda: {
-        "2020 Skoda Octavia RS": "skoda/mods/scene.gltf",
-        "2020 Skoda Superb" : "skoda/mmoo/scene.gltf"
+        "2020 Skoda Octavia RS": "skoda/mods/scene.optimized.glb",
+        "2020 Skoda Superb" : "skoda/mmoo/scene.optimized.glb",
+        "Skoda Superb New": "skoda/suberb/scene.optimized.glb"
     },
     cupra: {
-        "2022-2024 Cupra Formentor": "cupra/modcopra/scene.gltf",
-        "2025 Cupra Leon": "cupra/copraleon/scene.gltf"
+        "2022-2024 Cupra Formentor": "cupra/modcopra/scene.optimized.glb",
+        "2025 Cupra Leon": "cupra/copraleon/scene.optimized.glb"
     },
     bmw: {
-        "BMW M4 Coupe": "BMW/models/scene.gltf",
-        "BMW M5 F90 2017": "BMW/modm3/scene.gltf",
-        "2019 BMW M2 Competition": "BMW/modm4/scene.gltf"
+        "BMW X6 M": "BMW/msa1/scene.optimized.glb",
+        "2021 BMW M4 Competition": "BMW/m4mo/scene.fast.glb",
+        "BMW M5 F90 2017": "BMW/modm3/scene.optimized.glb",
+        "2019 BMW M2 Competition": "BMW/modm4/scene.optimized.glb"
     },
     audi: {
-        "2018 Audi RS 3 Sportback": "audi/mod4/scene.gltf",
-        "2021 Audi A5 Sportback": "audi/mod7/scene.gltf"
+        "2018 Audi RS 3 Sportback": "audi/mod4/scene.optimized.glb",
+        "2021 Audi A5 Sportback": "audi/mod7/scene.optimized.glb"
     },
     mercedes: {
-        "Mercedes-Benz GLC63 S AMG E Performance 2023": "audi/mod/scene.gltf",
-        "2016 Mercedes-AMG GT S 130th Anniversary Edition": "audi/mod6/scene.gltf",
-        "Mercedes-Benz S-Class W222": "audi/mod8m/scene.gltf"
+        "Mercedes-AMG C63 Coupe": "mercedes/m123/scene.fast.glb",
+        "Mercedes-Benz G63 AMG": "skoda/mc63/scene.fast.glb",
+        "Mercedes-Benz GLC63 S AMG E Performance 2023": "audi/mod/scene.fast.glb",
+        "Mercedes-Benz S-Class W222": "audi/mod8m/scene.fast.glb"
     },
     nissan: {
-        "2023 Nissan GT-R R35 Nismo": "seat/smodel/scene.gltf"
+        "2023 Nissan GT-R R35 Nismo": "seat/smodel/scene.optimized.glb"
     },
     ford: {
-        "2015 Ford Mustang GT": "seat/ford1/scene.gltf"
+        "2015 Ford Mustang GT": "seat/ford1/scene.optimized.glb"
+    },
+    golf: {
+        "Volkswagen Golf GTI": "ford/gti/scene.optimized.glb"
     },
     corvette: {
-        "Chevrolet Corvette C7": "cupra/modell/scene.gltf"
+        "2020 Chevrolet Corvette Stingray": "corvette/c123/scene.optimized.glb",
+        "Chevrolet Corvette C7": "cupra/modell/scene.optimized.glb"
     },
     alfa: {
-        "2017 Alfa Romeo Giulia Quadrifoglio": "cupra/modc7/scene.gltf"
+        "2017 Alfa Romeo Giulia Quadrifoglio": "cupra/modc7/scene.optimized.glb"
     },
     landrover: {
-        "2016 Range Rover Sport": "skoda/modrang/scene.gltf"
+        "2023 Range Rover Sport": "landrover/mmm/scene.optimized.glb",
+        "2016 Range Rover Sport": "skoda/modrang/scene.optimized.glb"
         
     },
-    ram: {
-        "Dodge Challenger SRT Hellcat Redeye": "Ram/modram/scene.gltf",
-        "Dodge Charger SRT 2018": "Ram/moddg/scene.gltf"
+    dodge: {
+        "Dodge Challenger SRT Hellcat Redeye": "Ram/modram/scene.optimized.glb",
+        "Dodge Charger SRT 2018": "Ram/moddg/scene.optimized.glb"
     }
 };
 
@@ -739,28 +943,88 @@ const EXTRA_COLOR_PRESETS = [
     { key: "frozenmustard", label: "Frozen Mustard", finish: "Matte", hex: "#9c8441", textColor: "#111" }
 ];
 
-const COLOR_PRESETS = normalizeColorCatalog([...BASE_COLOR_PRESETS, ...EXTRA_COLOR_PRESETS]);
+const GENERATED_COLOR_PRESETS = [
+    { key: "liquidcopper", label: "Liquid Copper", finish: "Metallic", hex: "#b8734a", textColor: "#111" },
+    { key: "satinrosebronze", label: "Satin Rose Bronze", finish: "Satin", hex: "#b98276", textColor: "#111" },
+    { key: "frozencopper", label: "Frozen Copper", finish: "Matte", hex: "#9a664f", textColor: "#111" },
+    { key: "champagnegold", label: "Champagne Gold", finish: "Metallic", hex: "#c7ad72", textColor: "#111" },
+    { key: "satinchampagne", label: "Satin Champagne", finish: "Satin", hex: "#d1bd8a", textColor: "#111" },
+    { key: "frozenchampagne", label: "Frozen Champagne", finish: "Matte", hex: "#b9ab86", textColor: "#111" },
+    { key: "electriccyan", label: "Electric Cyan", finish: "Gloss", hex: "#00aef0", textColor: "#111" },
+    { key: "satiniceblue", label: "Satin Ice Blue", finish: "Satin", hex: "#8bc7e8", textColor: "#111" },
+    { key: "frozeniceblue", label: "Frozen Ice Blue", finish: "Matte", hex: "#7fa8bd", textColor: "#111" },
+    { key: "deeptealmetal", label: "Deep Teal Metal", finish: "Metallic", hex: "#0c5965" },
+    { key: "glossteal", label: "Gloss Teal", finish: "Gloss", hex: "#008b8b" },
+    { key: "satindeepteal", label: "Satin Deep Teal", finish: "Satin", hex: "#2d6f72" },
+    { key: "frozenjade", label: "Frozen Jade", finish: "Matte", hex: "#5a7e73", textColor: "#111" },
+    { key: "emeraldchrome", label: "Emerald Chrome", finish: "Chrome", gradient: "linear-gradient(135deg, #8dffd8 0%, #00684f 45%, #c1ffe8 100%)", hex: "#0d8f6b" },
+    { key: "bluechrome", label: "Blue Chrome", finish: "Chrome", gradient: "linear-gradient(135deg, #9ddaff 0%, #0b4b9a 45%, #d2efff 100%)", hex: "#2d75c7" },
+    { key: "purplechrome", label: "Purple Chrome", finish: "Chrome", gradient: "linear-gradient(135deg, #e0b5ff 0%, #6326a6 45%, #f0d8ff 100%)", hex: "#7e43bd" },
+    { key: "redchrome", label: "Red Chrome", finish: "Chrome", gradient: "linear-gradient(135deg, #ffb0a3 0%, #a20d18 45%, #ffd7cf 100%)", hex: "#c92a32" },
+    { key: "laserred", label: "Laser Red", finish: "Gloss", hex: "#d71920" },
+    { key: "satinlaserred", label: "Satin Laser Red", finish: "Satin", hex: "#a72d35" },
+    { key: "frozencrimson", label: "Frozen Crimson", finish: "Matte", hex: "#7f2730" },
+    { key: "plumcrazy", label: "Plum Crazy", finish: "Gloss", hex: "#5b2a86" },
+    { key: "satinplum", label: "Satin Plum", finish: "Satin", hex: "#57405f" },
+    { key: "frozenpurple", label: "Frozen Purple", finish: "Matte", hex: "#493653" },
+    { key: "magentapearl", label: "Magenta Pearl", finish: "Pearl", hex: "#b61773" },
+    { key: "satinmagenta", label: "Satin Magenta", finish: "Satin", hex: "#8f3f70" },
+    { key: "limechrome", label: "Lime Chrome", finish: "Chrome", gradient: "linear-gradient(135deg, #d7ff80 0%, #70a800 45%, #efffc4 100%)", textColor: "#111", hex: "#9bd21c" },
+    { key: "neonyellow", label: "Neon Yellow", finish: "Gloss", hex: "#dfff00", textColor: "#111" },
+    { key: "satincitrus", label: "Satin Citrus", finish: "Satin", hex: "#c7cf41", textColor: "#111" },
+    { key: "frozencitrus", label: "Frozen Citrus", finish: "Matte", hex: "#a7a94a", textColor: "#111" },
+    { key: "militarygreen2", label: "Military Green 2", finish: "Matte", hex: "#59624a" }
+];
+
+const COLOR_PRESETS = normalizeColorCatalog([...BASE_COLOR_PRESETS, ...EXTRA_COLOR_PRESETS, ...GENERATED_COLOR_PRESETS]);
+
+const TINT_PRESETS = {
+    stock: { label: "بدون تظليل", hex: "#eef6ff", opacity: 0.08, transmission: 0.98, roughness: 0.025, envMapIntensity: 1.08 },
+    nano5: { label: "خفيف جدًا 5%", hex: "#bac5d7", opacity: 0.24, transmission: 0.7, roughness: 0.06, envMapIntensity: 0.94 },
+    light15: { label: "خفيف 15%", hex: "#9ca7b9", opacity: 0.34, transmission: 0.55, roughness: 0.07, envMapIntensity: 0.9 },
+    light: { label: "خفيف 20%", hex: "#8793a6", opacity: 0.42, transmission: 0.46, roughness: 0.08, envMapIntensity: 0.86 },
+    medium25: { label: "متوسط 25%", hex: "#737f92", opacity: 0.48, transmission: 0.38, roughness: 0.09, envMapIntensity: 0.82 },
+    medium: { label: "متوسط 35%", hex: "#556071", opacity: 0.58, transmission: 0.26, roughness: 0.1, envMapIntensity: 0.76 },
+    dark50: { label: "غامق 50%", hex: "#242a34", opacity: 0.76, transmission: 0.09, roughness: 0.11, envMapIntensity: 0.66 },
+    dark: { label: "غامق 60%", hex: "#121720", opacity: 0.84, transmission: 0.045, roughness: 0.12, envMapIntensity: 0.58 },
+    limo: { label: "أسود قوي 70%", hex: "#080a0f", opacity: 0.91, transmission: 0.018, roughness: 0.13, envMapIntensity: 0.48 },
+    limo85: { label: "أسود قوي جدًا 85%", hex: "#020305", opacity: 0.96, transmission: 0.004, roughness: 0.14, envMapIntensity: 0.38 }
+};
+
+const BRAKE_COLOR_PRESETS = {
+    stock: { label: "اللون الأصلي" },
+    red: { label: "أحمر سبورت", hex: "#d41d1d" },
+    yellow: { label: "أصفر", hex: "#d6a900" },
+    blue: { label: "أزرق", hex: "#255fd6" },
+    orange: { label: "برتقالي", hex: "#dd6b18" },
+    green: { label: "أخضر", hex: "#1fa85e" },
+    black: { label: "أسود", hex: "#16181d" },
+    silver: { label: "فضي", hex: "#bfc6d1" }
+};
 
 const GENERIC_BODY_INCLUDE = ["paint", "coloured", "colored", "carpaint", "body", "door", "hood", "bonnet", "bumper", "fender", "quarter", "trunk", "boot", "tailgate", "panel", "roof", "side", "ext_", "exterior", "car_body", "vehicle_body", "auto_body", "chassis_body"];
 const GENERIC_BODY_EXCLUDE = [
     "glass", "window", "wheel", "rim", "tire", "tyre", "brake", "disc", "caliper", "calliper", "interior",
     "grille", "grill", "grid", "mesh", "light", "lamp", "mirror", "badge", "logo", "chrome", "engine", "carbon", "plate", "exhaust", "spoiler",
-    "splitter", "chassis", "undertray", "cockpit", "bucket", "rubber", "plastic", "trim", "speaker", "dashboard", "steering", "gauge", "carpet", "fabric", "leather", "headlight", "taillight", "third_paint", "licen", "surround", "emblem", "seatbelt", "frontseat", "rearseat"
+    "splitter", "chassis", "undertray", "cockpit", "bucket", "rubber", "plastic", "trim", "speaker", "dashboard", "dash", "dash_skin", "steering", "gauge", "carpet", "fabric", "leather", "driver_seat", "passenger_seat", "passanger_seat", "rear_seat", "rear_seats", "front_seat", "front_seats", "amg_seat", "doorpanel", "door_panel", "doorcard", "headlight", "headlights", "taillight", "taillights", "tailight", "tailights", "backlight", "foglight", "fog_lamp", "drl", "led", "emissive", "indicator", "signal", "reflector", "reflectors", "lens", "projector", "bulb", "black_glass", "red_glass", "headglass", "tailglass", "windscreen", "windshield", "doorglass", "door_glass", "backglass", "quarter_glass", "roof_glass", "windows", "wiper", "numberplate", "license", "licence", "licen", "manufacturerplate", "showcase_plate", "third_paint", "surround", "emblem", "seatbelt", "frontseat", "rearseat"
 ];
 
 const MODEL_RULES = {
-    "skoda/mods/scene.gltf": {
+    "skoda/mods/scene.optimized.glb": {
         allowedMaterialNames: [
             "body"
         ],
         blockedKeywords: ["grille", "mesh", "chrome", "light", "glass", "mirror", "wheel", "rim"],
-        distanceFactor: 1.16,
+        distanceFactor:  1.05,
+        frameScale: 0.74,
+        minFrameDistance: 1.9,
         heightFactor: 0.18,
         yOffsetFactor: 0.1,
         lookAtYFactor: 0.08,
+        glassForceIncludeKeywords: ["glass_0_glass", "r_glass", "d_glass"],
         stripTextureMaps: true
     },
-    "seat/smodel/scene.gltf": {
+    "seat/smodel/scene.optimized.glb": {
         allowedMaterialNames: [
             "carpaint_9",
             "paint"
@@ -771,41 +1035,53 @@ const MODEL_RULES = {
         yOffsetFactor: 0.08,
         lookAtYFactor: 0.08
     },
-    "cupra/modell/scene.gltf": {
+    "cupra/modell/scene.optimized.glb": {
         allowedMaterialNames: [
             "body",
             "body.001"
         ],
         allowedKeywords: ["body"],
-        distanceFactor: 2.1,
-        heightFactor: 0.15,
-        yOffsetFactor: 0.02,
-        lookAtYFactor: 0.05,
-        initialRotationY: 1.5
+        distanceFactor: 1.22,
+        heightFactor: 0.17,
+        yOffsetFactor: 0.06,
+        lookAtYFactor: 0.07,
+        initialRotationY: 0.18,
+        brakeForceIncludeKeywords: ["brake_13", "brake_001"]
     },
-    "cupra/modcopra/scene.gltf": {
+    "cupra/modcopra/scene.optimized.glb": {
         allowedMaterialNames: ["car_paint"],
         blockedKeywords: ["glass", "chrome", "light", "mirror", "wheel", "rim", "black_refl", "toyo", "orange"],
-        distanceFactor: 1.88,
-        heightFactor: 0.14,
-        yOffsetFactor: 0.05,
-        lookAtYFactor: 0.05,
+        distanceFactor: 1.12,
+        frameScale: 0.94,
+        minFrameDistance: 2.45,
+        heightFactor: 0.17,
+        yOffsetFactor: 0.06,
+        lookAtYFactor: 0.07,
+        glassForceIncludeKeywords: ["_glass_0", "glass_dark"],
+        brakeForceIncludeKeywords: ["brake", "caliper", "calliper", "brembo"],
         stripTextureMaps: true
     },
-    "cupra/copraleon/scene.gltf": {
+    "cupra/copraleon/scene.optimized.glb": {
         allowedMaterialNames: [
-            "body",
-            "body_orange"
+            "body"
         ],
-        blockedKeywords: ["spoiler", "mirror", "glass", "grille", "light", "wheel", "rim"],
-        distanceFactor: 1.82,
-        heightFactor: 0.13,
-        yOffsetFactor: 0.04,
-        lookAtYFactor: 0.05,
-        initialRotationY: 0.5,
-        rotationSpeed: 0.0012
+        blockedKeywords: [
+            "spoiler", "mirror", "glass", "grille", "light", "wheel", "rim", "tire", "tyre", "gum",
+            "brakes2", "brembo", "brake", "disc", "rotor", "caliper", "chrome", "black", "black_m",
+            "d_red", "r_lights", "lights", "plate", "logo", "badge"
+        ],
+        distanceFactor: 1.02,
+        frameScale: 0.64,
+        minFrameDistance: 1.85,
+        heightFactor: 0.17,
+        yOffsetFactor: 0.06,
+        lookAtYFactor: 0.07,
+        initialRotationY: 0.2,
+        glassForceIncludeKeywords: ["glass_0", "d_glass", "r_glass"],
+        brakeForceIncludeKeywords: ["brembo"],
+        stripTextureMaps: true
     },
-    "BMW/models/scene.gltf": {
+    "BMW/models/scene.optimized.glb": {
         allowedMaterialNames: [
             "untitledbmw_m4competitiong82tnr3_2021painttnr_material_008",
             "untitledbmw_m4competitiong82tnr3_2021coloured_material_008",
@@ -818,9 +1094,10 @@ const MODEL_RULES = {
         heightFactor: 0.18,
         yOffsetFactor: 0.12,
         lookAtYFactor: 0.08,
-        stripTextureMaps: true
+        stripTextureMaps: true,
+        brakeForceIncludeKeywords: ["calliperscallipera_zone", "calliperscalliperbadge"]
     },
-    "BMW/modelbm2/scene.gltf": {
+    "BMW/modelbm2/scene.optimized.glb": {
         allowedMaterialNames: [
             "bmw_m4couperewardrecycled_2021paint_material",
             "bmw_m4couperewardrecycled_2021coloured_material",
@@ -832,51 +1109,56 @@ const MODEL_RULES = {
         yOffsetFactor: 0.12,
         lookAtYFactor: 0.08
     },
-    "BMW/modm3/scene.gltf": {
+    "BMW/modm3/scene.optimized.glb": {
         allowedMaterialNames: ["m5_f90_paint"],
         blockedKeywords: ["spoiler", "mirrorbase", "grille", "glass", "light", "badge", "rim", "wheel"],
-        ignoredGenericBlockedKeywords: ["chassis", "mirror"],
+        ignoredGenericBlockedKeywords: ["chassis"],
         distanceFactor: 1.24,
         heightFactor: 0.16,
         yOffsetFactor: 0.08,
         lookAtYFactor: 0.07,
+        glassForceIncludeKeywords: ["glass_parts"],
         stripTextureMaps: true
     },
-    "BMW/modm4/scene.gltf": {
+    "BMW/modm4/scene.optimized.glb": {
         allowedMaterialNames: ["m2_comp_paint"],
         blockedKeywords: ["spoiler", "mirrorbase", "grille", "glass", "light", "badge", "rim", "wheel"],
-        ignoredGenericBlockedKeywords: ["chassis", "mirror"],
+        ignoredGenericBlockedKeywords: ["chassis"],
         distanceFactor: 1.24,
         heightFactor: 0.16,
         yOffsetFactor: 0.08,
         lookAtYFactor: 0.07,
+        glassForceIncludeKeywords: ["glass_parts"],
         stripTextureMaps: true
     },
-    "audi/mod/scene.gltf": {
+    "audi/mod/scene.optimized.glb": {
         allowedMaterialNames: [
             "material"
         ],
         blockedKeywords: ["glass", "grille", "light", "wheel", "rim", "badge", "brake", "caliper", "chrome", "plastic"],
-        distanceFactor: 1.34,
+        distanceFactor: 1.18,
+        frameScale: 0.94,
+        minFrameDistance: 2.25,
         heightFactor: 0.17,
         yOffsetFactor: 0.04,
-        lookAtYFactor: 0.06
+        lookAtYFactor: 0.06,
+        glassForceIncludeKeywords: ["glass_002"]
     },
-    "audi/mod4/scene.gltf": {
+    "audi/mod4/scene.optimized.glb": {
         allowedMaterialNames: ["mat_rs3_2018_base.004"],
         blockedKeywords: ["mirror", "glass", "light", "wheel", "rim", "badge", "grille", "carbon"],
         distanceFactor: 1.32,
         heightFactor: 0.17,
         yOffsetFactor: 0.08,
         lookAtYFactor: 0.07,
+        brakeForceIncludeKeywords: ["mat_details_brake1", "sm_brake_fl", "sm_brake_fr", "sm_brake_rl", "sm_brake_rr"],
         stripTextureMaps: true
     },
-    "audi/mod5/scene.gltf": {
+    "audi/mod5/scene.optimized.glb": {
         allowedMaterialNames: [
             "m_2020_audi_rs5_daytona_gray_metallic"
         ],
         allowedObjectKeywords: ["door", "fender", "hood", "boot", "bumper", "roof"],
-        forceIncludeKeywords: ["mirrorl", "mirrorr"],
         blockedKeywords: ["spoiler", "glass", "window", "light", "wheel", "rim", "badge", "logo", "grille", "mirrorbase", "seatbelt", "interior", "engine"],
         distanceFactor: 1.34,
         heightFactor: 0.16,
@@ -884,30 +1166,32 @@ const MODEL_RULES = {
         lookAtYFactor: 0.07,
         stripTextureMaps: true
     },
-    "audi/mod7/scene.gltf": {
+    "audi/mod7/scene.optimized.glb": {
         allowedMaterialNames: ["2021_audi_a5_sportback_s-line_ibis_white"],
         blockedKeywords: ["grille", "mirror", "blacktrims", "chrome", "windows", "windowstrims", "rims", "rim", "wheel", "glass", "drl", "light", "badge", "logo"],
-        distanceFactor: 1.62,
-        heightFactor: 0.16,
+        distanceFactor: 1.22,
+        heightFactor: 0.17,
         yOffsetFactor: 0.08,
         lookAtYFactor: 0.07,
-        xOffsetFactor: 0.1,
-        initialRotationY: 0.22,
-        rotationSpeed: 0.0014,
-        stripTextureMaps: true
+        xOffsetFactor: 0.03,
+        initialRotationY: 0.16,
+        stripTextureMaps: true,
+        brakeForceIncludeKeywords: ["calipers"]
     },
-    "Ram/modram/scene.gltf": {
+    "Ram/modram/scene.optimized.glb": {
         allowedMaterialNames: [
             "dcshr_dark_green"
         ],
         allowedKeywords: ["dark_green", "body"],
         blockedKeywords: ["glass", "light", "wheel", "rim", "grille", "mirror", "spoiler"],
-        distanceFactor: 1.52,
-        heightFactor: 0.2,
-        yOffsetFactor: 0.02,
-        lookAtYFactor: 0.1
+        distanceFactor: 1.24,
+        heightFactor: 0.18,
+        yOffsetFactor: 0.06,
+        lookAtYFactor: 0.08,
+        glassForceIncludeKeywords: ["dcshr_windowsrough", "dcshr_windowssmooth"],
+        brakeForceIncludeKeywords: ["brembo"]
     },
-    "Ram/moddg/scene.gltf": {
+    "Ram/moddg/scene.optimized.glb": {
         allowedMaterialNames: [
             "skin_00",
             "skin_01",
@@ -918,36 +1202,25 @@ const MODEL_RULES = {
         ],
         allowedKeywords: ["ext_"],
         blockedKeywords: ["int_", "wheel", "rim", "light", "glass", "chrome", "rubber", "plastic", "grille", "mesh", "seat", "interior", "cabin", "mirror"],
-        distanceFactor: 1.56,
-        heightFactor: 0.18,
-        yOffsetFactor: 0.03,
+        distanceFactor:  1.26,
+        heightFactor: 1.10,
+        yOffsetFactor: 0.06,
         lookAtYFactor: 0.08,
-        stripTextureMaps: true
+        stripTextureMaps: true,
+        glassForceIncludeKeywords: ["ext_glass", "ext_black_glass", "glass"],
+        brakeForceIncludeKeywords: ["brake_color", "brake_plastic"]
     },
-    "audi/mod6/scene.gltf": {
-        allowedMaterialNames: [
-            "amg_gt_s_130_paint"
-        ],
-        blockedKeywords: ["spoiler", "grille", "glass", "light", "wheel", "rim", "badge"],
-        ignoredGenericBlockedKeywords: ["chassis", "mirror"],
-        distanceFactor: 1.74,
-        heightFactor: 0.16,
-        yOffsetFactor: 0.03,
-        lookAtYFactor: 0.06,
-        initialRotationY: 0.18,
-        rotationSpeed: 0.0013
-    },
-    "cupra/modc7/scene.gltf": {
+    "cupra/modc7/scene.optimized.glb": {
         allowedMaterialNames: ["giulia_qv_paint"],
         blockedKeywords: ["spoiler", "mirrorbase", "grille", "glass", "light", "wheel", "rim", "badge", "bumperchassis"],
-        ignoredGenericBlockedKeywords: ["chassis", "mirror"],
-        distanceFactor: 1.34,
-        heightFactor: 0.16,
+        ignoredGenericBlockedKeywords: ["chassis"],
+        distanceFactor:  1.26,
+        heightFactor:  1.10,
         yOffsetFactor: 0.08,
         lookAtYFactor: 0.07,
         stripTextureMaps: true
     },
-    "seat/ford1/scene.gltf": {
+    "seat/ford1/scene.optimized.glb": {
         allowedKeywords: ["carpaint"],
         allowedObjectKeywords: [
             "body_carpaint",
@@ -972,26 +1245,105 @@ const MODEL_RULES = {
             "fender_r_carpaint"
         ],
         blockedKeywords: ["spoiler", "mirror", "grille", "glass", "light", "wheel", "rim", "badge", "steeringbox", "radiator", "radiatorfan", "transmission", "lowerarm", "subframe", "swaybar", "hub", "tierod", "halfshaft", "shock", "spring", "headlight", "screen"],
-        distanceFactor: 1.36,
-        heightFactor: 0.17,
+        distanceFactor: 1.26,
+        heightFactor: 0.14,
         yOffsetFactor: 0.07,
         lookAtYFactor: 0.07,
+        stripTextureMaps: true,
+        brakeForceIncludeKeywords: ["gt500_wheelbrake"]
+    },
+    "ford/gti/scene.optimized.glb": {
+        allowedMaterialNames: ["paint_color"],
+        allowedObjectKeywords: ["paint_color_bd"],
+        blockedKeywords: ["glass", "window", "light", "lamp", "wheel", "rim", "tire", "tyre", "brake", "disc", "rotor", "chrome"],
+        distanceFactor: 1.16,
+        frameScale: 0.86,
+        minFrameDistance: 1.75,
+        heightFactor: 0.17,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.07,
+        glassForceIncludeKeywords: ["index_0_3", "object_4"],
         stripTextureMaps: true
     },
-    "skoda/mmoo/scene.gltf": {
+    "skoda/mmoo/scene.optimized.glb": {
         allowedMaterialNames: ["sup17_body"],
         blockedKeywords: [
             "glass", "light", "lamp", "headlight", "mirror", "rim", "wheel", "tire", "grille", "logo", "badge", "chrome", "plastic",
             "interior", "inside", "cabin", "int_", "seat", "dashboard", "dash", "steering", "carpet", "trim", "pillar", "leather", "fabric"
         ],
         stripTextureMaps: true,
-        distanceFactor: 1.22,
+        distanceFactor: 1.18,
         heightFactor: 0.18,
         yOffsetFactor: 0.1,
-        lookAtYFactor: 0.08
+        lookAtYFactor: 0.08,
+        minFrameDistance: 2.4,
+        glassForceIncludeKeywords: [
+            "sup17_backlight",
+            "sup17_doorglass",
+            "sup17_windshield",
+            "sup17_glass003",
+            "sup17_glass002",
+            "sup17_glass",
+            "glass_sup17_tailglass",
+            "sup17_tailglass"
+        ],
+        allowLightGlassTint: false
     },
-    "skoda/modrang/scene.gltf": {
+    "skoda/suberb/scene.optimized.glb": {
+        allowedMaterialNames: ["default1"],
+        allowedObjectKeywords: [
+            "car_body_default1",
+            "car_body_1_default1",
+            "car_body_top_default1",
+            "car_body_lf_door_default1",
+            "car_body_lr_door_default1",
+            "car_body_rf_door_default1",
+            "car_body_rr_door_default1",
+            "car_body_trunk_default1",
+            "car_body_lf_door_dipei_default1",
+            "car_body_lr_door_dipei_default1",
+            "car_body_rf_door_dipei_default1",
+            "car_body_rr_door_dipei_default1"
+        ],
+        blockedKeywords: [
+            "glass", "dark_glass", "headlight", "light", "lamp", "weideng", "tail", "chrome", "grill", "grille",
+            "plastic", "chassis", "hub", "wheel", "rim", "tire", "tyre", "brake", "breaks", "disc", "rotor",
+            "mirror", "inner", "chair", "door_map", "metal"
+        ],
+        distanceFactor: 1.18,
+        frameScale: 0.88,
+        minFrameDistance: 2.05,
+        heightFactor: 0.17,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.07,
+        scaleFactor: 100,
+        frameExcludeKeywords: ["10_trunk_plastic_fj_plastic"],
+        stripTextureMaps: true,
+        glassForceIncludeKeywords: [
+            "car_body_glass",
+            "car_top_glass",
+            "lf_door_glass",
+            "lr_door_glass",
+            "rf_door_glass",
+            "rr_door_glass",
+            "trunk_glass",
+            "dark_glass"
+        ],
+        allowLightGlassTint: false
+    },
+    "skoda/modrang/scene.optimized.glb": {
         allowedMaterialNames: ["car_paint"],
+        allowedKeywords: ["car_paint", "car paint"],
+        forceIncludeKeywords: [
+            "body_car_paint",
+            "hood_car_paint",
+            "fender_car_paint",
+            "front_bumper_car_paint",
+            "custom_rear_bumper_2_car_paint",
+            "tailgate_for_custom_2_car_paint",
+            "door_handle_car_paint",
+            "wheelbase_lower_plastic_side_diffs_car_paint"
+        ],
         blockedKeywords: [
             "grille", "mesh", "chrome", "glossy black", "diff plastic", "plastic", "drl", "light", "glass", "mirror", "window", "roof glass",
             "rubber", "sensor", "camera", "vent", "blade", "arch", "trim", "spoiler", "wheel", "rim", "badge", "logo"
@@ -1000,9 +1352,158 @@ const MODEL_RULES = {
         heightFactor: 0.18,
         yOffsetFactor: 0.08,
         lookAtYFactor: 0.08,
+        stripTextureMaps: true,
+        brakeForceIncludeKeywords: ["brake_caliper_2_glossy_black"]
+    },
+    "landrover/mmm/scene.optimized.glb": {
+        allowedMaterialNames: [
+            "2023_land_rover_range_rover_sport_firenze_red",
+            "2023_land_rover_range_rover_sport_redmain"
+        ],
+        allowedKeywords: ["firenze_red", "redmain"],
+        blockedKeywords: [
+            "chrome", "blackchrome", "blacktrims", "reflectors", "drl", "tailight", "taillight", "windows",
+            "glass", "badges", "rotors", "rotor", "tires", "tire", "tyre", "callipers", "brake", "wheel", "rim"
+        ],
+        distanceFactor: 1.24,
+        frameScale: 0.92,
+        minFrameDistance: 2.15,
+        heightFactor: 0.17,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.07,
+        stripTextureMaps: true,
+        glassForceIncludeKeywords: ["windows"],
+        brakeForceIncludeKeywords: ["callipers"]
+    },
+    "BMW/m4mo/scene.optimized.glb": {
+        allowedMaterialNames: ["material_692"],
+        allowedObjectKeywords: [
+            "body_material_692",
+            "bumpers_material_692",
+            "skirt_material_692",
+            "driver_door_material_692",
+            "passenger_door_material_692"
+        ],
+        forceIncludeKeywords: [
+            "body_material_692",
+            "bumpers_material_692",
+            "skirt_material_692",
+            "driver_door_material_692",
+            "passenger_door_material_692"
+        ],
+        blockedKeywords: [
+            "glass", "window", "headglass", "tailglass", "headlight", "light", "lamp", "wheel", "rim", "tire", "tyre",
+            "brake", "disc", "rotor", "grille", "grilles", "fgrllpiece", "badge", "logo", "plate", "interior", "seat",
+            "dashboard", "steering", "exhaust", "diffuser", "tailpiece", "tail", "bottom"
+        ],
+        distanceFactor: 1.22,
+        frameScale: 1.08,
+        heightFactor: 0.17,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.07,
+        stripTextureMaps: true,
+        glassForceIncludeKeywords: [
+            "material_699", "material_700", "glass_material_699", "headglass_material_775", "tailglass_material_775",
+            "driver_door_material_699", "passenger_door_material_699"
+        ],
+        brakeForceIncludeKeywords: [
+            "brake_material_773", "brake001_material_773", "brake002_material_773", "brake003_material_773",
+            "brake_material_774", "brake001_material_774", "brake002_material_774", "brake003_material_774"
+        ],
+        interiorDimKeywords: [
+            "seats_material", "interior", "interioralcntr", "dashboard", "driver_door_material_699",
+            "passenger_door_material_699", "glass_material_699"
+        ]
+    },
+    "BMW/msa1/scene.optimized.glb": {
+        allowedMaterialNames: ["carpaint"],
+        allowedObjectKeywords: ["carpaint"],
+        forceIncludeKeywords: ["carpaint"],
+        blockedKeywords: [
+            "glass", "windows", "panarama", "front_ligts", "back_lights", "light", "mirror", "chrome", "plastic", "chassis",
+            "koleso", "tire", "wheel", "rim", "tormoz", "disk", "emblema", "badge", "badges", "plate", "salon", "steering", "seat", "torpeda", "potolok"
+        ],
+        distanceFactor: 1.24,
+        heightFactor: 0.17,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.07,
+        scaleFactor: 100,
+        stripTextureMaps: true,
+        doubleSidedBody: true,
+        glassForceIncludeKeywords: ["windows_glass", "panarama_glass", "front_ligts_glass", "back_lights_glass_1"],
+        allowLightGlassTint: true,
+        brakeForceIncludeKeywords: ["koleso_support"]
+    },
+    "mercedes/m123/scene.optimized.glb": {
+        allowedMaterialNames: ["c63mat_amg_c63_base_004"],
+        allowedObjectKeywords: [
+            "c63_mat_amg_c63_base_004",
+            "sm_base_0000_001_sm_base_0000_mat_details_mat1_c63_mat_amg_c63_base_004",
+            "sm_frontkit_0000_001_sm_frontkit_0000_mat_details_mat_002_c63_mat_amg_c63_base_004",
+            "sm_hood_0000_001_sm_hood_0000_mat_details_mat_003_c63_mat_amg_c63_base_004"
+        ],
+        forceIncludeKeywords: ["c63_mat_amg_c63_base_004"],
+        blockedKeywords: [
+            "glass", "light", "lamp", "grid", "grille", "wheel", "rim", "tire", "tyre", "hub", "disk", "disc", "brake",
+            "chassis", "carbon", "interior", "steering", "seat", "details_int", "details_ext", "badge", "logo"
+        ],
+        distanceFactor: 1.24,
+        heightFactor: 0.16,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.07,
+        scaleFactor: 100,
+        stripTextureMaps: true,
+        glassForceIncludeKeywords: ["c63_mat_glass1"],
+        brakeForceIncludeKeywords: ["c63_mat_tire_brake1"]
+    },
+    "corvette/c123/scene.optimized.glb": {
+        allowedMaterialNames: [
+            "cchevrolet_corvettec8zr1_2024paint_material1"
+        ],
+        allowedKeywords: ["corvettec8zr1_2024paint_material"],
+        blockedKeywords: [
+            "glass", "window", "black_glass", "red_glass", "light", "lamp", "grille", "grill", "grillealpha",
+            "grillenoalpha", "speculartint", "coloured", "carbon", "engine", "interior", "seat", "seatbelt",
+            "manufacturerplate", "badge", "logo", "wheel", "rim", "tire", "tyre", "brakedisc", "brake_disc"
+        ],
+        distanceFactor: 1.2,
+        heightFactor: 0.15,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.07,
+        scaleFactor: 100,
+        stripTextureMaps: true,
+        glassForceIncludeKeywords: [
+            "window_material1",
+            "black_glass",
+            "red_glass"
+        ],
+        brakeForceIncludeKeywords: ["calliperscallipera_zone", "calliperscalliperbadge"]
+    },
+    "skoda/models/scene.optimized.glb": {
+        allowedMaterialNames: [
+            "0370_toyota_land_cruiser_250_25_12_body_12",
+            "0370_toyota_land_cruiser_250_25_12_body.001_29",
+            "0370_toyota_land_cruiser_250_25_12_body.002_30",
+            "0370_toyota_land_cruiser_250_25_12_body.003_31",
+            "0370_toyota_land_cruiser_250_25_12_body.004_32",
+            "0370_toyota_land_cruiser_250_25_12_body.005_33",
+            "0370_toyota_land_cruiser_250_25_12_body.006_34",
+            "0370_toyota_land_cruiser_250_25_12_body.007_35",
+            "0370_toyota_land_cruiser_250_25_12_body.008_36",
+            "0370_toyota_land_cruiser_250_25_12_body.009_37",
+            "0370_toyota_land_cruiser_250_25_12_body.010_40",
+            "0370_toyota_land_cruiser_250_25_12_body.011_41",
+            "0370_toyota_land_cruiser_250_25_12_body.012_42",
+            "0370_toyota_land_cruiser_250_25_12_body.013_43"
+        ],
+        blockedKeywords: ["window", "glass", "light", "lamp", "wheel", "rim", "tire", "tyre", "interior", "seat", "badge", "logo", "black", "plastic", "chrome"],
+        distanceFactor: 1.28,
+        heightFactor: 0.18,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.08,
         stripTextureMaps: true
     },
-    "audi/mod8m/scene.gltf": {
+    "audi/mod8m/scene.optimized.glb": {
         allowedMaterialNames: [
             "sw222_paint",
             "sw222_paint_2"
@@ -1023,21 +1524,91 @@ const MODEL_RULES = {
             "sw222_mirror_l_sw222_paint",
             "sw222_mirror_r_sw222_paint"
         ],
+        forceOverrideBlockedKeywords: [
+            "sw222_door_rr_chrome_2_2_sw222_paint",
+            "sw222_door_fr_chrome_2_2_sw222_paint",
+            "sw222_door_fl_chrome_2_2_sw222_paint",
+            "sw222_door_rl_chrome_2_2_sw222_paint",
+            "sw222_trunk_chrome_2_sw222_paint"
+        ],
         blockedKeywords: [
             "grille", "mblogo", "glass", "light", "wheel", "windshield", "doorglass", "doorpanel", "trim", "body_trim",
             "intmirror", "interior", "signal", "vehiclelights", "primary.", "showcase_plate", "bumperbar"
         ],
-        ignoredGenericBlockedKeywords: ["chrome", "mirror"],
-        distanceFactor: 1.3,
+        ignoredGenericBlockedKeywords: [],
+        distanceFactor: 1.26,
         heightFactor: 0.17,
         yOffsetFactor: 0.08,
         lookAtYFactor: 0.07,
+        stripTextureMaps: true,
+        glassForceIncludeKeywords: ["sw222_windshield", "sw222_doorglass", "sw222_glass"],
+        brakeForceIncludeKeywords: ["amdb11_caliper"]
+    },
+    "skoda/mc63/scene.optimized.glb": {
+        allowedMaterialNames: [
+            "bodypaint",
+            "G900_rocket_urus_27__PAINT_2",
+            "G900_rocket_urus_27__PAINT_2_0",
+            "G900_rocket_urus_27__PAINT_2_1",
+            "G900_rocket_urus_27__PAINT_2_2",
+            "G900_rocket_urus_27__PAINT_2_3",
+            "G900_rocket_urus_27__PAINT_2_4",
+            "G900_rocket_urus_27__PAINT_2_5",
+            "G900_rocket_urus_27__PAINT_2_6",
+            "G900_rocket_urus_27__PAINT_2_7",
+            "G900_rocket_urus_27__PAINT_2_8",
+            "G900_rocket_urus_27__PAINT_2_9"
+        ],
+        forceIncludeKeywords: [
+            "amg_hood_bodypaint",
+            "amg_front_bamper_bodypaint",
+            "amg_rear_bamper_bodypaint",
+            "amg_grill_bodypaint",
+            "g-class_headlightframe_l_amg_bodypaint",
+            "g-class_headlightframe_r_amg_bodypaint",
+            "g-class_mirror_r_bodypaint",
+            "g-class_mirror_l_bodypaint",
+            "amg_sparetire_bodypaint",
+            "g-class_fender_r_bodypaint",
+            "g-class_fender_l_bodypaint",
+            "amg_frontwide_fender_l_bodypaint",
+            "amg_frontwide_fender_r_bodypaint",
+            "g-class_fl_door_amg_bodypaint",
+            "g-class_fr_door_amg_bodypaint"
+        ],
+        forceOverrideBlockedKeywords: [
+            "amg_grill_bodypaint",
+            "g-class_headlightframe_l_amg_bodypaint",
+            "g-class_headlightframe_r_amg_bodypaint",
+            "g-class_mirror_r_bodypaint",
+            "g-class_mirror_l_bodypaint",
+            "amg_sparetire_bodypaint"
+        ],
+        blockedKeywords: ["grille", "mesh", "chrome", "light", "glass", "mirror", "wheel", "rim", "badge", "logo", "brake", "caliper"],
+        distanceFactor: 1.26,
+        heightFactor: 0.18,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.08,
+        glassForceIncludeKeywords: ["g_class_glass", "g_class_glass_tint", "intwindows"],
+        brakeForceIncludeKeywords: ["caliper", "calliper", "brembo"],
         stripTextureMaps: true
+    },
+    "audi/mod3/scene.optimized.glb": {
+        allowedMaterialNames: ["material.021"],
+        blockedKeywords: ["backlight", "glass", "light", "brake_metal", "disc", "rotor", "wheel", "rim", "tire", "tyre", "badge", "logo", "caliper"],
+        distanceFactor: 1.22,
+        heightFactor: 0.17,
+        yOffsetFactor: 0.08,
+        lookAtYFactor: 0.07,
+        stripTextureMaps: true,
+        brakeForceIncludeKeywords: ["caliper"]
     }
 };
 
 const brandSelect = document.getElementById("brandSelect");
 const modelSelect = document.getElementById("modelSelect");
+const tintSelect = document.getElementById("tintSelect");
+const brakeColorSelect = document.getElementById("brakeColorSelect");
 const viewer = document.getElementById("viewer");
 const colorGrid = document.getElementById("colorGrid");
 const paletteHint = document.getElementById("paletteHint");
@@ -1045,30 +1616,51 @@ const colorSearch = document.getElementById("colorSearch");
 const finishFilter = document.getElementById("finishFilter");
 const statusText = document.getElementById("statusText");
 const debugPanel = document.getElementById("debugPanel");
+const loadingOverlay = document.getElementById("loadingOverlay");
+const loadingLabel = document.getElementById("loadingLabel");
+const loadingProgress = document.getElementById("loadingProgress");
+const fallbackPoster = document.getElementById("fallbackPoster");
+const zoomOutBtn = document.getElementById("zoomOutBtn");
+const resetViewBtn = document.getElementById("resetViewBtn");
+const zoomInBtn = document.getElementById("zoomInBtn");
 
 let currentColorKey = "bluegloss";
+let currentTintKey = "stock";
+let currentBrakeColorKey = "stock";
 let car;
 let bodyMaterialEntries = [];
+let glassMaterialEntries = [];
+let brakeMaterialEntries = [];
+let interiorTintMaterialEntries = [];
 let lastMaterialScan = [];
+let lastFrameInfo = null;
 let currentCarPath = "";
+let activeLoadId = 0;
 let currentColorSearch = "";
 let currentFinishFilter = "all";
+let controls;
+let interactionTimer = 0;
+let isUserInteracting = false;
+let lastCameraState = null;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x05070d);
 
-const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(64, 4, 4, 10);
 
 function isLowPowerDevice() {
-    return window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 820;
+    const verySmallScreen = window.innerWidth <= 430;
+    const lowMemory = typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 4;
+    const lowCpu = typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency <= 4;
+    return verySmallScreen && (lowMemory || lowCpu);
 }
 
 const LOW_POWER_DEVICE = isLowPowerDevice();
 
 function createStudioEnvironmentTexture() {
     const canvas = document.createElement("canvas");
-    canvas.width = LOW_POWER_DEVICE ? 512 : 1024;
-    canvas.height = LOW_POWER_DEVICE ? 256 : 512;
+    canvas.width = LOW_POWER_DEVICE ? 640 : (window.innerWidth <= 640 ? 960 : 1536);
+    canvas.height = LOW_POWER_DEVICE ? 320 : (window.innerWidth <= 640 ? 480 : 768);
     const ctx = canvas.getContext("2d");
 
     const baseGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
@@ -1107,13 +1699,35 @@ function createStudioEnvironmentTexture() {
     return texture;
 }
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+const renderer = new THREE.WebGLRenderer({ antialias: !LOW_POWER_DEVICE && window.innerWidth > 520, alpha: false, powerPreference: "high-performance" });
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.NoToneMapping;
 renderer.toneMappingExposure = 1.0;
 renderer.physicallyCorrectLights = true;
 renderer.sortObjects = !LOW_POWER_DEVICE;
 viewer.appendChild(renderer.domElement);
+if (THREE.OrbitControls) {
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.enablePan = true;
+    controls.screenSpacePanning = true;
+    controls.rotateSpeed = window.innerWidth <= 640 ? 0.65 : 0.78;
+    controls.zoomSpeed = 0.72;
+    controls.panSpeed = 0.42;
+    controls.minPolarAngle = THREE.MathUtils.degToRad(58);
+    controls.maxPolarAngle = THREE.MathUtils.degToRad(88);
+    controls.addEventListener("start", () => {
+        isUserInteracting = true;
+        window.clearTimeout(interactionTimer);
+    });
+    controls.addEventListener("end", () => {
+        window.clearTimeout(interactionTimer);
+        interactionTimer = window.setTimeout(() => {
+            isUserInteracting = false;
+        }, 2800);
+    });
+}
 const MAX_TEXTURE_ANISOTROPY = Math.max(
     1,
     Math.min(
@@ -1138,10 +1752,15 @@ scene.add(fillLight.target);
 const env = createStudioEnvironmentTexture();
 scene.environment = env;
 
+const dracoLoader = new THREE.DRACOLoader();
+dracoLoader.setDecoderPath("https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/libs/draco/");
+
 const loader = new THREE.GLTFLoader();
-THREE.Cache.enabled = true;
+loader.setDRACOLoader(dracoLoader);
+THREE.Cache.enabled = false;
 const originalConsoleWarn = console.warn.bind(console);
-const TARGET_FRAME_INTERVAL = LOW_POWER_DEVICE ? 1000 / 30 : 1000 / 60;
+const TARGET_FRAME_INTERVAL = LOW_POWER_DEVICE ? 1000 / 36 : 1000 / 60;
+const AUTO_ROTATION_SPEED = window.innerWidth <= 640 ? 0.00145 : 0.0017;
 let lastFrameTime = 0;
 
 console.warn = (...args) => {
@@ -1157,8 +1776,10 @@ function resizeRenderer() {
     const height = viewer.clientHeight || window.innerHeight;
     const devicePixelRatio = window.devicePixelRatio || 1;
     const targetPixelRatio = LOW_POWER_DEVICE
-        ? (window.innerWidth <= 640 ? 1.25 : 1.4)
-        : window.innerWidth <= 980 ? 1.5 : 2;
+        ? 1.05
+        : window.innerWidth <= 640 ? 1.18
+        : window.innerWidth <= 980 ? 1.55
+        : 2;
     renderer.setPixelRatio(Math.max(1, Math.min(devicePixelRatio, targetPixelRatio)));
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
@@ -1173,10 +1794,10 @@ function animate(now = 0) {
 
     lastFrameTime = now;
 
-    if (car) {
-        const rotationSpeed = getModelRule()?.rotationSpeed ?? 0.0022;
-        car.rotation.y += rotationSpeed;
+    if (car && !isUserInteracting) {
+        car.rotation.y += AUTO_ROTATION_SPEED;
     }
+    controls?.update();
     renderer.render(scene, camera);
 }
 
@@ -1266,6 +1887,14 @@ function buildCarMaterial(preset) {
     return material;
 }
 
+function getTintPreset(key) {
+    return TINT_PRESETS[key] || TINT_PRESETS.stock;
+}
+
+function getBrakePreset(key) {
+    return BRAKE_COLOR_PRESETS[key] || BRAKE_COLOR_PRESETS.stock;
+}
+
 function normalizeName(value) {
     return String(value || "")
         .trim()
@@ -1303,6 +1932,8 @@ function getQueryConfig() {
         brand: normalizeName(params.get("brand")),
         model: params.get("model") || "",
         color: normalizeName(params.get("color")),
+        tint: normalizeName(params.get("tint")),
+        brake: normalizeName(params.get("brake")),
         debug: params.get("debug") === "1"
     };
 }
@@ -1317,7 +1948,11 @@ function normalizeModelPath(value) {
 
 function getModelRule() {
     const normalizedPath = normalizeModelPath(currentCarPath);
-    const match = Object.entries(MODEL_RULES).find(([path]) => normalizeModelPath(path) === normalizedPath);
+    const optimizedEquivalentPath = normalizedPath.replace(/scene\.fast\.glb$/i, "scene.optimized.glb");
+    const match = Object.entries(MODEL_RULES).find(([path]) => {
+        const rulePath = normalizeModelPath(path);
+        return rulePath === normalizedPath || rulePath === optimizedEquivalentPath;
+    });
     return match ? match[1] : null;
 }
 
@@ -1329,14 +1964,24 @@ function isAllowedBodyMaterial(descriptor, materialName) {
     const allowedKeywords = normalizeList(rule?.allowedKeywords);
     const allowedObjectKeywords = normalizeList(rule?.allowedObjectKeywords);
     const forceIncludeKeywords = normalizeList(rule?.forceIncludeKeywords);
+    const forceOverrideBlockedKeywords = normalizeList(rule?.forceOverrideBlockedKeywords);
     const hasExplicitRule = Boolean(forceIncludeKeywords.length || allowedMaterialNames.length || allowedKeywords.length || allowedObjectKeywords.length);
+    const hasForceMatch = forceIncludeKeywords.some((word) => normalized.includes(word));
+    const hasForceOverride = forceOverrideBlockedKeywords.some((word) => normalized.includes(word));
+    const hasBodyColoredMirror = normalized.includes("mirror")
+        && ["body", "paint", "carpaint"].some((word) => normalized.includes(word))
+        && !["glass", "window", "light", "lamp", "signal", "indicator", "chrome", "black", "plastic"].some((word) => normalized.includes(word));
 
-    if (forceIncludeKeywords.length && forceIncludeKeywords.some((word) => normalized.includes(word))) {
+    if (isBlockedMaterial(normalized) && !hasForceOverride && !hasBodyColoredMirror) {
+        return false;
+    }
+
+    if (hasForceMatch) {
         return true;
     }
 
-    if (isBlockedMaterial(normalized)) {
-        return false;
+    if (hasBodyColoredMirror) {
+        return true;
     }
 
     if (allowedObjectKeywords.length && allowedObjectKeywords.some((word) => normalized.includes(word))) {
@@ -1382,7 +2027,146 @@ function getBlockedReasons(descriptor) {
 
 function isGlassLikeMaterial(materialName) {
     const normalized = normalizeName(materialName);
-    return normalized.includes("glass") || normalized.includes("window") || normalized.includes("mirror");
+    return normalized.includes("glass") || normalized.includes("window") || normalized.includes("windshield") || normalized.includes("windscreen");
+}
+
+function isGlassEffectTarget(descriptor, material, obj) {
+    const normalized = normalizeName(descriptor);
+    const normalizedObjectName = normalizeName(obj?.name || "");
+    const normalizedMaterialName = normalizeName(material?.name || "");
+    const rule = getModelRule() || {};
+    const forcedGlassKeywords = normalizeList(rule.glassForceIncludeKeywords);
+    const forcedGlassMatch = forcedGlassKeywords.some((word) => normalized.includes(word) || normalizedObjectName.includes(word) || normalizedMaterialName.includes(word));
+
+    const excludedGlassTargets = [
+        "light",
+        "lamp",
+        "indicator",
+        "headlight",
+        "taillight",
+        "drl",
+        "led",
+        "mirror",
+        "chrome",
+        "badge",
+        "logo"
+    ].some((word) => normalized.includes(word));
+
+    if (excludedGlassTargets) {
+        return Boolean(rule.allowLightGlassTint && forcedGlassMatch);
+    }
+
+    if (forcedGlassMatch) {
+        return true;
+    }
+
+    const explicitGlassMatch = [
+        "glass",
+        "window",
+        "windshield",
+        "windscreen",
+        "doorglass",
+        "door_glass",
+        "rearwindow",
+        "backglass",
+        "backlight",
+        "rear_glass",
+        "quarter_glass"
+    ].some((word) => normalized.includes(word));
+
+    if (explicitGlassMatch) {
+        return true;
+    }
+
+    const glassLikeName = ["glass", "window", "windshield", "windscreen", "doorglass", "backglass"].some((word) =>
+        normalizedObjectName.includes(word),
+    );
+
+    if (glassLikeName) {
+        return true;
+    }
+
+    const hasTransparency = Boolean(
+        material?.transparent ||
+        (typeof material?.opacity === "number" && material.opacity < 0.98) ||
+        (typeof material?.transmission === "number" && material.transmission > 0.01),
+    );
+    const excludedTransparentParts = ["light", "lamp", "indicator", "tail", "head", "dr", "led"].some((word) =>
+        normalized.includes(word),
+    );
+
+    return hasTransparency && !excludedTransparentParts;
+}
+
+function isBrakeEffectTarget(descriptor, material, obj) {
+    const normalized = normalizeName(descriptor);
+    const normalizedObjectName = normalizeName(obj?.name || "");
+    const normalizedMaterialName = normalizeName(material?.name || "");
+    const forcedBrakeKeywords = normalizeList(getModelRule()?.brakeForceIncludeKeywords);
+    const forcedBrakeMatch = forcedBrakeKeywords.some((word) =>
+        normalized.includes(word) || normalizedObjectName.includes(word) || normalizedMaterialName.includes(word),
+    );
+
+    const hardBlockedBrakeTargets = [
+        "disc",
+        "disk",
+        "rotor",
+        "hub",
+        "drum",
+        "axle",
+        "lock",
+        "locks",
+        "light",
+        "brakelight",
+        "brake_light",
+        "pedal"
+    ].some((word) => normalized.includes(word));
+
+    if (hardBlockedBrakeTargets) {
+        return false;
+    }
+
+    const rollingPartTargets = [
+        "wheel",
+        "rim",
+        "tire",
+        "tyre"
+    ].some((word) => normalized.includes(word));
+
+    if (rollingPartTargets && !forcedBrakeMatch) {
+        return false;
+    }
+
+    if (forcedBrakeMatch) {
+        return true;
+    }
+
+    return normalized.includes("caliper")
+        || normalized.includes("calliper")
+        || normalized.includes("brembo")
+        || normalized.includes("brake_caliper")
+        || normalized.includes("calliperzone")
+        || normalized.includes("calliper_zone")
+        || normalized.includes("brake_color")
+        || normalized.includes("brakecolor")
+        || normalizedObjectName.includes("caliper")
+        || normalizedObjectName.includes("calliper")
+        || normalizedObjectName.includes("brembo")
+        || normalizedMaterialName.includes("caliper")
+        || normalizedMaterialName.includes("calliper")
+        || normalizedMaterialName.includes("brembo")
+        || normalizedMaterialName.includes("brake_color")
+        || normalizedMaterialName.includes("brakecolor");
+}
+
+function isInteriorTintTarget(descriptor) {
+    const dimKeywords = normalizeList(getModelRule()?.interiorDimKeywords);
+    if (!dimKeywords.length) {
+        return false;
+    }
+
+    const normalized = normalizeName(descriptor);
+    return dimKeywords.some((word) => normalized.includes(word));
 }
 
 function normalizeSceneMaterial(material, descriptor) {
@@ -1399,7 +2183,7 @@ function normalizeSceneMaterial(material, descriptor) {
         material.alphaMap = null;
         material.alphaTest = 0;
         material.depthWrite = true;
-        material.side = THREE.FrontSide;
+        material.side = getModelRule()?.doubleSidedBody ? THREE.DoubleSide : THREE.FrontSide;
     }
 
     optimizeMaterialTextureMaps(material);
@@ -1476,6 +2260,73 @@ function disposeCarAssets(root) {
     });
 }
 
+function buildEffectMaterialEntries(root, matcher) {
+    const entries = [];
+
+    root.traverse((obj) => {
+        if (!obj.isMesh || !obj.material) {
+            return;
+        }
+
+        const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+
+        materials.forEach((material, index) => {
+            if (!material) {
+                return;
+            }
+
+            const descriptor = getObjectDescriptor(obj, material.name);
+            normalizeSceneMaterial(material, descriptor);
+            if (!matcher(descriptor, material, obj)) {
+                return;
+            }
+
+            entries.push({
+                mesh: obj,
+                originalMaterial: material,
+                index: Array.isArray(obj.material) ? index : null,
+                descriptor,
+                materialName: normalizeName(material.name)
+            });
+        });
+    });
+
+    return entries;
+}
+
+function buildInteriorTintEntries(root) {
+    const entries = [];
+
+    root.traverse((obj) => {
+        if (!obj.isMesh || !obj.material) {
+            return;
+        }
+
+        const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+
+        materials.forEach((material, index) => {
+            if (!material) {
+                return;
+            }
+
+            const descriptor = getObjectDescriptor(obj, material.name);
+            if (!isInteriorTintTarget(descriptor)) {
+                return;
+            }
+
+            entries.push({
+                mesh: obj,
+                originalMaterial: material,
+                index: Array.isArray(obj.material) ? index : null,
+                descriptor,
+                materialName: normalizeName(material.name)
+            });
+        });
+    });
+
+    return entries;
+}
+
 function cloneAndTuneMaterial(sourceMaterial, preset) {
     if (!sourceMaterial || typeof sourceMaterial.clone !== "function") {
         return buildCarMaterial(preset);
@@ -1512,7 +2363,7 @@ function cloneAndTuneMaterial(sourceMaterial, preset) {
     material.transparent = preset.transparent ?? false;
     material.alphaTest = 0;
     material.depthWrite = true;
-    material.side = THREE.FrontSide;
+    material.side = rule.doubleSidedBody ? THREE.DoubleSide : THREE.FrontSide;
     material.envMap = env;
     material.envMapIntensity = preset.envMapIntensity ?? 1.0;
     if ("reflectivity" in material) {
@@ -1557,8 +2408,172 @@ function cloneAndTuneMaterial(sourceMaterial, preset) {
     return material;
 }
 
+function cloneTintMaterial(sourceMaterial, preset) {
+    const material = sourceMaterial && typeof sourceMaterial.clone === "function"
+        ? sourceMaterial.clone()
+        : new THREE.MeshPhysicalMaterial();
+    const tintColor = srgbHexToLinearColor(preset.hex);
+
+    clearMaterialTextureSlots(material, ["map", "alphaMap", "emissiveMap", "lightMap"]);
+
+    if (!(material.color instanceof THREE.Color)) {
+        material.color = new THREE.Color(0xffffff);
+    }
+
+    material.color.copy(tintColor);
+    material.transparent = true;
+    material.opacity = preset.opacity;
+    material.depthWrite = false;
+    material.alphaTest = 0;
+    material.side = THREE.DoubleSide;
+    material.envMap = env;
+    material.envMapIntensity = preset.envMapIntensity ?? 0.9;
+
+    if ("transmission" in material) {
+        material.transmission = preset.transmission ?? 0;
+    }
+    if ("metalness" in material) {
+        material.metalness = 0;
+    }
+    if ("roughness" in material) {
+        material.roughness = preset.roughness ?? 0.08;
+    }
+    if ("clearcoat" in material) {
+        material.clearcoat = 0.08;
+        material.clearcoatRoughness = 0.18;
+    }
+
+    optimizeMaterialTextureMaps(material);
+    material.needsUpdate = true;
+    return material;
+}
+
+function cloneInteriorDimMaterial(sourceMaterial, tintPreset) {
+    const material = sourceMaterial && typeof sourceMaterial.clone === "function"
+        ? sourceMaterial.clone()
+        : new THREE.MeshStandardMaterial();
+    const strength = tintPreset.opacity ?? 0;
+
+    if (!(material.color instanceof THREE.Color)) {
+        material.color = new THREE.Color(0xffffff);
+    }
+
+    if (strength > 0.45) {
+        const dark = new THREE.Color(0x05070b);
+        material.color.lerp(dark, THREE.MathUtils.clamp(strength * 1.15, 0.58, 0.94));
+        clearMaterialTextureSlots(material, ["map", "emissiveMap", "lightMap", "aoMap"]);
+        if ("emissive" in material) {
+            material.emissive.set(0x000000);
+            material.emissiveIntensity = 0;
+        }
+        if ("roughness" in material) material.roughness = Math.max(material.roughness ?? 0.45, 0.72);
+        if ("metalness" in material) material.metalness = Math.min(material.metalness ?? 0, 0.08);
+    }
+
+    material.needsUpdate = true;
+    return material;
+}
+
+function cloneBrakeMaterial(sourceMaterial, preset) {
+    const material = sourceMaterial && typeof sourceMaterial.clone === "function"
+        ? sourceMaterial.clone()
+        : new THREE.MeshPhysicalMaterial();
+
+    if (!preset.hex) {
+        optimizeMaterialTextureMaps(material);
+        material.needsUpdate = true;
+        return material;
+    }
+
+    clearMaterialTextureSlots(material, ["map", "emissiveMap", "lightMap", "alphaMap"]);
+
+    if (!(material.color instanceof THREE.Color)) {
+        material.color = new THREE.Color(0xffffff);
+    }
+
+    material.color.copy(srgbHexToLinearColor(preset.hex));
+    material.transparent = false;
+    material.opacity = 1;
+    material.envMap = env;
+    material.envMapIntensity = 1.05;
+    material.side = THREE.FrontSide;
+
+    if ("metalness" in material) {
+        material.metalness = 0.24;
+    }
+    if ("roughness" in material) {
+        material.roughness = 0.3;
+    }
+    if ("clearcoat" in material) {
+        material.clearcoat = 0.86;
+        material.clearcoatRoughness = 0.12;
+    }
+
+    optimizeMaterialTextureMaps(material);
+    material.needsUpdate = true;
+    return material;
+}
+
 function updateStatus(message) {
     statusText.textContent = message;
+}
+
+function setLoadingState(isLoading, message = "Loading car...", progress = 12) {
+    if (!loadingOverlay) {
+        return;
+    }
+
+    loadingOverlay.classList.toggle("active", isLoading);
+    loadingOverlay.style.setProperty("--load-progress", `${THREE.MathUtils.clamp(progress, 0, 100)}%`);
+
+    if (loadingLabel) {
+        loadingLabel.textContent = message;
+    }
+}
+
+function setFallbackPoster(active) {
+    if (fallbackPoster) {
+        fallbackPoster.classList.toggle("active", Boolean(active));
+    }
+}
+
+window.getPpfDebugState = () => ({
+    path: currentCarPath,
+    hasCar: Boolean(car),
+    frame: lastFrameInfo,
+    bodyCount: bodyMaterialEntries.length,
+    glassCount: glassMaterialEntries.length,
+    brakeCount: brakeMaterialEntries.length,
+    fallbackActive: fallbackPoster?.classList.contains("active") || false,
+    loadingActive: loadingOverlay?.classList.contains("active") || false,
+    status: statusText?.textContent || "",
+    camera: camera?.position?.toArray?.() || null,
+    target: controls?.target?.toArray?.() || null
+});
+
+function rememberCameraState(target, minDistance, maxDistance) {
+    lastCameraState = {
+        position: camera.position.clone(),
+        target: target.clone(),
+        minDistance,
+        maxDistance
+    };
+}
+
+function applyCameraState(state = lastCameraState) {
+    if (!state) {
+        return;
+    }
+
+    camera.position.copy(state.position);
+    if (controls) {
+        controls.target.copy(state.target);
+        controls.minDistance = state.minDistance;
+        controls.maxDistance = state.maxDistance;
+        controls.update();
+    } else {
+        camera.lookAt(state.target);
+    }
 }
 
 function renderDebugInfo(selectedModel = "") {
@@ -1576,6 +2591,12 @@ function renderDebugInfo(selectedModel = "") {
         `path: ${currentCarPath || "-"}`,
         `entries: ${bodyMaterialEntries.length}`
     ];
+
+    if (lastFrameInfo) {
+        lines.push(`box size: ${lastFrameInfo.size.map((value) => value.toFixed(3)).join(", ")}`);
+        lines.push(`box center: ${lastFrameInfo.center.map((value) => value.toFixed(3)).join(", ")}`);
+        lines.push(`camera distance: ${lastFrameInfo.distance.toFixed(3)}`);
+    }
 
     const debugEntries = bodyMaterialEntries.length ? bodyMaterialEntries : lastMaterialScan;
     const debugTitle = bodyMaterialEntries.length ? "selected" : "scan";
@@ -1632,7 +2653,7 @@ function renderColorButtons() {
         const totalColors = COLOR_PRESETS.length;
         const visibleCount = visiblePresets.length;
         const filterLabel = currentFinishFilter === "all" ? "كل الخامات" : currentFinishFilter;
-        paletteHint.textContent = `كتالوج PPF واقعي يضم ${totalColors} لونًا. المعروض الآن ${visibleCount} لونًا ضمن ${filterLabel} عبر ${finishCount} خامات.`;
+        paletteHint.textContent = `يعرض الآن ${totalColors} لون PPF. النتيجة تعرض ${visibleCount} خيار ضمن ${filterLabel} عبر ${finishCount} خامات.`;
     }
 
     setActiveColorButton();
@@ -1666,7 +2687,21 @@ function populateFinishFilter() {
     });
 }
 
-function populateModels() {
+function isExternalModelPath(path) {
+    return path.startsWith("external-models/");
+}
+
+async function externalModelExists(path) {
+    try {
+        const response = await fetch(path, { method: "HEAD", cache: "no-store" });
+        return response.ok;
+    } catch (error) {
+        console.warn("[PPF] external model check failed:", path, error);
+        return false;
+    }
+}
+
+async function populateModels() {
     const brand = brandSelect.value;
     modelSelect.innerHTML = '<option value="">اختر الموديل</option>';
 
@@ -1674,18 +2709,38 @@ function populateModels() {
         return;
     }
 
-    Object.entries(carModels[brand]).forEach(([modelName, path]) => {
+    let visibleModelCount = 0;
+
+    for (const [modelName, path] of Object.entries(carModels[brand])) {
+        if (isExternalModelPath(path) && !(await externalModelExists(path))) {
+            console.warn("[PPF] Hidden missing external model:", modelName, path);
+            continue;
+        }
+
         const option = document.createElement("option");
         option.value = path;
         option.textContent = modelName;
+        if (isExternalModelPath(path)) {
+            option.dataset.externalModel = "true";
+        }
         modelSelect.appendChild(option);
-    });
+        visibleModelCount += 1;
+    }
+
+    if (visibleModelCount === 0) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.disabled = true;
+        option.textContent = "لا توجد موديلات جاهزة لهذه الماركة";
+        modelSelect.appendChild(option);
+    }
 }
 
 function formatBrandLabel(brandKey) {
     const labels = {
         bmw: "BMW",
-        ram: "RAM",
+        dodge: "Dodge",
+        golf: "Golf",
         landrover: "Land Rover",
         alfa: "Alfa Romeo"
     };
@@ -1711,16 +2766,36 @@ function populateBrands() {
     });
 }
 
-function applyInitialSelectionFromQuery() {
+async function applyInitialSelectionFromQuery() {
     const config = getQueryConfig();
+
+    if (config.brand === "ram") {
+        config.brand = "dodge";
+    }
 
     if (config.color && getPreset(config.color)) {
         currentColorKey = config.color;
     }
 
+    if (config.tint && TINT_PRESETS[config.tint]) {
+        currentTintKey = config.tint;
+    }
+
+    if (config.brake && BRAKE_COLOR_PRESETS[config.brake]) {
+        currentBrakeColorKey = config.brake;
+    }
+
+    if (tintSelect) {
+        tintSelect.value = currentTintKey;
+    }
+
+    if (brakeColorSelect) {
+        brakeColorSelect.value = currentBrakeColorKey;
+    }
+
     if (config.brand && carModels[config.brand]) {
         brandSelect.value = config.brand;
-        populateModels();
+        await populateModels();
     }
 
     if (config.model) {
@@ -1811,34 +2886,87 @@ function buildBodyMaterialEntries(root) {
     return entries.length > 0 ? entries : fallbackEntries;
 }
 
+function getFramingBox(root, rule = {}) {
+    const excludeKeywords = normalizeList(rule.frameExcludeKeywords);
+
+    if (!excludeKeywords.length) {
+        return new THREE.Box3().setFromObject(root);
+    }
+
+    const box = new THREE.Box3();
+    const meshBox = new THREE.Box3();
+    let hasIncludedMesh = false;
+
+    root.updateMatrixWorld(true);
+    root.traverse((obj) => {
+        if (!obj.isMesh || !obj.geometry) {
+            return;
+        }
+
+        const descriptor = getObjectDescriptor(obj);
+        if (excludeKeywords.some((word) => descriptor.includes(word))) {
+            return;
+        }
+
+        if (!obj.geometry.boundingBox) {
+            obj.geometry.computeBoundingBox();
+        }
+
+        if (!obj.geometry.boundingBox) {
+            return;
+        }
+
+        meshBox.copy(obj.geometry.boundingBox).applyMatrix4(obj.matrixWorld);
+        box.union(meshBox);
+        hasIncludedMesh = true;
+    });
+
+    return hasIncludedMesh ? box : new THREE.Box3().setFromObject(root);
+}
+
 function frameCar() {
-    const box = new THREE.Box3().setFromObject(car);
+    const rule = getModelRule() || {};
+    const box = getFramingBox(car, rule);
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
-    const rule = getModelRule() || {};
-    const xOffset = size.x * (rule.xOffsetFactor ?? 0);
+    const xOffset = size.x * THREE.MathUtils.clamp(rule.xOffsetFactor ?? 0, -0.06, 0.06);
 
     car.position.set(-center.x + xOffset, -center.y + size.y * (rule.yOffsetFactor ?? 0.12), -center.z);
+    car.updateMatrixWorld(true);
 
-    const maxDim = Math.max(size.x, size.y, size.z);
+    const framedBox = getFramingBox(car, rule);
+    const framedSize = framedBox.getSize(new THREE.Vector3());
+    const framedCenter = framedBox.getCenter(new THREE.Vector3());
+
+    const maxDim = Math.max(framedSize.x, framedSize.y, framedSize.z, 0.001);
     const isCompactLayout = window.innerWidth <= 980;
-    const desktopDistanceFactor = rule.distanceFactor ?? 1.2;
-    const mobileDistanceFactor = desktopDistanceFactor + 0.2;
-    const legacyDistance = maxDim * (isCompactLayout ? mobileDistanceFactor : desktopDistanceFactor);
     const halfFovY = THREE.MathUtils.degToRad(camera.fov * 0.5);
     const halfFovX = Math.atan(Math.tan(halfFovY) * camera.aspect);
-    const fitHeightDistance = (size.y * 0.5) / Math.tan(halfFovY);
-    const fitWidthDistance = (size.x * 0.5) / Math.tan(halfFovX);
-    const fitDepthDistance = size.z * 0.72;
-    const safeFitDistance = Math.max(fitHeightDistance, fitWidthDistance, fitDepthDistance) * (isCompactLayout ? 1.12 : 1.02);
-    const distance = Math.max(legacyDistance, safeFitDistance);
-    const heightFactor = rule.heightFactor ?? 0.18;
+    const fitHeightDistance = (framedSize.y * 0.5) / Math.tan(halfFovY);
+    const fitWidthDistance = (framedSize.x * 0.5) / Math.tan(halfFovX);
+    const fitDepthDistance = framedSize.z * 0.72;
+    const safeFitDistance = Math.max(fitHeightDistance, fitWidthDistance, fitDepthDistance, rule.minFrameDistance ?? 4);
+    const normalizedDistanceFactor = THREE.MathUtils.clamp(rule.distanceFactor ?? 1.22, 1.02, 1.5);
+    const distancePadding = isCompactLayout ? 1.18 : 1.08;
+    const frameScale = THREE.MathUtils.clamp(rule.frameScale ?? 1, 0.68, 1.18);
+    const distance = safeFitDistance * normalizedDistanceFactor * distancePadding * frameScale;
+    const heightFactor = THREE.MathUtils.clamp(rule.heightFactor ?? 0.18, 0.12, 0.24);
+    const lookAtYFactor = THREE.MathUtils.clamp(rule.lookAtYFactor ?? 0.08, 0.04, 0.12);
+    const target = new THREE.Vector3(framedCenter.x, framedSize.y * lookAtYFactor, framedCenter.z);
+    lastFrameInfo = {
+        size: [framedSize.x, framedSize.y, framedSize.z],
+        center: [framedCenter.x, framedCenter.y, framedCenter.z],
+        distance
+    };
 
-    camera.position.set(0, distance * (isCompactLayout ? Math.max(heightFactor - 0.01, 0.11) : heightFactor), distance);
-    camera.lookAt(0, size.y * (rule.lookAtYFactor ?? 0.08), 0);
-    camera.near = Math.max(maxDim / 100, 0.1);
-    camera.far = maxDim * 12;
+    camera.position.set(framedCenter.x, distance * (isCompactLayout ? Math.max(heightFactor - 0.006, 0.125) : heightFactor), framedCenter.z + distance);
+    camera.lookAt(target);
+    camera.near = Math.min(Math.max(maxDim / 200, 0.01), Math.max(distance / 30, 0.05));
+    camera.far = Math.max(maxDim * 12, distance * 5, 120);
     camera.updateProjectionMatrix();
+
+    rememberCameraState(target, distance * 0.58, distance * 1.72);
+    applyCameraState();
 }
 
 function changeCarColor(colorKey) {
@@ -1863,13 +2991,95 @@ function changeCarColor(colorKey) {
     });
 }
 
+function applyWindowTint(tintKey) {
+    if (!car || (glassMaterialEntries.length === 0 && interiorTintMaterialEntries.length === 0)) {
+        return;
+    }
+
+    const preset = getTintPreset(tintKey);
+    const restoreInterior = tintKey === "stock";
+
+    glassMaterialEntries.forEach((entry) => {
+        const tintedMaterial = cloneTintMaterial(entry.originalMaterial, preset);
+
+        if (entry.index === null) {
+            entry.mesh.material = tintedMaterial;
+            return;
+        }
+
+        const nextMaterials = Array.isArray(entry.mesh.material) ? [...entry.mesh.material] : [entry.mesh.material];
+        nextMaterials[entry.index] = tintedMaterial;
+        entry.mesh.material = nextMaterials;
+    });
+
+    interiorTintMaterialEntries.forEach((entry) => {
+        const dimMaterial = restoreInterior ? entry.originalMaterial : cloneInteriorDimMaterial(entry.originalMaterial, preset);
+
+        if (entry.index === null) {
+            entry.mesh.material = dimMaterial;
+            return;
+        }
+
+        const nextMaterials = Array.isArray(entry.mesh.material) ? [...entry.mesh.material] : [entry.mesh.material];
+        nextMaterials[entry.index] = dimMaterial;
+        entry.mesh.material = nextMaterials;
+    });
+}
+
+function applyBrakeColor(colorKey) {
+    if (!car || brakeMaterialEntries.length === 0) {
+        return;
+    }
+
+    const preset = getBrakePreset(colorKey);
+
+    brakeMaterialEntries.forEach((entry) => {
+        const brakeMaterial = cloneBrakeMaterial(entry.originalMaterial, preset);
+
+        if (entry.index === null) {
+            entry.mesh.material = brakeMaterial;
+            return;
+        }
+
+        const nextMaterials = Array.isArray(entry.mesh.material) ? [...entry.mesh.material] : [entry.mesh.material];
+        nextMaterials[entry.index] = brakeMaterial;
+        entry.mesh.material = nextMaterials;
+    });
+}
+
+function applyAppearanceEffects() {
+    applyWindowTint(currentTintKey);
+    applyBrakeColor(currentBrakeColorKey);
+}
+
 function loadCar(path) {
     currentCarPath = String(path || "").trim().replace(/\\/g, "/");
+    const loadId = ++activeLoadId;
     updateStatus("جاري تحميل السيارة...");
+    setFallbackPoster(false);
+    setLoadingState(true, "Loading car...", 14);
+    const timeoutId = window.setTimeout(() => {
+        if (loadId !== activeLoadId) {
+            return;
+        }
+
+        console.warn("[PPF] Model loading timeout:", currentCarPath);
+        setLoadingState(false);
+        setFallbackPoster(true);
+        updateStatus("تعذر تحميل المعاينة بسرعة. جرّب اختيار السيارة مرة ثانية أو اختر موديلًا آخر.");
+    }, LOW_POWER_DEVICE ? 22000 : 16000);
 
     loader.load(
         path,
         (gltf) => {
+            if (loadId !== activeLoadId) {
+                window.clearTimeout(timeoutId);
+                disposeCarAssets(gltf.scene);
+                return;
+            }
+
+            window.clearTimeout(timeoutId);
+
             if (car) {
                 disposeCarAssets(car);
                 scene.remove(car);
@@ -1878,36 +3088,66 @@ function loadCar(path) {
             car = gltf.scene;
             const rule = getModelRule() || {};
             car.rotation.set(0, rule.initialRotationY ?? 0, 0);
-            car.scale.set(1, 1, 1);
+            const scaleFactor = rule.scaleFactor ?? 1;
+            car.scale.set(scaleFactor, scaleFactor, scaleFactor);
             bodyMaterialEntries = buildBodyMaterialEntries(car);
+            glassMaterialEntries = buildEffectMaterialEntries(car, isGlassEffectTarget);
+            brakeMaterialEntries = buildEffectMaterialEntries(car, isBrakeEffectTarget);
+            interiorTintMaterialEntries = buildInteriorTintEntries(car);
 
-            frameCar();
             scene.add(car);
+            car.updateMatrixWorld(true);
+            frameCar();
+            applyAppearanceEffects();
 
             if (bodyMaterialEntries.length === 0) {
-                updateStatus("تم تحميل السيارة، لكن لم يتم العثور على خامات البودي المناسبة تلقائيًا.");
+                updateStatus("تم تجهيز السيارة للمعاينة. يمكنك تجربة التظليل والبريكات من الخيارات الجانبية.");
             } else {
                 changeCarColor(currentColorKey);
                 const selectedModel = modelSelect.options[modelSelect.selectedIndex]?.text || "السيارة";
-                updateStatus(`تم تحميل ${selectedModel} وتطبيق اللون الحالي على ${bodyMaterialEntries.length} خامة من البودي.`);
+                updateStatus(`تم تطبيق اختياراتك على ${selectedModel}. يمكنك تعديل اللون والتظليل والبريكات قبل الحجز.`);
                 renderDebugInfo(selectedModel);
             }
 
             if (bodyMaterialEntries.length === 0) {
                 renderDebugInfo(modelSelect.options[modelSelect.selectedIndex]?.text || "السيارة");
             }
+            setLoadingState(false, "Ready", 100);
+            setFallbackPoster(false);
+            renderer.render(scene, camera);
         },
-        undefined,
+        (event) => {
+            if (loadId !== activeLoadId) {
+                return;
+            }
+
+            if (event.lengthComputable) {
+                setLoadingState(true, "Loading car...", Math.max(12, (event.loaded / event.total) * 92));
+            } else {
+                setLoadingState(true, "Loading car...", 42);
+            }
+        },
         (error) => {
+            if (loadId !== activeLoadId) {
+                return;
+            }
+
+            window.clearTimeout(timeoutId);
             console.error(error);
-            updateStatus("حدث خطأ أثناء تحميل السيارة. تأكد من ملفات الموديل والمسار.");
+            setLoadingState(false);
+            setFallbackPoster(true);
+            if (currentCarPath.startsWith("external-models/")) {
+                updateStatus("هذا الموديل غير جاهز للمعاينة حالياً. اختر موديلًا آخر من القائمة.");
+            } else {
+                updateStatus("حدث خطأ أثناء تحميل السيارة. تأكد من ملفات الموديل والمسار.");
+            }
             renderDebugInfo(modelSelect.options[modelSelect.selectedIndex]?.text || "السيارة");
         }
     );
 }
 
-brandSelect.addEventListener("change", () => {
-    populateModels();
+brandSelect.addEventListener("change", async () => {
+    await populateModels();
     updateStatus("اختر الموديل من القائمة.");
 });
 
@@ -1919,6 +3159,16 @@ colorSearch.addEventListener("input", () => {
 finishFilter.addEventListener("change", () => {
     currentFinishFilter = finishFilter.value || "all";
     renderColorButtons();
+});
+
+tintSelect.addEventListener("change", () => {
+    currentTintKey = tintSelect.value || "stock";
+    applyWindowTint(currentTintKey);
+});
+
+brakeColorSelect.addEventListener("change", () => {
+    currentBrakeColorKey = brakeColorSelect.value || "stock";
+    applyBrakeColor(currentBrakeColorKey);
 });
 
 modelSelect.addEventListener("change", () => {
@@ -1934,9 +3184,40 @@ window.addEventListener("resize", () => {
     }
 });
 
+resetViewBtn?.addEventListener("click", () => {
+    isUserInteracting = false;
+    applyCameraState();
+});
+
+zoomInBtn?.addEventListener("click", () => {
+    isUserInteracting = true;
+    camera.position.multiplyScalar(0.86);
+    controls?.update();
+    window.clearTimeout(interactionTimer);
+    interactionTimer = window.setTimeout(() => {
+        isUserInteracting = false;
+    }, 1600);
+});
+
+zoomOutBtn?.addEventListener("click", () => {
+    isUserInteracting = true;
+    camera.position.multiplyScalar(1.16);
+    controls?.update();
+    window.clearTimeout(interactionTimer);
+    interactionTimer = window.setTimeout(() => {
+        isUserInteracting = false;
+    }, 1600);
+});
+
 populateBrands();
 populateFinishFilter();
 renderColorButtons();
+if (tintSelect) {
+    tintSelect.value = currentTintKey;
+}
+if (brakeColorSelect) {
+    brakeColorSelect.value = currentBrakeColorKey;
+}
 applyInitialSelectionFromQuery();
 resizeRenderer();
 animate();

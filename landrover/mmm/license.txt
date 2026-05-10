@@ -1,0 +1,11 @@
+Model Information:
+* title:	2023 Land Rover Range Rover Sport
+* source:	https://sketchfab.com/3d-models/2023-land-rover-range-rover-sport-b68c443c8dae42359fb26a9282a3d572
+* author:	OUTPISTON (https://sketchfab.com/outpiston)
+
+Model License:
+* license type:	CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions must have the same license.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "2023 Land Rover Range Rover Sport" (https://sketchfab.com/3d-models/2023-land-rover-range-rover-sport-b68c443c8dae42359fb26a9282a3d572) by OUTPISTON (https://sketchfab.com/outpiston) licensed under CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)

@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#08111b">
   <title>تسجيل الدخول | Gloss Boss</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="portal.css">
 </head>
 <body class="portalPage">
+  <a class="portal" href="https://www.instagram.com/gloss.boss_detailing?igsh=MW4xanlrcTV2Z2dqYQ%3D%3D&utm_source=qr" target="_blank" rel="noopener" aria-label="Instagram">
+    <span class="icon"><i class="fab fa-instagram" aria-hidden="true"></i></span>
+  </a>
   <div class="pageWrap narrow">
     <header class="pageNav">
       <a class="brandBlock" href="login.html">
@@ -47,6 +51,7 @@
           <h2>ابدأ من هنا</h2>
           <p>إذا كنت أول مرة، اعمل حساب جديد. وإذا عندك حساب، سجل دخول مباشرة.</p>
         </div>
+
 
         <div class="modeSwitch">
           <button type="button" id="loginModeBtn" class="modeButton is-active">تسجيل دخول</button>
@@ -102,7 +107,7 @@
       signOut,
       updateProfile,
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { auth, authReady } from "./firebase-config.js";
+    import { auth, authReady, firebaseConfig } from "./firebase-config.js";
     import {
       mapFirebaseError,
       messageFromCode,
@@ -129,6 +134,16 @@
       mode: "login",
       canResendVerification: false,
     };
+
+    function buildAuthActionSettings(messageCode = "login_required") {
+      const url = new URL("login.html", `https://${firebaseConfig.authDomain}`);
+      url.searchParams.set("message", messageCode);
+
+      return {
+        url: url.toString(),
+        handleCodeInApp: false,
+      };
+    }
 
     await authReady.catch(() => {});
 
@@ -203,7 +218,7 @@
 
         await updateProfile(credential.user, { displayName: fullName });
         await saveUserProfile(credential.user, { name: fullName });
-        await sendEmailVerification(credential.user);
+        await sendEmailVerification(credential.user, buildAuthActionSettings("verify_email"));
         await signOut(auth);
 
         viewState.canResendVerification = false;
@@ -254,7 +269,7 @@
       }
 
       try {
-        await sendPasswordResetEmail(auth, email);
+        await sendPasswordResetEmail(auth, email, buildAuthActionSettings("password_reset_done"));
         setMessage("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك.", "success");
       } catch (error) {
         setMessage(mapFirebaseError(error), "error");
@@ -270,7 +285,7 @@
       }
 
       try {
-        await sendEmailVerification(currentUser);
+        await sendEmailVerification(currentUser, buildAuthActionSettings("verify_email"));
         setMessage("تم إرسال رابط التفعيل مرة ثانية.", "success");
       } catch (error) {
         setMessage(mapFirebaseError(error), "error");
