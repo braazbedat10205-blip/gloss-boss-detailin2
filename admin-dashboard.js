@@ -10,7 +10,7 @@ import {
   updateDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getDownloadURL, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-import { db, storage } from "./firebase-config.js";
+import { auth, db, storage } from "./firebase-config.js";
 import { logoutAndGo, requireAdmin } from "./app-auth.js";
 
 const CACHE_TTL_MS = 45_000;
@@ -454,9 +454,18 @@ async function sendBookingEmail(type, booking) {
     return false;
   }
 
+  const idToken = await auth.currentUser?.getIdToken();
+  if (!idToken) {
+    console.error("Email Worker failed: missing Firebase ID token.");
+    return false;
+  }
+
   const response = await fetch(EMAIL_API_ENDPOINT, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: {
+      authorization: `Bearer ${idToken}`,
+      "content-type": "application/json",
+    },
     body: JSON.stringify({
       type,
       to: booking.userEmail,

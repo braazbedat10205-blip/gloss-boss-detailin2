@@ -18,12 +18,17 @@ This removes email sending from Firebase Functions. Firestore and Firebase Auth 
 
 ```txt
 BREVO_API_KEY=your Brevo API key
-BREVO_SENDER_EMAIL=bookings@your-domain.com
+BREVO_SENDER_EMAIL=bookings@your-real-domain.com
 BREVO_SENDER_NAME=Gloss Boss Detailing
-APP_URL=https://gloos-boos-site.firebaseapp.com
+BREVO_REPLY_TO_EMAIL=your-inbox@your-real-domain.com
+APP_URL=https://braazbedat10205-blip.github.io
+EMAIL_LOGO_URL=https://braazbedat10205-blip.github.io/gloss-boss-detailin2/glos.jpeg
+FIREBASE_PROJECT_ID=gloos-boos-site
 ```
 
 Do not put the Brevo API key in any HTML or JavaScript frontend file.
+The sender must be a real address on a domain authenticated in Brevo. The Worker
+rejects placeholder domains such as `your-domain.com`.
 
 7. Deploy the Worker.
 8. Copy the Worker URL, for example:
@@ -115,4 +120,23 @@ Important: Firebase client SDK cannot generate a password reset link without sen
 
 ## Brevo Deliverability
 
-Inside Brevo, verify the sender/domain and add SPF, DKIM, and DMARC records to your DNS. This is what reduces spam.
+Inside Brevo, authenticate the entire sender domain, not only one sender address,
+and add every SPF, DKIM, and DMARC record shown by Brevo to your DNS.
+
+Also check the following:
+
+1. Brevo must show the domain as authenticated.
+2. Use only one SPF record for the domain. Merge providers into that record
+   instead of adding multiple `v=spf1` records.
+3. Start DMARC with monitoring, for example:
+   `v=DMARC1; p=none; rua=mailto:dmarc@your-real-domain.com`
+4. Do not use Gmail, Outlook, or another free mailbox as `BREVO_SENDER_EMAIL`.
+5. Keep the Worker authorization check enabled. A public email endpoint can be
+   abused and quickly damage the sender reputation.
+
+After changing Worker variables or code, deploy it again. Existing messages that
+already landed in spam do not retrain Gmail immediately; mark a few legitimate
+test messages as "Not spam" while the authenticated domain builds reputation.
+
+`wrangler.toml` uses `keep_vars = true` so deployment preserves the real sender
+configured in the Cloudflare dashboard instead of overwriting it with an example.
