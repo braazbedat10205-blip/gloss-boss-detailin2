@@ -1,4 +1,8 @@
 const BREVO_EMAIL_URL = "https://api.brevo.com/v3/smtp/email";
+const FIREBASE_TOKEN_URL = "https://oauth2.googleapis.com/token";
+const RESET_REQUEST_WINDOW_MS = 60_000;
+const recentResetRequests = new Map();
+let cachedFirebaseAccessToken = null;
 
 export default {
   async fetch(request, env) {
@@ -12,11 +16,6 @@ export default {
       return json({ ok: false, error: "METHOD_NOT_ALLOWED" }, 405, corsHeaders);
     }
 
-    const authorization = await authorizeAdmin(request, env);
-    if (!authorization.ok) {
-      return json(authorization, authorization.status || 401, corsHeaders);
-    }
-
     if (!env.BREVO_API_KEY || !isValidSenderEmail(env.BREVO_SENDER_EMAIL)) {
       return json({ ok: false, error: "BREVO_NOT_CONFIGURED" }, 500, corsHeaders);
     }
@@ -28,37 +27,34 @@ export default {
       return json({ ok: false, error: "INVALID_JSON" }, 400, corsHeaders);
     }
 
+    const type = String(payload?.type || "").trim();
+    if (type === "password-reset-request") {
+      if (!isAllowedOrigin(request, env)) {
+        return json({ ok: false, error: "ORIGIN_NOT_ALLOWED" }, 403, corsHeaders);
+      }
+
+      const result = await handlePasswordResetRequest(request, payload, env);
+      return json(result.body, result.status, corsHeaders);
+    }
+
+    const authorization = await authorizeAdmin(request, env);
+    if (!authorization.ok) {
+      return json(authorization, authorization.status || 401, corsHeaders);
+    }
+
     const email = buildEmail(payload, env);
     if (!email.ok) {
       return json(email, 400, corsHeaders);
     }
 
-    const brevoResponse = await fetch(BREVO_EMAIL_URL, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "api-key": env.BREVO_API_KEY,
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        sender: getSender(env),
-        to: [{ email: email.to }],
-        subject: email.subject,
-        textContent: email.textContent,
-        htmlContent: email.htmlContent,
-        replyTo: getReplyTo(env),
-        tags: ["gloss-boss", email.type],
-      }),
-    });
-
-    if (!brevoResponse.ok) {
-      const details = await brevoResponse.text().catch(() => "");
+    const brevoResult = await sendBrevoEmail(email, env);
+    if (!brevoResult.ok) {
       return json(
         {
           ok: false,
           error: "BREVO_SEND_FAILED",
-          status: brevoResponse.status,
-          details,
+          status: brevoResult.status,
+          details: brevoResult.details,
         },
         502,
         corsHeaders,
@@ -68,6 +64,237 @@ export default {
     return json({ ok: true, type: email.type }, 200, corsHeaders);
   },
 };
+
+async function handlePasswordResetRequest(request, payload, env) {
+  const email = String(payload?.email || "").trim().toLowerCase();
+  if (!isValidEmail(email)) {
+    return { status: 400, body: { ok: false, error: "VALID_EMAIL_REQUIRED" } };
+  }
+
+  if (!isFirebaseServiceAccountConfigured(env)) {
+    return { status: 500, body: { ok: false, error: "FIREBASE_ADMIN_NOT_CONFIGURED" } };
+  }
+
+  const clientAddress = request.headers.get("CF-Connecting-IP") || "unknown";
+  const requestKey = `${clientAddress}:${email}`;
+  if (isResetRequestRateLimited(requestKey)) {
+    return { status: 200, body: genericResetResponse() };
+  }
+
+  recentResetRequests.set(requestKey, Date.now());
+
+  let firebaseLink;
+  try {
+    firebaseLink = await generateFirebasePasswordResetLink(email, env);
+  } catch (error) {
+    const code = String(error?.code || "");
+    if (code === "EMAIL_NOT_FOUND" || code === "USER_NOT_FOUND") {
+      return { status: 200, body: genericResetResponse() };
+    }
+
+    console.error("Firebase reset link generation failed:", code || error);
+    return { status: 503, body: { ok: false, error: "PASSWORD_RESET_UNAVAILABLE" } };
+  }
+
+  const resetLink = buildBrandedResetLink(firebaseLink, env);
+  const emailMessage = buildEmail({
+    type: "password-reset",
+    to: email,
+    resetLink,
+  }, env);
+  const sendResult = await sendBrevoEmail(emailMessage, env);
+
+  if (!sendResult.ok) {
+    console.error("Brevo password reset send failed:", sendResult.status, sendResult.details);
+    return { status: 503, body: { ok: false, error: "PASSWORD_RESET_UNAVAILABLE" } };
+  }
+
+  return { status: 200, body: genericResetResponse() };
+}
+
+function genericResetResponse() {
+  return {
+    ok: true,
+    message: "If an account exists for this email, a reset link has been sent.",
+  };
+}
+
+function isResetRequestRateLimited(key) {
+  const now = Date.now();
+  const previousRequest = recentResetRequests.get(key) || 0;
+
+  for (const [storedKey, timestamp] of recentResetRequests) {
+    if (now - timestamp > RESET_REQUEST_WINDOW_MS) {
+      recentResetRequests.delete(storedKey);
+    }
+  }
+
+  return now - previousRequest < RESET_REQUEST_WINDOW_MS;
+}
+
+async function generateFirebasePasswordResetLink(email, env) {
+  const accessToken = await getFirebaseAccessToken(env);
+  const projectId = encodeURIComponent(env.FIREBASE_PROJECT_ID);
+  const response = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/projects/${projectId}/accounts:sendOobCode`,
+    {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${accessToken}`,
+        "content-type": "application/json",
+        "x-goog-user-project": env.FIREBASE_PROJECT_ID,
+      },
+      body: JSON.stringify({
+        requestType: "PASSWORD_RESET",
+        email,
+        returnOobLink: true,
+      }),
+    },
+  );
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || !data.oobLink) {
+    const error = new Error("FIREBASE_RESET_LINK_FAILED");
+    error.code = data?.error?.message || `HTTP_${response.status}`;
+    throw error;
+  }
+
+  return data.oobLink;
+}
+
+function buildBrandedResetLink(firebaseLink, env) {
+  const source = new URL(firebaseLink);
+  const target = new URL(
+    env.PASSWORD_RESET_URL || "https://gloos-boos-site.web.app/auth-action.html",
+  );
+
+  for (const key of ["mode", "oobCode", "apiKey", "lang", "continueUrl"]) {
+    const value = source.searchParams.get(key);
+    if (value) {
+      target.searchParams.set(key, value);
+    }
+  }
+
+  return target.toString();
+}
+
+async function getFirebaseAccessToken(env) {
+  if (
+    cachedFirebaseAccessToken
+    && cachedFirebaseAccessToken.expiresAt > Date.now() + 60_000
+  ) {
+    return cachedFirebaseAccessToken.token;
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  const assertion = await signServiceAccountJwt({
+    clientEmail: env.FIREBASE_CLIENT_EMAIL,
+    privateKey: env.FIREBASE_PRIVATE_KEY,
+    issuedAt: now,
+  });
+
+  const response = await fetch(FIREBASE_TOKEN_URL, {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+      assertion,
+    }),
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok || !data.access_token) {
+    throw new Error(`FIREBASE_TOKEN_FAILED_${response.status}`);
+  }
+
+  cachedFirebaseAccessToken = {
+    token: data.access_token,
+    expiresAt: Date.now() + Number(data.expires_in || 3600) * 1000,
+  };
+  return cachedFirebaseAccessToken.token;
+}
+
+async function signServiceAccountJwt({ clientEmail, privateKey, issuedAt }) {
+  const header = base64UrlEncode(JSON.stringify({ alg: "RS256", typ: "JWT" }));
+  const claims = base64UrlEncode(JSON.stringify({
+    iss: clientEmail,
+    sub: clientEmail,
+    aud: FIREBASE_TOKEN_URL,
+    scope: "https://www.googleapis.com/auth/identitytoolkit",
+    iat: issuedAt,
+    exp: issuedAt + 3600,
+  }));
+  const unsignedToken = `${header}.${claims}`;
+  const cryptoKey = await crypto.subtle.importKey(
+    "pkcs8",
+    pemToArrayBuffer(privateKey),
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = await crypto.subtle.sign(
+    "RSASSA-PKCS1-v1_5",
+    cryptoKey,
+    new TextEncoder().encode(unsignedToken),
+  );
+
+  return `${unsignedToken}.${base64UrlEncode(signature)}`;
+}
+
+function pemToArrayBuffer(value) {
+  const normalized = String(value || "").replaceAll("\\n", "\n");
+  const base64 = normalized
+    .replace("-----BEGIN PRIVATE KEY-----", "")
+    .replace("-----END PRIVATE KEY-----", "")
+    .replace(/\s+/g, "");
+  const binary = atob(base64);
+  return Uint8Array.from(binary, (character) => character.charCodeAt(0)).buffer;
+}
+
+function base64UrlEncode(value) {
+  const bytes = typeof value === "string"
+    ? new TextEncoder().encode(value)
+    : new Uint8Array(value);
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
+}
+
+function isFirebaseServiceAccountConfigured(env) {
+  return Boolean(
+    env.FIREBASE_PROJECT_ID
+    && env.FIREBASE_CLIENT_EMAIL
+    && env.FIREBASE_PRIVATE_KEY,
+  );
+}
+
+async function sendBrevoEmail(email, env) {
+  const response = await fetch(BREVO_EMAIL_URL, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "api-key": env.BREVO_API_KEY,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      sender: getSender(env),
+      to: [{ email: email.to }],
+      subject: email.subject,
+      textContent: email.textContent,
+      htmlContent: email.htmlContent,
+      replyTo: getReplyTo(env),
+      tags: ["gloss-boss", email.type],
+    }),
+  });
+
+  return {
+    ok: response.ok,
+    status: response.status,
+    details: response.ok ? "" : await response.text().catch(() => ""),
+  };
+}
 
 async function authorizeAdmin(request, env) {
   if (!env.FIREBASE_PROJECT_ID) {
@@ -131,7 +358,7 @@ function readFirebaseUid(idToken) {
   }
 }
 
-function buildEmail(payload, env) {
+function buildEmail(payload, env = {}) {
   const type = String(payload?.type || "").trim();
   const to = String(payload?.to || "").trim().toLowerCase();
 
@@ -393,6 +620,18 @@ function buildCorsHeaders(request, env) {
     "access-control-max-age": "86400",
     vary: "Origin",
   };
+}
+
+function isAllowedOrigin(request, env) {
+  const origin = request.headers.get("Origin") || "";
+  return new Set([
+    env.APP_URL,
+    "https://braazbedat10205-blip.github.io",
+    "https://gloos-boos-site.firebaseapp.com",
+    "https://gloos-boos-site.web.app",
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
+  ].filter(Boolean)).has(origin);
 }
 
 function json(data, status, headers) {

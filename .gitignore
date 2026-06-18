@@ -12,6 +12,9 @@ Thumbs.db
 .DS_Store
 firebase-debug.log
 *.log
+.firebase/
+.tmp-whatsapp/
+.tmp-*-key.json
 
 # Local function environment secrets
 node_modules/

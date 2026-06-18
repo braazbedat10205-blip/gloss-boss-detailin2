@@ -1,4 +1,4 @@
-name = "gloss-boss-email"
+name = "hidden-lake-a1b7"
 main = "email-worker.js"
 compatibility_date = "2026-05-10"
 account_id = "2fec2a9164b0a23d9ac92e29def161e4"
@@ -9,7 +9,9 @@ BREVO_SENDER_NAME = "Gloss Boss Detailing"
 APP_URL = "https://braazbedat10205-blip.github.io"
 EMAIL_LOGO_URL = "https://braazbedat10205-blip.github.io/gloss-boss-detailin2/glos.jpeg"
 FIREBASE_PROJECT_ID = "gloos-boos-site"
+PASSWORD_RESET_URL = "https://gloos-boos-site.web.app/auth-action.html"
 
-# Keep BREVO_SENDER_EMAIL in the Cloudflare dashboard so a placeholder cannot be
-# deployed accidentally. Do not put BREVO_API_KEY here; add it as a secret:
+# Keep sender and credentials in the Cloudflare dashboard. Required secrets:
 # npx wrangler secret put BREVO_API_KEY
+# npx wrangler secret put FIREBASE_CLIENT_EMAIL
+# npx wrangler secret put FIREBASE_PRIVATE_KEY

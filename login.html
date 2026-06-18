@@ -98,7 +98,6 @@
     import {
       createUserWithEmailAndPassword,
       sendEmailVerification,
-      sendPasswordResetEmail,
       signInWithEmailAndPassword,
       signOut,
       updateProfile,
@@ -125,6 +124,7 @@
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirmPassword");
+    const EMAIL_API_ENDPOINT = "https://hidden-lake-a1b7.braazbedat10205.workers.dev";
 
     const viewState = {
       mode: "login",
@@ -265,7 +265,18 @@
       }
 
       try {
-        await sendPasswordResetEmail(auth, email, buildAuthActionSettings("password_reset_done"));
+        const response = await fetch(EMAIL_API_ENDPOINT, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            type: "password-reset-request",
+            email,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("PASSWORD_RESET_UNAVAILABLE");
+        }
         setMessage("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك.", "success");
       } catch (error) {
         setMessage(mapFirebaseError(error), "error");
