@@ -54,7 +54,7 @@
           <button type="button" id="signupModeBtn" class="modeButton">إنشاء حساب</button>
         </div>
 
-        <form id="authForm" class="formGrid">
+        <form id="authForm" class="formGrid" onsubmit="return false;">
           <div id="nameGroup" class="fieldGroup hidden">
             <label class="fieldLabel" for="fullName">الاسم الكامل</label>
             <input id="fullName" class="fieldInput" type="text" placeholder="مثال: محمد أحمد" autocomplete="name">
@@ -131,6 +131,12 @@
       canResendVerification: false,
     };
 
+    loginModeBtn.addEventListener("click", () => setMode("login"));
+    signupModeBtn.addEventListener("click", () => setMode("signup"));
+    authForm.addEventListener("submit", handleSubmit);
+    resetPasswordBtn.addEventListener("click", handlePasswordReset);
+    resendVerificationBtn.addEventListener("click", resendVerificationEmail);
+
     function buildAuthActionSettings(messageCode = "login_required") {
       const url = new URL("login.html", `https://${firebaseConfig.authDomain}`);
       url.searchParams.set("message", messageCode);
@@ -141,29 +147,40 @@
       };
     }
 
-    await authReady.catch(() => {});
+    initializeAuthState();
 
-    const existingUser = await waitForUser();
-    if (existingUser?.emailVerified) {
-      window.location.replace("index.html");
-    }
+    async function initializeAuthState() {
+      await Promise.race([
+        authReady.catch(() => {}),
+        new Promise((resolve) => window.setTimeout(resolve, 2500)),
+      ]);
 
-    if (existingUser && !existingUser.emailVerified) {
-      viewState.canResendVerification = true;
-      resendVerificationBtn.classList.remove("hidden");
-      setMessage("فعّل بريدك الإلكتروني أولًا. إذا لم يصلك الرابط، أرسله مرة ثانية.", "info");
-    } else {
+      try {
+        const existingUser = await Promise.race([
+          waitForUser(),
+          new Promise((resolve) => window.setTimeout(() => resolve(null), 2500)),
+        ]);
+
+        if (existingUser?.emailVerified) {
+          window.location.replace("index.html");
+          return;
+        }
+
+        if (existingUser && !existingUser.emailVerified) {
+          viewState.canResendVerification = true;
+          resendVerificationBtn.classList.remove("hidden");
+          setMessage("فعّل بريدك الإلكتروني أولًا. إذا لم يصلك الرابط، أرسله مرة ثانية.", "info");
+          return;
+        }
+      } catch (error) {
+        console.warn("Could not restore the previous Firebase session:", error);
+      }
+
       const urlMessage = messageFromCode(readMessageCode());
       if (urlMessage) {
         setMessage(urlMessage, "info");
       }
     }
-
-    loginModeBtn.addEventListener("click", () => setMode("login"));
-    signupModeBtn.addEventListener("click", () => setMode("signup"));
-    authForm.addEventListener("submit", handleSubmit);
-    resetPasswordBtn.addEventListener("click", handlePasswordReset);
-    resendVerificationBtn.addEventListener("click", resendVerificationEmail);
 
     function setMode(mode) {
       viewState.mode = mode;
