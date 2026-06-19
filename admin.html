@@ -143,6 +143,48 @@
     </main>
   </div>
 
-  <script type="module" src="./admin-dashboard.js?v=20260511-admin-bookings-first"></script>
+  <dialog id="rejectionDialog" class="rejectionDialog">
+    <form id="rejectionForm" class="rejectionForm">
+      <div class="rejectionHead">
+        <div>
+          <span class="hintBadge">رفض الحجز</span>
+          <h2>إرسال سبب الرفض للعميل</h2>
+        </div>
+        <button id="closeRejectionDialogBtn" class="dialogClose" type="button" aria-label="إغلاق">×</button>
+      </div>
+
+      <p id="rejectionBookingSummary" class="rejectionSummary"></p>
+
+      <label class="fieldGroup">
+        <span class="fieldLabel">سبب رفض الحجز</span>
+        <textarea id="rejectionReason" class="fieldInput rejectionReason" rows="4" maxlength="500" required placeholder="مثال: الموعد غير متاح، يرجى اختيار موعد آخر"></textarea>
+      </label>
+
+      <fieldset class="deliveryOptions">
+        <legend>طريقة إرسال السبب</legend>
+        <label class="deliveryOption">
+          <input type="radio" name="rejectionDelivery" value="whatsapp">
+          <span><strong>واتساب</strong><small>فتح رسالة جاهزة على رقم العميل</small></span>
+        </label>
+        <label class="deliveryOption">
+          <input type="radio" name="rejectionDelivery" value="email">
+          <span><strong>إيميل</strong><small>إرسال رسالة Gloss Boss عبر Brevo</small></span>
+        </label>
+        <label class="deliveryOption">
+          <input type="radio" name="rejectionDelivery" value="both" checked>
+          <span><strong>كلاهما</strong><small>واتساب وإيميل معًا</small></span>
+        </label>
+      </fieldset>
+
+      <div id="rejectionDialogMessage" class="messageBox hidden" aria-live="polite"></div>
+
+      <div class="rejectionActions">
+        <button id="abortRejectionBtn" class="ghostAction" type="button">تراجع</button>
+        <button id="confirmRejectionBtn" class="primaryAction rejectionSubmit" type="submit">رفض الحجز وإرسال السبب</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="./admin-dashboard.js?v=20260620-rejection-reason"></script>
 </body>
 </html>

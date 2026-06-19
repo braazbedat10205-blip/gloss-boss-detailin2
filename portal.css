@@ -621,6 +621,133 @@ textarea {
   color: #ffd4d9;
 }
 
+.rejectionDialog {
+  width: min(570px, calc(100% - 24px));
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  color: var(--text);
+  background: var(--panel-strong);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.58);
+}
+
+.rejectionDialog::backdrop {
+  background: rgba(1, 5, 10, 0.78);
+  backdrop-filter: blur(7px);
+}
+
+.rejectionForm {
+  display: grid;
+  gap: 20px;
+  padding: 26px;
+}
+
+.rejectionHead,
+.rejectionActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.rejectionHead h2 {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+}
+
+.dialogClose {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  font-size: 25px;
+}
+
+.rejectionSummary {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(104, 217, 255, 0.16);
+  border-radius: var(--radius-md);
+  color: var(--muted);
+  background: rgba(104, 217, 255, 0.05);
+  line-height: 1.7;
+}
+
+.rejectionReason {
+  min-height: 112px;
+  resize: vertical;
+}
+
+.deliveryOptions {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.deliveryOptions legend {
+  margin-bottom: 9px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.deliveryOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.025);
+  cursor: pointer;
+}
+
+.deliveryOption:has(input:checked) {
+  border-color: rgba(104, 217, 255, 0.48);
+  background: rgba(104, 217, 255, 0.08);
+}
+
+.deliveryOption input {
+  accent-color: var(--cool);
+}
+
+.deliveryOption span,
+.deliveryOption strong,
+.deliveryOption small {
+  display: block;
+}
+
+.deliveryOption small {
+  margin-top: 3px;
+  color: var(--muted);
+}
+
+.rejectionSubmit {
+  width: auto;
+  min-width: 220px;
+}
+
+@media (max-width: 560px) {
+  .rejectionForm {
+    padding: 21px 16px;
+  }
+
+  .rejectionActions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .rejectionActions button,
+  .rejectionSubmit {
+    width: 100%;
+  }
+}
+
 .emptyState {
   padding: 32px 24px;
   text-align: center;

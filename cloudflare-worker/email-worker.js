@@ -416,9 +416,12 @@ function buildEmail(payload, env = {}) {
 }
 
 function buildBookingEmail({ type, to, confirmed, booking, env }) {
+  const rejectionReason = String(booking.rejectionReason || "").trim();
   const intro = confirmed
     ? "Your booking has been confirmed."
-    : "Your booking has been cancelled. The appointment slot is now available again.";
+    : rejectionReason
+      ? "Unfortunately, your booking request could not be accepted."
+      : "Your booking has been cancelled. The appointment slot is now available again.";
 
   const subject = confirmed
     ? "Gloss Boss booking confirmed"
@@ -431,6 +434,10 @@ function buildBookingEmail({ type, to, confirmed, booking, env }) {
     ["Time", booking.time || "-"],
     ["Vehicle", booking.vehicle || "-"],
   ];
+
+  if (!confirmed && rejectionReason) {
+    details.push(["Reason", rejectionReason]);
+  }
 
   return {
     ok: true,

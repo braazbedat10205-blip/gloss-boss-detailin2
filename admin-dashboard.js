@@ -47,8 +47,17 @@ const galleryUploadBtn = document.getElementById("galleryUploadBtn");
 const cancelProductEditBtn = document.getElementById("cancelProductEditBtn");
 const uploadMessage = document.getElementById("uploadMessage");
 const galleryAdminGrid = document.getElementById("galleryAdminGrid");
+const rejectionDialog = document.getElementById("rejectionDialog");
+const rejectionForm = document.getElementById("rejectionForm");
+const rejectionReason = document.getElementById("rejectionReason");
+const rejectionBookingSummary = document.getElementById("rejectionBookingSummary");
+const rejectionDialogMessage = document.getElementById("rejectionDialogMessage");
+const confirmRejectionBtn = document.getElementById("confirmRejectionBtn");
+const closeRejectionDialogBtn = document.getElementById("closeRejectionDialogBtn");
+const abortRejectionBtn = document.getElementById("abortRejectionBtn");
 
 let editingProduct = null;
+let pendingRejection = null;
 
 const state = {
   bookings: [],
@@ -88,6 +97,13 @@ function bindEvents() {
   galleryUploadForm?.addEventListener("submit", handleGalleryUpload);
   galleryAdminGrid?.addEventListener("click", handleProductAdminAction);
   cancelProductEditBtn?.addEventListener("click", resetProductForm);
+  rejectionForm?.addEventListener("submit", submitBookingRejection);
+  closeRejectionDialogBtn?.addEventListener("click", closeRejectionDialog);
+  abortRejectionBtn?.addEventListener("click", closeRejectionDialog);
+  rejectionDialog?.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    closeRejectionDialog();
+  });
   document.addEventListener("visibilitychange", handleVisibilityChange);
   window.addEventListener("beforeunload", cleanup);
 }
@@ -416,6 +432,17 @@ async function handleBookingActionWithFunction(event) {
     return;
   }
 
+  if (action === "cancel") {
+    const booking = findBookingBySlotKey(slotKey);
+    if (!booking) {
+      setMessage("تعذر العثور على الحجز.", "error");
+      return;
+    }
+
+    openRejectionDialog(booking);
+    return;
+  }
+
   button.disabled = true;
 
   try {
@@ -431,9 +458,6 @@ async function handleBookingActionWithFunction(event) {
       await deleteBookingAcrossCollections(slotKey);
       await deleteDoc(doc(db, "bookingSlots", slotKey));
       removeOptimisticBooking(slotKey);
-      if (action === "cancel") {
-        emailSent = await sendBookingEmail("booking-cancellation", booking);
-      }
     }
 
     setMessage(buildStatusMessage(action, emailSent), "success");
@@ -449,7 +473,7 @@ function findBookingBySlotKey(slotKey) {
   return state.bookings.find((booking) => booking.slotKey === slotKey) || null;
 }
 
-async function sendBookingEmail(type, booking) {
+async function sendBookingEmail(type, booking, options = {}) {
   if (!EMAIL_API_ENDPOINT || !booking?.userEmail) {
     return false;
   }
@@ -475,6 +499,7 @@ async function sendBookingEmail(type, booking) {
         date: booking.date,
         time: booking.time,
         vehicle: booking.vehicle,
+        rejectionReason: options.rejectionReason || "",
       },
     }),
   });
@@ -486,6 +511,175 @@ async function sendBookingEmail(type, booking) {
   }
 
   return true;
+}
+
+function openRejectionDialog(booking) {
+  const hasEmail = Boolean(booking.userEmail && booking.userEmail !== "-");
+  const hasWhatsApp = Boolean(normalizeWhatsAppNumber(booking.phone));
+
+  pendingRejection = booking;
+  confirmRejectionBtn.disabled = false;
+  rejectionForm.reset();
+  rejectionReason.value = "";
+  rejectionBookingSummary.textContent =
+    `${booking.customerName} — ${booking.date} الساعة ${booking.time}`;
+  setRejectionDialogMessage("", "info");
+
+  const whatsappOption = rejectionForm.querySelector('input[value="whatsapp"]');
+  const emailOption = rejectionForm.querySelector('input[value="email"]');
+  const bothOption = rejectionForm.querySelector('input[value="both"]');
+
+  whatsappOption.disabled = !hasWhatsApp;
+  emailOption.disabled = !hasEmail;
+  bothOption.disabled = !hasWhatsApp || !hasEmail;
+
+  if (hasWhatsApp && hasEmail) {
+    bothOption.checked = true;
+  } else if (hasWhatsApp) {
+    whatsappOption.checked = true;
+  } else if (hasEmail) {
+    emailOption.checked = true;
+  } else {
+    setRejectionDialogMessage("لا يوجد رقم واتساب أو بريد إلكتروني صالح لهذا العميل.", "error");
+    confirmRejectionBtn.disabled = true;
+  }
+
+  rejectionDialog.showModal();
+  window.setTimeout(() => rejectionReason.focus(), 50);
+}
+
+function closeRejectionDialog() {
+  pendingRejection = null;
+  confirmRejectionBtn.disabled = false;
+  rejectionDialog?.close();
+}
+
+async function submitBookingRejection(event) {
+  event.preventDefault();
+
+  const booking = pendingRejection;
+  const reason = rejectionReason.value.trim();
+  const delivery = rejectionForm.elements.rejectionDelivery.value;
+
+  if (!booking) {
+    closeRejectionDialog();
+    return;
+  }
+
+  if (!reason) {
+    setRejectionDialogMessage("اكتب سبب رفض الحجز أولًا.", "error");
+    rejectionReason.focus();
+    return;
+  }
+
+  if (!delivery) {
+    setRejectionDialogMessage("اختر طريقة إرسال سبب الرفض.", "error");
+    return;
+  }
+
+  const sendEmail = delivery === "email" || delivery === "both";
+  const sendWhatsApp = delivery === "whatsapp" || delivery === "both";
+  const whatsappUrl = sendWhatsApp ? buildWhatsAppRejectionUrl(booking, reason) : "";
+  let whatsappWindow = null;
+
+  if (sendWhatsApp) {
+    if (!whatsappUrl) {
+      setRejectionDialogMessage("رقم العميل غير صالح للإرسال عبر واتساب.", "error");
+      return;
+    }
+    whatsappWindow = window.open("", "_blank");
+    if (!whatsappWindow) {
+      setRejectionDialogMessage("المتصفح منع فتح واتساب. اسمح بالنوافذ المنبثقة ثم حاول مرة ثانية.", "error");
+      return;
+    }
+  }
+
+  confirmRejectionBtn.disabled = true;
+  confirmRejectionBtn.textContent = "جاري الإرسال والرفض...";
+  setRejectionDialogMessage("جاري إرسال سبب الرفض...", "info");
+
+  try {
+    if (sendEmail) {
+      const emailSent = await sendBookingEmail("booking-cancellation", booking, {
+        rejectionReason: reason,
+      });
+      if (!emailSent) {
+        whatsappWindow?.close();
+        throw new Error("REJECTION_EMAIL_FAILED");
+      }
+    }
+
+    await deleteBookingAcrossCollections(booking.slotKey);
+    await deleteDoc(doc(db, "bookingSlots", booking.slotKey));
+    removeOptimisticBooking(booking.slotKey);
+
+    if (whatsappWindow) {
+      whatsappWindow.location.href = whatsappUrl;
+    }
+
+    closeRejectionDialog();
+    const deliveryLabel = {
+      whatsapp: "واتساب",
+      email: "الإيميل",
+      both: "واتساب والإيميل",
+    }[delivery];
+    setMessage(`تم رفض الحجز وإرسال السبب عبر ${deliveryLabel}.`, "success");
+  } catch (error) {
+    console.error(error);
+    setRejectionDialogMessage(
+      error?.message === "REJECTION_EMAIL_FAILED"
+        ? "تعذر إرسال الإيميل، لذلك لم يتم رفض الحجز. حاول مرة ثانية."
+        : "تعذر رفض الحجز. لم يتم حذف الموعد.",
+      "error",
+    );
+  } finally {
+    confirmRejectionBtn.disabled = false;
+    confirmRejectionBtn.textContent = "رفض الحجز وإرسال السبب";
+  }
+}
+
+function buildWhatsAppRejectionUrl(booking, reason) {
+  const number = normalizeWhatsAppNumber(booking.phone);
+  if (!number) {
+    return "";
+  }
+
+  const message = [
+    `مرحبًا ${booking.customerName || ""}،`,
+    "",
+    "نعتذر، تم رفض حجزك لدى Gloss Boss Detailing.",
+    `سبب الرفض: ${reason}`,
+    "",
+    `الخدمة: ${booking.service || "-"}`,
+    `التاريخ: ${booking.date || "-"}`,
+    `الوقت: ${booking.time || "-"}`,
+    "",
+    "يمكنك التواصل معنا أو اختيار موعد آخر. شكرًا لتفهمك.",
+  ].join("\n");
+
+  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+}
+
+function normalizeWhatsAppNumber(value) {
+  let number = String(value || "").replace(/\D/g, "");
+  if (!number || number === "0") {
+    return "";
+  }
+
+  if (number.startsWith("00")) {
+    number = number.slice(2);
+  } else if (number.startsWith("0")) {
+    number = `972${number.slice(1)}`;
+  }
+
+  return number.length >= 8 && number.length <= 15 ? number : "";
+}
+
+function setRejectionDialogMessage(text, type) {
+  rejectionDialogMessage.textContent = text;
+  rejectionDialogMessage.className = text
+    ? `messageBox is-${type}`
+    : "messageBox hidden";
 }
 
 async function updateBookingAcrossCollections(slotKey, payload) {
